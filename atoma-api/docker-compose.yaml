@@ -1,0 +1,11 @@
+version: '3.7'
+
+services:
+
+  mongo:
+    container_name: atoma-compound-db
+    image: mongo
+    restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=$MONGO_USERNAME
+      - MONGO_INITDB_ROOT_PASSWORD=$MONGO_PASSWORD
