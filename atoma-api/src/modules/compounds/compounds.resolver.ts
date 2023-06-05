@@ -9,7 +9,7 @@ export class CompoundsResolver {
   // ) {}
 
   @Query(() => Compound)
-  async author() {
+  async findCompound() {
     //@Args('id', { type: () => Int }) id: number) {
     return {
       name: 'water',

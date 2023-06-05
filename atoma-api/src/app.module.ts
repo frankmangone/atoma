@@ -5,10 +5,11 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 
 import { CompoundsModule } from './modules/compounds/compounds.module';
+import { CompoundsResolver } from './modules/compounds/compounds.resolver';
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://localhost'),
+    MongooseModule.forRoot('mongodb://localhost:27017/test'),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
@@ -16,5 +17,6 @@ import { CompoundsModule } from './modules/compounds/compounds.module';
     }),
     CompoundsModule,
   ],
+  providers: [CompoundsResolver],
 })
 export class AppModule {}
