@@ -6,6 +6,7 @@ specifiers:
   '@nestjs/apollo': ^11.0.6
   '@nestjs/cli': ^8.0.0
   '@nestjs/common': ^8.0.0
+  '@nestjs/config': ^2.3.2
   '@nestjs/core': ^9
   '@nestjs/graphql': ^11.0.6
   '@nestjs/mongoose': ^9.2.2
@@ -41,6 +42,7 @@ dependencies:
   '@as-integrations/fastify': 2.0.0_@apollo+server@4.7.1
   '@nestjs/apollo': 11.0.6_kqmcm6fvhd37gmqwfoeqonz7eu
   '@nestjs/common': 8.4.7_atc7tu2sld2m3nk4hmwkqn6qde
+  '@nestjs/config': 2.3.2_pywgzl5w522sa4xe5k7bb2y2xm
   '@nestjs/core': 9.4.2_3fm6rxl6b3dq74z7xivxeczlhe
   '@nestjs/graphql': 11.0.6_rumbw42j7h56nv43hszxgai2w4
   '@nestjs/mongoose': 9.2.2_tm2yzhh6bjt5alc3wu4kwggtdu
@@ -1249,6 +1251,22 @@ packages:
       uuid: 8.3.2
     transitivePeerDependencies:
       - debug
+
+  /@nestjs/config/2.3.2_pywgzl5w522sa4xe5k7bb2y2xm:
+    resolution: {integrity: sha512-VtGV8PBpxzMzz68kdxTWqPm9v7SYCSZXQ0tC72AMNnjdmU+CVjUSLpEpdnm0XcWHxE1nV6wSI3HZxsATIV4ZxA==}
+    peerDependencies:
+      '@nestjs/common': ^7.0.0 || ^8.0.0 || ^9.0.0
+      reflect-metadata: ^0.1.13
+      rxjs: ^6.0.0 || ^7.2.0
+    dependencies:
+      '@nestjs/common': 8.4.7_atc7tu2sld2m3nk4hmwkqn6qde
+      dotenv: 16.0.3
+      dotenv-expand: 10.0.0
+      lodash: 4.17.21
+      reflect-metadata: 0.1.13
+      rxjs: 7.8.1
+      uuid: 9.0.0
+    dev: false
 
   /@nestjs/core/9.4.2_3fm6rxl6b3dq74z7xivxeczlhe:
     resolution: {integrity: sha512-S5K9GTpjBqEJtu5VxRsVaaGEBZ1bkY+Ht4+2hqZSKsI+rzcEB5hcvR+5KiMsMY1VGYvlZ99lxYz72p4h8B0mKw==}
@@ -2648,6 +2666,16 @@ packages:
     dependencies:
       esutils: 2.0.3
     dev: true
+
+  /dotenv-expand/10.0.0:
+    resolution: {integrity: sha512-GopVGCpVS1UKH75VKHGuQFqS1Gusej0z4FyQkPdwjil2gNIv+LNsqBlboOzpJFZKVT95GkCyWJbBSdFEFUWI2A==}
+    engines: {node: '>=12'}
+    dev: false
+
+  /dotenv/16.0.3:
+    resolution: {integrity: sha512-7GO6HghkA5fYG9TYnNxi14/7K9f5occMlp3zXAuSxn7CKCxt9xbNWG7yF8hTCSUchlfWSe3uLmlPfigevRItzQ==}
+    engines: {node: '>=12'}
+    dev: false
 
   /ee-first/1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
