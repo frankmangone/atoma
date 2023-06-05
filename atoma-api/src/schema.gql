@@ -1,0 +1,12 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Compound {
+  name: String!
+  reducedFormula: String
+}
+
+type Query {
+  findCompound: Compound!
+}
