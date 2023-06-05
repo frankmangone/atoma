@@ -2,6 +2,10 @@
 /dist
 /node_modules
 
+# Lockfiles
+yarn.lock
+package-lock.json
+
 # Environment
 .env
 
