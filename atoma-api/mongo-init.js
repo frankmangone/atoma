@@ -6,9 +6,7 @@ db.createUser({
   user: MONGO_USERNAME,
   pwd: MONGO_PASSWORD,
   roles: [
-    {
-      role: 'readWrite',
-      db: COMPOUNDS_DB_NAME,
-    },
+    { role: 'userAdminAnyDatabase', db: 'admin' },
+    { role: 'readWriteAnyDatabase', db: 'admin' },
   ],
 });
