@@ -36,7 +36,8 @@ export class CompoundsResolver {
    *
    * Creates a compound in the database.
    *
-   * @returns
+   * @param {CreateCompoundInput} payload
+   * @returns {Promise<Compound>}
    */
   @Mutation(() => Compound)
   async createCompound(
