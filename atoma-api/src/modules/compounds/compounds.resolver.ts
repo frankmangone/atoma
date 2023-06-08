@@ -1,6 +1,8 @@
-import { Query, Resolver } from '@nestjs/graphql';
+import { Mutation, Query, Resolver } from '@nestjs/graphql';
 import { Compound } from '@schemas/compound.schema';
 import { CompoundsService } from './compounds.service';
+import { CreateCompoundInput } from './inputs/create-compound.input';
+import { Payload } from '@common/decorators';
 
 @Resolver(() => Compound)
 export class CompoundsResolver {
@@ -11,7 +13,7 @@ export class CompoundsResolver {
    *
    * Queries for multiple compounds.
    *
-   * @returns
+   * @returns {Promise<Compound[]>}
    */
   @Query(() => [Compound])
   async findManyCompounds(): Promise<Compound[]> {
@@ -29,9 +31,18 @@ export class CompoundsResolver {
     // this.authorsService.findOneById(id);
   }
 
-  // @ResolveField()
-  // async posts(@Parent() author: Author) {
-  //   const { id } = author;
-  //   return this.postsService.findAll({ authorId: id });
-  // }
+  /**
+   * createCompound
+   *
+   * Creates a compound in the database.
+   *
+   * @param {CreateCompoundInput} payload
+   * @returns {Promise<Compound>}
+   */
+  @Mutation(() => Compound)
+  async createCompound(
+    @Payload() payload: CreateCompoundInput,
+  ): Promise<Compound> {
+    return this._compoundsService.create(payload);
+  }
 }
