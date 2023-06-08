@@ -11,6 +11,6 @@ import { CompoundsService } from './compounds.service';
     ]),
   ],
   providers: [CompoundsResolver, CompoundsService],
-  exports: [CompoundsResolver, CompoundsService],
+  exports: [CompoundsResolver],
 })
 export class CompoundsModule {}

@@ -3,9 +3,12 @@ import { Compound } from '@schemas/compound.schema';
 import { CompoundsService } from './compounds.service';
 import { CreateCompoundInput } from './inputs/create-compound.input';
 import { Payload } from '@common/decorators';
+import { Logger } from '@nestjs/common';
 
 @Resolver(() => Compound)
 export class CompoundsResolver {
+  private readonly _logger = new Logger(CompoundsResolver.name);
+
   constructor(private readonly _compoundsService: CompoundsService) {}
 
   /**
@@ -17,6 +20,8 @@ export class CompoundsResolver {
    */
   @Query(() => [Compound])
   async findManyCompounds(): Promise<Compound[]> {
+    this._logger.log({ message: 'Resolver `findManyCompounds` called' });
+
     return this._compoundsService.findAll();
   }
 
@@ -43,6 +48,11 @@ export class CompoundsResolver {
   async createCompound(
     @Payload() payload: CreateCompoundInput,
   ): Promise<Compound> {
+    this._logger.log({
+      message: 'Resolver `createCompound` called',
+      data: payload,
+    });
+
     return this._compoundsService.create(payload);
   }
 }

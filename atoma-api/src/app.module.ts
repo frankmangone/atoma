@@ -6,12 +6,13 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 
 import { CompoundsModule } from './modules/compounds/compounds.module';
-import { CompoundsResolver } from './modules/compounds/compounds.resolver';
+import { LoggingModule } from './modules/logging/logging.module';
 
 import { CONFIG } from './common';
 
 @Module({
   imports: [
+    LoggingModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
       // validate: validateEnvironmentVariables,
@@ -38,6 +39,5 @@ import { CONFIG } from './common';
     }),
     CompoundsModule,
   ],
-  providers: [CompoundsResolver],
 })
 export class AppModule {}
