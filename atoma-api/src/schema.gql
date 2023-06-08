@@ -8,5 +8,6 @@ type Compound {
 }
 
 type Query {
-  findCompound: Compound!
+  findManyCompounds: [Compound!]!
+  findOneCompound: Compound!
 }

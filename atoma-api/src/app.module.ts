@@ -22,7 +22,7 @@ import { CONFIG } from './common';
         const MONGO_USERNAME = _config.get(CONFIG.MONGO_USERNAME);
         const MONGO_PASSWORD = _config.get(CONFIG.MONGO_PASSWORD);
         const MONGO_PORT = _config.get(CONFIG.MONGO_PORT);
-        const mongoUri = `mongodb://localhost:${MONGO_PORT}/${COMPOUNDS_DB_NAME}`;
+        const mongoUri = `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@localhost:${MONGO_PORT}/${COMPOUNDS_DB_NAME}?authSource=admin`;
 
         return {
           uri: mongoUri,
