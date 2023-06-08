@@ -11,7 +11,7 @@ export class Compound {
   id: number;
 
   @Field(() => String)
-  @Prop()
+  @Prop({ unique: true })
   name: string;
 
   @Prop()
