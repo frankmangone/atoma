@@ -8,6 +8,7 @@ import { Logger } from '@nestjs/common';
 @Resolver(() => Compound)
 export class CompoundsResolver {
   private readonly _logger = new Logger(CompoundsResolver.name);
+
   constructor(private readonly _compoundsService: CompoundsService) {}
 
   /**
