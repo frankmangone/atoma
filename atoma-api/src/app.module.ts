@@ -12,6 +12,7 @@ import { CONFIG } from './common';
 
 @Module({
   imports: [
+    LoggingModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
       // validate: validateEnvironmentVariables,
@@ -36,7 +37,6 @@ import { CONFIG } from './common';
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
     }),
-    LoggingModule.forRoot(),
     CompoundsModule,
   ],
 })

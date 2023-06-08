@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { createLogger, format, transports as winstonTransports } from 'winston';
 
 const { NODE_ENV, APP_NAME } = process.env;

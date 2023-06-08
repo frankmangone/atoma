@@ -19,6 +19,7 @@ specifiers:
   '@types/supertest': ^2.0.11
   '@typescript-eslint/eslint-plugin': ^5.0.0
   '@typescript-eslint/parser': ^5.0.0
+  dotenv: ^16.1.4
   eslint: ^8.0.1
   eslint-config-prettier: ^8.3.0
   eslint-plugin-prettier: ^4.0.0
@@ -50,6 +51,7 @@ dependencies:
   '@nestjs/graphql': 11.0.6_ialnnoy7wtyogk6axbpsqtlfue
   '@nestjs/mongoose': 9.2.2_53lnyehlms7qbftpl6p5xcva3a
   '@nestjs/platform-express': 9.4.2_esprltrbpiguxawrkfzeze6eae
+  dotenv: 16.1.4
   fastify: 4.17.0
   graphql: 16.6.0
   mongoose: 7.2.2
@@ -2807,6 +2809,11 @@ packages:
 
   /dotenv/16.0.3:
     resolution: {integrity: sha512-7GO6HghkA5fYG9TYnNxi14/7K9f5occMlp3zXAuSxn7CKCxt9xbNWG7yF8hTCSUchlfWSe3uLmlPfigevRItzQ==}
+    engines: {node: '>=12'}
+    dev: false
+
+  /dotenv/16.1.4:
+    resolution: {integrity: sha512-m55RtE8AsPeJBpOIFKihEmqUcoVncQIwo7x9U8ZwLEZw9ZpXboz2c+rvog+jUaJvVrZ5kBOeYQBX5+8Aa/OZQw==}
     engines: {node: '>=12'}
     dev: false
 
