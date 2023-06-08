@@ -26,7 +26,13 @@ export class CompoundsService {
    * @returns {Promise<Compound[]>}
    */
   async findAll(): Promise<Compound[]> {
-    return this._compound.find().exec();
+    this._logger.log('Querying DB for compound records...');
+
+    const compounds = await this._compound.find().exec();
+
+    this._logger.log(`Found ${compounds.length} compound records.`);
+
+    return compounds;
   }
 
   /**
