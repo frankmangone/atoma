@@ -7,6 +7,15 @@ type Compound {
   reducedFormula: String
 }
 
+input CreateCompoundInput {
+  name: String!
+  reducedFormula: String!
+}
+
+type Mutation {
+  createCompound(payload: CreateCompoundInput!): Compound!
+}
+
 type Query {
   findManyCompounds: [Compound!]!
   findOneCompound: Compound!
