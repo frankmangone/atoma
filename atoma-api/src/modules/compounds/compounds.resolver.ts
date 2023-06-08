@@ -42,15 +42,6 @@ export class CompoundsResolver {
   async createCompound(
     @Payload() payload: CreateCompoundInput,
   ): Promise<Compound> {
-    console.log(payload);
-
-    const compounds = await this._compoundsService.findAll();
-    return compounds[0];
+    return this._compoundsService.create(payload);
   }
-
-  // @ResolveField()
-  // async posts(@Parent() author: Author) {
-  //   const { id } = author;
-  //   return this.postsService.findAll({ authorId: id });
-  // }
 }

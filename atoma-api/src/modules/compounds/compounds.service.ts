@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Compound } from '@schemas/compound.schema';
+import { CreateCompoundInput } from './inputs/create-compound.input';
 
 @Injectable()
 export class CompoundsService {
@@ -19,5 +20,16 @@ export class CompoundsService {
    */
   async findAll(): Promise<Compound[]> {
     return this._compound.find().exec();
+  }
+
+  /**
+   * create
+   *
+   * Creates a new compound record from the provided input.
+   *
+   * @returns {Promise<Compound>}
+   */
+  async create(payload: CreateCompoundInput): Promise<Compound> {
+    return this._compound.create(payload);
   }
 }
