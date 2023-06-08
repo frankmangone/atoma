@@ -6,7 +6,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 
 import { CompoundsModule } from './modules/compounds/compounds.module';
-import { CompoundsResolver } from './modules/compounds/compounds.resolver';
+import { LoggingModule } from './modules/logging/logging.module';
 
 import { CONFIG } from './common';
 
@@ -36,8 +36,8 @@ import { CONFIG } from './common';
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
     }),
+    LoggingModule.forRoot(),
     CompoundsModule,
   ],
-  providers: [CompoundsResolver],
 })
 export class AppModule {}
