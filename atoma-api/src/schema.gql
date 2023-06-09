@@ -12,11 +12,22 @@ input CreateCompoundInput {
   reducedFormula: String!
 }
 
+input FindPaginatedInput {
+  after: String
+  before: String
+  limit: Int!
+}
+
 type Mutation {
   createCompound(payload: CreateCompoundInput!): Compound!
 }
 
+type PaginatedCompounds {
+  data: [Compound!]
+  nextCursor: String
+  prevCursor: String
+}
+
 type Query {
-  findManyCompounds: [Compound!]!
-  findOneCompound: Compound!
+  findManyCompounds(options: FindPaginatedInput!): PaginatedCompounds!
 }
