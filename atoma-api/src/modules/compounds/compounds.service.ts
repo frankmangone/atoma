@@ -8,14 +8,13 @@ import { Model } from 'mongoose';
 import { Compound } from '@schemas/compound.schema';
 import { CreateCompoundInput } from './inputs/create-compound.input';
 import { UserInputError } from '@nestjs/apollo';
+import { CompoundsRepository } from './compounds.repository';
 
 @Injectable()
 export class CompoundsService {
   private readonly _logger = new Logger(CompoundsService.name);
 
-  constructor(
-    @InjectModel(Compound.name) private readonly _compound: Model<Compound>,
-  ) {}
+  constructor(private readonly _compoundsRepository: CompoundsRepository) {}
 
   /**
    * findAll
@@ -28,10 +27,9 @@ export class CompoundsService {
   async findAll(): Promise<Compound[]> {
     this._logger.log('Querying DB for compound records...');
 
-    const compounds = await this._compound.find().exec();
+    const compounds = await this._compoundsRepository.findPaginated();
 
     this._logger.log(`Found ${compounds.length} compound records.`);
-
     return compounds;
   }
 
@@ -53,7 +51,7 @@ export class CompoundsService {
         data: payload,
       });
 
-      const compound = await this._compound.create(payload);
+      const compound = await this._compoundsRepository.create(payload);
 
       this._logger.log({
         message: 'Compound successfully created in database.',
