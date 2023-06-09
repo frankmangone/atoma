@@ -1,9 +1,10 @@
-import { Mutation, Query, Resolver } from '@nestjs/graphql';
-import { Compound } from '@schemas/compound.schema';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Compound, PaginatedCompounds } from '@schemas/compound.schema';
 import { CompoundsService } from './compounds.service';
 import { CreateCompoundInput } from './inputs/create-compound.input';
 import { Payload } from '@common/decorators';
 import { Logger } from '@nestjs/common';
+import { FindPaginatedInput } from '@common/pagination/pagination.input';
 
 @Resolver(() => Compound)
 export class CompoundsResolver {
@@ -16,25 +17,34 @@ export class CompoundsResolver {
    *
    * Queries for multiple compounds.
    *
-   * @returns {Promise<Compound[]>}
+   * @returns {Promise<PaginatedCompounds>}
    */
-  @Query(() => [Compound])
-  async findManyCompounds(): Promise<Compound[]> {
-    this._logger.log({ message: 'Resolver `findManyCompounds` called' });
+  @Query(() => PaginatedCompounds)
+  async findManyCompounds(
+    @Args('options') options: FindPaginatedInput,
+  ): Promise<PaginatedCompounds> {
+    this._logger.log('Resolver `findManyCompounds` called');
 
-    return this._compoundsService.findAll();
+    const result = await this._compoundsService.findPaginated(options);
+
+    this._logger.log({
+      message: 'Resolver `findManyCompounds` called',
+      data: { nextCursor: result.nextCursor, prevCursor: result.prevCursor },
+    });
+
+    return result;
   }
 
-  @Query(() => Compound)
-  async findOneCompound() {
-    //@Args('id', { type: () => Int }) id: number) {
-    return {
-      name: 'water',
-      reducedFormula: 'H2O',
-      alternativeNames: [],
-    };
-    // this.authorsService.findOneById(id);
-  }
+  // @Query(() => Compound)
+  // async findOneCompound() {
+  //   //@Args('id', { type: () => Int }) id: number) {
+  //   return {
+  //     name: 'water',
+  //     reducedFormula: 'H2O',
+  //     alternativeNames: [],
+  //   };
+  //   // this.authorsService.findOneById(id);
+  // }
 
   /**
    * createCompound

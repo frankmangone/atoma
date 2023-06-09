@@ -3,6 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { CompoundsResolver } from './compounds.resolver';
 import { Compound, CompoundSchema } from '@schemas/compound.schema';
 import { CompoundsService } from './compounds.service';
+import { CompoundsRepository } from './compounds.repository';
 
 @Module({
   imports: [
@@ -10,7 +11,7 @@ import { CompoundsService } from './compounds.service';
       { name: Compound.name, schema: CompoundSchema },
     ]),
   ],
-  providers: [CompoundsResolver, CompoundsService],
+  providers: [CompoundsResolver, CompoundsService, CompoundsRepository],
   exports: [CompoundsResolver],
 })
 export class CompoundsModule {}

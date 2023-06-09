@@ -3,36 +3,33 @@ import {
   Logger,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
 import { Compound } from '@schemas/compound.schema';
 import { CreateCompoundInput } from './inputs/create-compound.input';
 import { UserInputError } from '@nestjs/apollo';
+import { CompoundsRepository } from './compounds.repository';
+import { Paginated } from '@common/pagination/pagination.types';
+import { FindPaginatedInput } from '@common/pagination/pagination.input';
 
 @Injectable()
 export class CompoundsService {
   private readonly _logger = new Logger(CompoundsService.name);
 
-  constructor(
-    @InjectModel(Compound.name) private readonly _compound: Model<Compound>,
-  ) {}
+  constructor(private readonly _compoundsRepository: CompoundsRepository) {}
 
   /**
-   * findAll
+   * findPaginated
    *
    * Gets all compound records.
    * TODO: This should have pagination, and query options
    *
-   * @returns {Promise<Compound[]>}
+   * @returns {Promise<Paginated<Compound>>}
    */
-  async findAll(): Promise<Compound[]> {
+  async findPaginated(
+    options?: FindPaginatedInput,
+  ): Promise<Paginated<Compound>> {
     this._logger.log('Querying DB for compound records...');
 
-    const compounds = await this._compound.find().exec();
-
-    this._logger.log(`Found ${compounds.length} compound records.`);
-
-    return compounds;
+    return this._compoundsRepository.findPaginated(options);
   }
 
   /**
@@ -53,7 +50,7 @@ export class CompoundsService {
         data: payload,
       });
 
-      const compound = await this._compound.create(payload);
+      const compound = await this._compoundsRepository.create(payload);
 
       this._logger.log({
         message: 'Compound successfully created in database.',
