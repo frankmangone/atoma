@@ -47,6 +47,17 @@ export abstract class BaseRepository<T> {
   }
 
   /**
+   * findOne
+   *
+   * Finds one record that matches the specified query.
+   *
+   * @returns {Promise<T>}
+   */
+  async findOne(query: Record<string, unknown>): Promise<T> {
+    return this._model.findOne(query).exec();
+  }
+
+  /**
    * create
    *
    * Creates a record for the specified model, provided that the

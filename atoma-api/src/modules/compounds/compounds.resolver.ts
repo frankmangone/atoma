@@ -5,6 +5,7 @@ import { CreateCompoundInput } from './inputs/create-compound.input';
 import { Payload } from '@common/decorators';
 import { Logger } from '@nestjs/common';
 import { FindPaginatedInput } from '@common/pagination/pagination.input';
+import { FindCompoundResult } from './results/find-compound.result';
 
 @Resolver(() => Compound)
 export class CompoundsResolver {
@@ -35,16 +36,23 @@ export class CompoundsResolver {
     return result;
   }
 
-  // @Query(() => Compound)
-  // async findOneCompound() {
-  //   //@Args('id', { type: () => Int }) id: number) {
-  //   return {
-  //     name: 'water',
-  //     reducedFormula: 'H2O',
-  //     alternativeNames: [],
-  //   };
-  //   // this.authorsService.findOneById(id);
-  // }
+  /**
+   * findOneCompound
+   *
+   * Queries for a single compound, by name, for now.
+   *
+   * @returns {Promise<FindCompoundResult>}
+   */
+  @Query(() => FindCompoundResult)
+  async findOneCompound(@Args('name', { type: () => String }) name: string) {
+    // TODO: Logs
+
+    const compound = await this._compoundsService.findOne({ name });
+
+    // TODO: Logs
+
+    return compound;
+  }
 
   /**
    * createCompound
