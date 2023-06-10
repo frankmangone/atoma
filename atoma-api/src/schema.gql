@@ -35,7 +35,21 @@ type PaginatedCompounds {
   prevCursor: String
 }
 
+type PaginatedProperties {
+  data: [Property!]
+  nextCursor: String
+  prevCursor: String
+}
+
+type Property {
+  description: String!
+  name: String!
+  type: String!
+  units: String!
+}
+
 type Query {
   findManyCompounds(options: FindPaginatedInput!): PaginatedCompounds!
+  findManyProperties(options: FindPaginatedInput!): PaginatedProperties!
   findOneCompound(name: String!): FindCompoundResult!
 }

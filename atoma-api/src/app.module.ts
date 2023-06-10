@@ -5,8 +5,9 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 
-import { CompoundsModule } from './modules/compounds/compounds.module';
 import { LoggingModule } from './modules/logging/logging.module';
+import { CompoundsModule } from './modules/compounds/compounds.module';
+import { PropertiesModule } from './modules/properties/properties.module';
 
 import { CONFIG } from './common';
 
@@ -37,7 +38,9 @@ import { CONFIG } from './common';
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
     }),
+    //
     CompoundsModule,
+    PropertiesModule,
   ],
 })
 export class AppModule {}
