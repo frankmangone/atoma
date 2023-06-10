@@ -6,6 +6,7 @@ import { Payload } from '@common/decorators';
 import { Logger } from '@nestjs/common';
 import { FindPaginatedInput } from '@common/pagination/pagination.input';
 import { FindCompoundResult } from './results/find-compound.result';
+import { NotFoundError } from '@common/errors/not-found.error';
 
 @Resolver(() => Compound)
 export class CompoundsResolver {
@@ -29,7 +30,7 @@ export class CompoundsResolver {
     const result = await this._compoundsService.findPaginated(options);
 
     this._logger.log({
-      message: 'Resolver `findManyCompounds` called',
+      message: 'Found compounds for query options.',
       data: { nextCursor: result.nextCursor, prevCursor: result.prevCursor },
     });
 
@@ -45,13 +46,28 @@ export class CompoundsResolver {
    */
   @Query(() => FindCompoundResult)
   async findOneCompound(@Args('name', { type: () => String }) name: string) {
-    // TODO: Logs
+    this._logger.log({
+      message: 'Resolver `findOneCompound` called',
+      data: { name },
+    });
 
     const compound = await this._compoundsService.findOne({ name });
 
-    // TODO: Logs
+    if (compound === null) {
+      this._logger.error({
+        message: 'No compound found for specified name.',
+        data: { name },
+      });
 
-    return compound;
+      return new NotFoundError(`Compound "${name}" not found.`);
+    }
+
+    this._logger.error({
+      message: 'Compound found for specified name.',
+      data: compound,
+    });
+
+    return Compound.from(compound);
   }
 
   /**
