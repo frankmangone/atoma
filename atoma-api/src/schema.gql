@@ -12,6 +12,8 @@ input CreateCompoundInput {
   reducedFormula: String!
 }
 
+union FindCompoundResult = Compound | NotFoundError
+
 input FindPaginatedInput {
   after: String
   before: String
@@ -22,6 +24,11 @@ type Mutation {
   createCompound(payload: CreateCompoundInput!): Compound!
 }
 
+type NotFoundError {
+  code: String!
+  message: String!
+}
+
 type PaginatedCompounds {
   data: [Compound!]
   nextCursor: String
@@ -30,4 +37,5 @@ type PaginatedCompounds {
 
 type Query {
   findManyCompounds(options: FindPaginatedInput!): PaginatedCompounds!
+  findOneCompound(name: String!): FindCompoundResult!
 }

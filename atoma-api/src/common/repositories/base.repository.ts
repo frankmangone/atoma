@@ -1,6 +1,6 @@
 import { FindPaginatedInput } from '@common/pagination/pagination.input';
 import { Paginated } from '@common/pagination/pagination.types';
-import { Model } from 'mongoose';
+import { Document, Model } from 'mongoose';
 
 export abstract class BaseRepository<T> {
   constructor(protected readonly _model: Model<T>) {}
@@ -44,6 +44,17 @@ export abstract class BaseRepository<T> {
       nextCursor: hasNextResult ? `${lastItem}` : null,
       prevCursor: hasPrevResult ? `${firstItem}` : null,
     };
+  }
+
+  /**
+   * findOne
+   *
+   * Finds one record that matches the specified query.
+   *
+   * @returns {Promise<T>}
+   */
+  async findOne(query: Record<string, unknown>): Promise<Document<T> | null> {
+    return this._model.findOne(query);
   }
 
   /**

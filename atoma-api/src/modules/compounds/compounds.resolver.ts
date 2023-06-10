@@ -5,6 +5,8 @@ import { CreateCompoundInput } from './inputs/create-compound.input';
 import { Payload } from '@common/decorators';
 import { Logger } from '@nestjs/common';
 import { FindPaginatedInput } from '@common/pagination/pagination.input';
+import { FindCompoundResult } from './results/find-compound.result';
+import { NotFoundError } from '@common/errors/not-found.error';
 
 @Resolver(() => Compound)
 export class CompoundsResolver {
@@ -28,23 +30,46 @@ export class CompoundsResolver {
     const result = await this._compoundsService.findPaginated(options);
 
     this._logger.log({
-      message: 'Resolver `findManyCompounds` called',
+      message: 'Found compounds for query options.',
       data: { nextCursor: result.nextCursor, prevCursor: result.prevCursor },
     });
 
     return result;
   }
 
-  // @Query(() => Compound)
-  // async findOneCompound() {
-  //   //@Args('id', { type: () => Int }) id: number) {
-  //   return {
-  //     name: 'water',
-  //     reducedFormula: 'H2O',
-  //     alternativeNames: [],
-  //   };
-  //   // this.authorsService.findOneById(id);
-  // }
+  /**
+   * findOneCompound
+   *
+   * Queries for a single compound, by name, for now.
+   *
+   * @param {string} name
+   * @returns {Promise<FindCompoundResult>}
+   */
+  @Query(() => FindCompoundResult)
+  async findOneCompound(@Args('name', { type: () => String }) name: string) {
+    this._logger.log({
+      message: 'Resolver `findOneCompound` called',
+      data: { name },
+    });
+
+    const compound = await this._compoundsService.findOne({ name });
+
+    if (compound === null) {
+      this._logger.error({
+        message: 'No compound found for specified name.',
+        data: { name },
+      });
+
+      return new NotFoundError(`Compound "${name}" not found.`);
+    }
+
+    this._logger.log({
+      message: 'Compound found for specified name.',
+      data: compound,
+    });
+
+    return Compound.from(compound);
+  }
 
   /**
    * createCompound
