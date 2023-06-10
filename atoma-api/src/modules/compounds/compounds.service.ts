@@ -1,3 +1,4 @@
+import { Document } from 'mongoose';
 import {
   Injectable,
   Logger,
@@ -37,9 +38,12 @@ export class CompoundsService {
    *
    * Gets a compound, querying by name, for now.
    *
-   * @returns {Promise<Paginated<Compound>>}
+   * @param {FindOneCompoundInput | undefined} options
+   * @returns {Promise<Document<Compound> | null>}
    */
-  async findOne(options?: FindOneCompoundInput): Promise<Compound> {
+  async findOne(
+    options?: FindOneCompoundInput,
+  ): Promise<Document<Compound> | null> {
     this._logger.log({
       message: 'Querying DB for one compound...',
       data: options,

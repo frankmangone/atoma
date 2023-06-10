@@ -42,6 +42,7 @@ export class CompoundsResolver {
    *
    * Queries for a single compound, by name, for now.
    *
+   * @param {string} name
    * @returns {Promise<FindCompoundResult>}
    */
   @Query(() => FindCompoundResult)
@@ -62,7 +63,7 @@ export class CompoundsResolver {
       return new NotFoundError(`Compound "${name}" not found.`);
     }
 
-    this._logger.error({
+    this._logger.log({
       message: 'Compound found for specified name.',
       data: compound,
     });
