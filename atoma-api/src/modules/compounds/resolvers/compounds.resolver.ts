@@ -1,11 +1,11 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { Compound, PaginatedCompounds } from '@schemas/compound.schema';
-import { CompoundsService } from './compounds.service';
-import { CreateCompoundInput } from './inputs/create-compound.input';
+import { CompoundsService } from '../compounds.service';
+import { CreateCompoundInput } from '../inputs/create-compound.input';
 import { Payload } from '@common/decorators';
 import { Logger } from '@nestjs/common';
 import { FindPaginatedInput } from '@common/pagination/pagination.input';
-import { FindCompoundResult } from './results/find-compound.result';
+import { FindCompoundResult } from '../results/find-compound.result';
 import { NotFoundError } from '@common/errors/not-found.error';
 
 @Resolver(() => Compound)
