@@ -1,15 +1,16 @@
 import { plainToInstance } from 'class-transformer';
-import { Paginated } from '@common/pagination/paginated.schema';
+import { Document, Schema as Sch } from 'mongoose';
 import { ObjectType } from '@nestjs/graphql';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Schema as Sch } from 'mongoose';
+import { Paginated } from '@common/pagination/paginated.schema';
+import { BaseEntity } from '@common/repositories/base.schema';
 import { Compound } from './compound.schema';
 import { Property } from './property.schema';
 import { Condition, ConditionSchema } from './condition.schema';
 
 @ObjectType()
 @Schema()
-export class CompoundPropertyData {
+export class CompoundPropertyData extends BaseEntity {
   static from(object: Document<CompoundPropertyData>): CompoundPropertyData {
     return plainToInstance(CompoundPropertyData, object.toObject());
   }

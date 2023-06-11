@@ -4,10 +4,11 @@ import { plainToInstance } from 'class-transformer';
 import { Document } from 'mongoose';
 import { Paginated } from '@common/pagination/paginated.schema';
 import { PropertyType } from '@common/enums';
+import { BaseEntity } from '@common/repositories/base.schema';
 
 @ObjectType()
 @Schema()
-export class Property {
+export class Property extends BaseEntity {
   static from(object: Document<Property>): Property {
     return plainToInstance(Property, object.toObject());
   }

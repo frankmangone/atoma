@@ -3,10 +3,11 @@ import { Paginated } from '@common/pagination/paginated.schema';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { BaseEntity } from '@common/repositories/base.schema';
 
 @ObjectType()
 @Schema()
-export class Compound {
+export class Compound extends BaseEntity {
   static from(object: Document<Compound>): Compound {
     return plainToInstance(Compound, object.toObject());
   }

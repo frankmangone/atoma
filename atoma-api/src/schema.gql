@@ -5,6 +5,7 @@
 type Compound {
   name: String!
   reducedFormula: String
+  uuid: String!
 }
 
 input CreateCompoundInput {
@@ -47,6 +48,7 @@ type Property {
   name: String!
   type: String!
   units: String!
+  uuid: String!
 }
 
 type Query {
