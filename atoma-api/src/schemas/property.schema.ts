@@ -14,6 +14,10 @@ export class Property {
 
   @Field(() => String)
   @Prop({ unique: true })
+  key: string;
+
+  @Field(() => String)
+  @Prop()
   name: string;
 
   @Prop()

@@ -43,6 +43,7 @@ type PaginatedProperties {
 
 type Property {
   description: String!
+  key: String!
   name: String!
   type: String!
   units: String!
