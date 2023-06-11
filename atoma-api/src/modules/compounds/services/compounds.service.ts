@@ -5,12 +5,12 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { Compound } from '@schemas/compound.schema';
-import { CreateCompoundInput } from './inputs/create-compound.input';
+import { CreateCompoundInput } from '../inputs/create-compound.input';
 import { UserInputError } from '@nestjs/apollo';
-import { CompoundsRepository } from './compounds.repository';
+import { CompoundsRepository } from '../compounds.repository';
 import { Paginated } from '@common/pagination/pagination.types';
 import { FindPaginatedInput } from '@common/pagination/pagination.input';
-import { FindOneCompoundInput } from './inputs/find-one-compound.input';
+import { FindOneCompoundInput } from '../inputs/find-one-compound.input';
 
 @Injectable()
 export class CompoundsService {

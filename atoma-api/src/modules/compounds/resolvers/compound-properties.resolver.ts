@@ -1,33 +1,35 @@
 import { Mutation, Resolver } from '@nestjs/graphql';
 import { Compound } from '@schemas/compound.schema';
-import { CompoundsService } from '../compounds.service';
-import { CreateCompoundInput } from '../inputs/create-compound.input';
 import { Payload } from '@common/decorators';
 import { Logger } from '@nestjs/common';
+import { CreateCompoundPropertyDataInput } from '../inputs/create-compount-property-data.input';
+import { CompoundPropertyDataService } from '../services/compound-property-data.service';
 
 @Resolver(() => Compound)
 export class CompoundsResolver {
   private readonly _logger = new Logger(CompoundsResolver.name);
 
-  constructor(private readonly _compoundsService: CompoundsService) {}
+  constructor(
+    private readonly _compoundPropertyDataService: CompoundPropertyDataService,
+  ) {}
 
   /**
    * createComponentPropertyData
    *
-   * Creates a compound in the database.
+   * Creates a compound property data record in the database.
    *
-   * @param {CreateCompoundInput} payload
+   * @param {CreateCompoundPropertyDataInput} payload
    * @returns {Promise<Compound>}
    */
   @Mutation(() => Compound)
-  async createCompound(
-    @Payload() payload: CreateCompoundInput,
+  async createCompoundPropertyData(
+    @Payload() payload: CreateCompoundPropertyDataInput,
   ): Promise<Compound> {
     this._logger.log({
-      message: 'Resolver `createCompound` called',
+      message: 'Resolver `createCompoundPropertyData` called',
       data: payload,
     });
 
-    return this._compoundsService.create(payload);
+    return this._compoundPropertyDataService.create(payload);
   }
 }

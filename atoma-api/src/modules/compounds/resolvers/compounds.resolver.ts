@@ -1,6 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { Compound, PaginatedCompounds } from '@schemas/compound.schema';
-import { CompoundsService } from '../compounds.service';
+import { CompoundsService } from '../services/compounds.service';
 import { CreateCompoundInput } from '../inputs/create-compound.input';
 import { Payload } from '@common/decorators';
 import { Logger } from '@nestjs/common';
