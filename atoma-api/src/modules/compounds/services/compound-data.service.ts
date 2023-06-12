@@ -1,8 +1,8 @@
 import { Document } from 'mongoose';
 import { Injectable, Logger } from '@nestjs/common';
+import { CompoundsService } from './compounds.service';
 import { CompoundDataRepository } from '../repositories/compound-data.repository';
 import { CreateCompoundDataInput } from '../inputs/create-compount-data.input';
-import { CompoundsRepository } from '../repositories/compounds.repository';
 import { Compound } from '@schemas/compound.schema';
 import { NotFoundError } from '@common/errors/not-found.error';
 import { CompoundData } from '@schemas/compound-data.schema';
@@ -14,8 +14,8 @@ export class CompoundDataService {
   private readonly _logger = new Logger(CompoundDataService.name);
 
   constructor(
-    private readonly _compoundsRepository: CompoundsRepository,
     private readonly _compoundDataRepository: CompoundDataRepository,
+    private readonly _compoundsService: CompoundsService,
     private readonly _propertiesService: PropertiesService,
   ) {}
 
@@ -30,7 +30,7 @@ export class CompoundDataService {
    * corresponding record.
    *
    * @param {CreateCompoundDataInput} payload
-   * @returns {Promise<any>}
+   * @returns {Promise<CompoundData | NotFoundError>}
    */
   async create(
     payload: CreateCompoundDataInput,
@@ -40,6 +40,8 @@ export class CompoundDataService {
       compoundUuid,
       propertyUuid,
     );
+
+    // TODO: Use transactions? Is it even worth it?
 
     if (compound === null) {
       return new NotFoundError(
@@ -60,6 +62,8 @@ export class CompoundDataService {
 
     const compoundData = await this._compoundDataRepository.create({
       ...payload,
+      compound: compound._id,
+      property: property._id,
     });
 
     this._logger.log({
@@ -67,8 +71,7 @@ export class CompoundDataService {
       data: payload,
     });
 
-    // TODO: CompoundData.from
-    return compoundData;
+    return CompoundData.from(compoundData as any); // How can I avoid this `any`?
   }
 
   /**
@@ -90,11 +93,9 @@ export class CompoundDataService {
       data: { compoundUuid, propertyUuid },
     });
 
-    const compound = await this._compoundsRepository.findOne({
-      uuid: compoundUuid,
-    });
-    const property = await this._propertiesService.findByUuid(propertyUuid);
-
-    return [compound, property];
+    return Promise.all([
+      this._compoundsService.findByUuid(compoundUuid),
+      this._propertiesService.findByUuid(propertyUuid),
+    ]);
   }
 }

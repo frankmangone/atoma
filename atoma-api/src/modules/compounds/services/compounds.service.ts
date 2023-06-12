@@ -53,6 +53,20 @@ export class CompoundsService {
   }
 
   /**
+   * findByUuid
+   *
+   * Gets a compound record by its uuid.
+   *
+   * @param {string} uuid
+   * @returns {Promise<Document<Compound> | null>}
+   */
+  async findByUuid(uuid: string): Promise<Document<Compound> | null> {
+    this._logger.log(`Querying DB for compound with uuid "${uuid}"...`);
+
+    return this._compoundsRepository.findOne({ uuid });
+  }
+
+  /**
    * create
    *
    * Creates a new compound record from the provided input.
