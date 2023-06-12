@@ -3,20 +3,20 @@ import { CompoundData } from '@schemas/compound-data.schema';
 import { Payload } from '@common/decorators';
 import { Logger } from '@nestjs/common';
 import { CreateCompoundDataInput } from '../inputs/create-compount-data.input';
-import { CompoundPropertyDataService } from '../services/compound-data.service';
+import { CompoundDataService } from '../services/compound-data.service';
 
 @Resolver(() => CompoundData)
 export class CompoundDataResolver {
   private readonly _logger = new Logger(CompoundDataResolver.name);
 
-  constructor() {} // private readonly _compoundDataResolver: CompoundPropertyDataService,
+  constructor(private readonly _compoundDataService: CompoundDataService) {}
 
   /**
    * createCompoundData
    *
    * Creates a compound property data record in the database.
    *
-   * @param {CreateCompoundPropertyDataInput} payload
+   * @param {CreateCompoundDataInput} payload
    * @returns {Promise<Compound>}
    */
   @Mutation(() => CompoundData)
@@ -28,6 +28,6 @@ export class CompoundDataResolver {
       data: payload,
     });
 
-    // return this._compoundDataResolver.create(payload);
+    return this._compoundDataService.create(payload);
   }
 }

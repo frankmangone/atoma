@@ -9,7 +9,7 @@ import { Property } from './property.schema';
 import { Condition, ConditionSchema } from './condition.schema';
 
 @ObjectType()
-@Schema()
+@Schema({ collection: 'compound-property-data' })
 export class CompoundData extends BaseEntity {
   static from(object: Document<CompoundData>): CompoundData {
     return plainToInstance(CompoundData, object.toObject());
