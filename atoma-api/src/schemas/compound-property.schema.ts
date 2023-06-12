@@ -22,6 +22,7 @@ export class CompoundProperty extends BaseEntity {
 }
 
 @ObjectType()
-export class PaginatedCompounds extends Paginated(CompoundProperty) {}
+export class PaginatedCompoundProperties extends Paginated(CompoundProperty) {}
 
-export const CompoundSchema = SchemaFactory.createForClass(Compound);
+export const CompoundPropertySchema =
+  SchemaFactory.createForClass(CompoundProperty);

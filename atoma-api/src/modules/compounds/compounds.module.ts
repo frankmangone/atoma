@@ -11,6 +11,7 @@ import {
   CompoundData,
   CompoundDataSchema,
 } from '@schemas/compound-data.schema';
+import { PropertiesModule } from '@modules/properties/properties.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import {
       { name: Compound.name, schema: CompoundSchema },
       { name: CompoundData.name, schema: CompoundDataSchema },
     ]),
+    PropertiesModule,
   ],
   providers: [
     CompoundDataResolver,

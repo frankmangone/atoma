@@ -24,6 +24,8 @@ input CreateCompoundDataInput {
   value: Float!
 }
 
+union CreateCompoundDataResult = CompoundData | NotFoundError
+
 input CreateCompoundInput {
   name: String!
   reducedFormula: String!
@@ -39,7 +41,7 @@ input FindPaginatedInput {
 
 type Mutation {
   createCompound(payload: CreateCompoundInput!): Compound!
-  createCompoundData(payload: CreateCompoundDataInput!): CompoundData!
+  createCompoundData(payload: CreateCompoundDataInput!): CreateCompoundDataResult!
 }
 
 type NotFoundError {
