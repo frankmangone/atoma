@@ -12,6 +12,10 @@ type CompoundData {
   uuid: String!
 }
 
+type CompoundProperty {
+  uuid: String!
+}
+
 input ConditionInput {
   value: Float!
   variable: String!

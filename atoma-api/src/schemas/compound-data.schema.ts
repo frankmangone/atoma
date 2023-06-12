@@ -16,10 +16,10 @@ export class CompoundData extends BaseEntity {
   }
 
   @Prop({ type: Sch.Types.ObjectId, ref: Compound.name })
-  compound: Compound;
+  compoundId: Compound;
 
   @Prop({ type: Sch.Types.ObjectId, ref: Property.name })
-  property: Property;
+  propertyId: Property;
 
   @Prop({ type: [{ type: ConditionSchema }] })
   conditions: Condition[];

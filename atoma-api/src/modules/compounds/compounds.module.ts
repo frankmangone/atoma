@@ -3,14 +3,20 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Compound, CompoundSchema } from '@schemas/compound.schema';
 import { CompoundsService } from './services/compounds.service';
 import { CompoundDataService } from './services/compound-data.service';
+import { CompoundPropertiesService } from './services/compound-properties.service';
 import { CompoundsRepository } from './repositories/compounds.repository';
 import { CompoundDataRepository } from './repositories/compound-data.repository';
+import { CompoundPropertiesRepository } from './repositories/compound-properties.repository';
 import { CompoundsResolver } from './resolvers/compounds.resolver';
 import { CompoundDataResolver } from './resolvers/compound-data.resolver';
 import {
   CompoundData,
   CompoundDataSchema,
 } from '@schemas/compound-data.schema';
+import {
+  CompoundProperty,
+  CompoundPropertySchema,
+} from '@schemas/compound-property.schema';
 import { PropertiesModule } from '@modules/properties/properties.module';
 
 @Module({
@@ -18,6 +24,7 @@ import { PropertiesModule } from '@modules/properties/properties.module';
     MongooseModule.forFeature([
       { name: Compound.name, schema: CompoundSchema },
       { name: CompoundData.name, schema: CompoundDataSchema },
+      { name: CompoundProperty.name, schema: CompoundPropertySchema },
     ]),
     PropertiesModule,
   ],
@@ -28,6 +35,8 @@ import { PropertiesModule } from '@modules/properties/properties.module';
     CompoundsResolver,
     CompoundsService,
     CompoundsRepository,
+    CompoundPropertiesService,
+    CompoundPropertiesRepository,
   ],
   exports: [CompoundsResolver, CompoundDataResolver],
 })

@@ -1,6 +1,7 @@
 import { Document } from 'mongoose';
 import { Injectable, Logger } from '@nestjs/common';
 import { CompoundsService } from './compounds.service';
+import { CompoundPropertiesService } from './compound-properties.service';
 import { CompoundDataRepository } from '../repositories/compound-data.repository';
 import { CreateCompoundDataInput } from '../inputs/create-compount-data.input';
 import { Compound } from '@schemas/compound.schema';
@@ -16,6 +17,7 @@ export class CompoundDataService {
   constructor(
     private readonly _compoundDataRepository: CompoundDataRepository,
     private readonly _compoundsService: CompoundsService,
+    private readonly _compoundPropertiesService: CompoundPropertiesService,
     private readonly _propertiesService: PropertiesService,
   ) {}
 
@@ -41,7 +43,7 @@ export class CompoundDataService {
       propertyUuid,
     );
 
-    // TODO: Use transactions? Is it even worth it?
+    // TODO: Use transactions
 
     if (compound === null) {
       return new NotFoundError(
@@ -62,14 +64,19 @@ export class CompoundDataService {
 
     const compoundData = await this._compoundDataRepository.create({
       ...payload,
-      compound: compound._id,
-      property: property._id,
+      compoundId: compound._id,
+      propertyId: property._id,
     });
 
     this._logger.log({
       message: 'Compound property data successfully created.',
       data: payload,
     });
+
+    await this._compoundPropertiesService.idempotentCreate(
+      compound._id,
+      property._id,
+    );
 
     return CompoundData.from(compoundData as any); // How can I avoid this `any`?
   }
