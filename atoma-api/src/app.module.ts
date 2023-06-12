@@ -5,8 +5,9 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 
-import { CompoundsModule } from './modules/compounds/compounds.module';
 import { LoggingModule } from './modules/logging/logging.module';
+import { CompoundsModule } from './modules/compounds/compounds.module';
+import { PropertiesModule } from './modules/properties/properties.module';
 
 import { CONFIG } from './common';
 
@@ -20,10 +21,14 @@ import { CONFIG } from './common';
     MongooseModule.forRootAsync({
       useFactory: async (_config: ConfigService) => {
         const COMPOUNDS_DB_NAME = _config.get(CONFIG.COMPOUNDS_DB_NAME);
+
+        const MONGO_PROTOCOL = _config.get(CONFIG.MONGO_PROTOCOL);
         const MONGO_USERNAME = _config.get(CONFIG.MONGO_USERNAME);
         const MONGO_PASSWORD = _config.get(CONFIG.MONGO_PASSWORD);
+        const MONGO_HOST = _config.get(CONFIG.MONGO_HOST);
         const MONGO_PORT = _config.get(CONFIG.MONGO_PORT);
-        const mongoUri = `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@localhost:${MONGO_PORT}/${COMPOUNDS_DB_NAME}?authSource=admin`;
+
+        const mongoUri = `${MONGO_PROTOCOL}://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST}:${MONGO_PORT}/${COMPOUNDS_DB_NAME}?authSource=admin`;
 
         return {
           uri: mongoUri,
@@ -37,7 +42,9 @@ import { CONFIG } from './common';
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
     }),
+    //
     CompoundsModule,
+    PropertiesModule,
   ],
 })
 export class AppModule {}

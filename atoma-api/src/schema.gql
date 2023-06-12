@@ -5,6 +5,23 @@
 type Compound {
   name: String!
   reducedFormula: String
+  uuid: String!
+}
+
+type CompoundData {
+  uuid: String!
+}
+
+input ConditionInput {
+  value: Float!
+  variable: String!
+}
+
+input CreateCompoundDataInput {
+  compoundUuid: String!
+  conditions: [ConditionInput!]!
+  propertyUuid: String!
+  value: Float!
 }
 
 input CreateCompoundInput {
@@ -22,6 +39,7 @@ input FindPaginatedInput {
 
 type Mutation {
   createCompound(payload: CreateCompoundInput!): Compound!
+  createCompoundData(payload: CreateCompoundDataInput!): CompoundData!
 }
 
 type NotFoundError {
@@ -35,7 +53,23 @@ type PaginatedCompounds {
   prevCursor: String
 }
 
+type PaginatedProperties {
+  data: [Property!]
+  nextCursor: String
+  prevCursor: String
+}
+
+type Property {
+  description: String!
+  key: String!
+  name: String!
+  type: String!
+  units: String!
+  uuid: String!
+}
+
 type Query {
   findManyCompounds(options: FindPaginatedInput!): PaginatedCompounds!
+  findManyProperties(options: FindPaginatedInput!): PaginatedProperties!
   findOneCompound(name: String!): FindCompoundResult!
 }
