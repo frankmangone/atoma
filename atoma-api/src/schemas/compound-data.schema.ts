@@ -10,9 +10,9 @@ import { Condition, ConditionSchema } from './condition.schema';
 
 @ObjectType()
 @Schema()
-export class CompoundPropertyData extends BaseEntity {
-  static from(object: Document<CompoundPropertyData>): CompoundPropertyData {
-    return plainToInstance(CompoundPropertyData, object.toObject());
+export class CompoundData extends BaseEntity {
+  static from(object: Document<CompoundData>): CompoundData {
+    return plainToInstance(CompoundData, object.toObject());
   }
 
   @Prop({ type: Sch.Types.ObjectId, ref: Compound.name })
@@ -21,14 +21,11 @@ export class CompoundPropertyData extends BaseEntity {
   @Prop({ type: Sch.Types.ObjectId, ref: Property.name })
   property: Property;
 
-  @Prop([ConditionSchema])
+  @Prop({ type: [{ type: ConditionSchema }] })
   conditions: Condition[];
 }
 
 @ObjectType()
-export class PaginatedCompoundPropertyData extends Paginated(
-  CompoundPropertyData,
-) {}
+export class PaginatedCompoundData extends Paginated(CompoundData) {}
 
-export const CompoundPropertyDataSchema =
-  SchemaFactory.createForClass(CompoundPropertyData);
+export const CompoundDataSchema = SchemaFactory.createForClass(CompoundData);

@@ -1,8 +1,8 @@
 import { InputType, Field, Float } from '@nestjs/graphql';
-import { Condition } from '@schemas/condition.schema';
+import { Condition, ConditionInput } from '@schemas/condition.schema';
 
 @InputType()
-export class CreateCompoundPropertyDataInput {
+export class CreateCompoundDataInput {
   @Field()
   propertyUuid: string;
 
@@ -12,6 +12,6 @@ export class CreateCompoundPropertyDataInput {
   @Field(() => Float)
   value: number;
 
-  @Field() // TODO: ???
-  conditions: Condition;
+  @Field(() => [ConditionInput])
+  conditions: Condition[];
 }
