@@ -12,6 +12,10 @@ type CompoundData {
   uuid: String!
 }
 
+type CompoundProperty {
+  uuid: String!
+}
+
 input ConditionInput {
   value: Float!
   variable: String!
@@ -23,6 +27,8 @@ input CreateCompoundDataInput {
   propertyUuid: String!
   value: Float!
 }
+
+union CreateCompoundDataResult = CompoundData | NotFoundError
 
 input CreateCompoundInput {
   name: String!
@@ -39,7 +45,7 @@ input FindPaginatedInput {
 
 type Mutation {
   createCompound(payload: CreateCompoundInput!): Compound!
-  createCompoundData(payload: CreateCompoundDataInput!): CompoundData!
+  createCompoundData(payload: CreateCompoundDataInput!): CreateCompoundDataResult!
 }
 
 type NotFoundError {

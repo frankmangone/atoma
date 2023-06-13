@@ -1,4 +1,5 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Document } from 'mongoose';
 import { Compound, PaginatedCompounds } from '@schemas/compound.schema';
 import { CompoundsService } from '../services/compounds.service';
 import { CreateCompoundInput } from '../inputs/create-compound.input';
@@ -82,7 +83,7 @@ export class CompoundsResolver {
   @Mutation(() => Compound)
   async createCompound(
     @Payload() payload: CreateCompoundInput,
-  ): Promise<Compound> {
+  ): Promise<Document<Compound>> {
     this._logger.log({
       message: 'Resolver `createCompound` called',
       data: payload,

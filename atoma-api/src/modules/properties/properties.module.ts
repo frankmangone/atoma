@@ -12,6 +12,6 @@ import { PropertiesRepository } from './properties.repository';
     ]),
   ],
   providers: [PropertiesResolver, PropertiesService, PropertiesRepository],
-  exports: [PropertiesResolver],
+  exports: [PropertiesResolver, PropertiesService],
 })
 export class PropertiesModule {}

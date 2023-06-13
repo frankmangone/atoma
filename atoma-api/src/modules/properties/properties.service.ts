@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { Document } from 'mongoose';
 import { Property } from '@schemas/property.schema';
 import { PropertiesRepository } from './properties.repository';
 import { Paginated } from '@common/pagination/pagination.types';
@@ -15,6 +16,7 @@ export class PropertiesService {
    *
    * Gets all property records.
    *
+   * @param {FindPaginatedInput | undefined} options
    * @returns {Promise<Paginated<Property>>}
    */
   async findPaginated(
@@ -23,5 +25,19 @@ export class PropertiesService {
     this._logger.log('Querying DB for compound records...');
 
     return this._propertiesRepository.findPaginated(options);
+  }
+
+  /**
+   * findByUuid
+   *
+   * Gets a property record by its uuid.
+   *
+   * @param {string} uuid
+   * @returns {Promise<Document<Property> | null>}
+   */
+  async findByUuid(uuid: string): Promise<Document<Property> | null> {
+    this._logger.log(`Querying DB for property with uuid "${uuid}"...`);
+
+    return this._propertiesRepository.findOne({ uuid });
   }
 }
