@@ -16,6 +16,8 @@ export class CompoundProperty extends BaseEntity {
     return plainToInstance(CompoundProperty, object.toObject());
   }
 
+  _id: string;
+
   @Prop({ type: Sch.Types.ObjectId, ref: Compound.name })
   compoundId: Compound;
 

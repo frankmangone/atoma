@@ -58,25 +58,30 @@ export class CompoundDataService {
     }
 
     this._logger.log({
+      message: 'Creating compound property record in database...',
+      data: payload,
+    });
+
+    const compoundProperty =
+      await this._compoundPropertiesService.idempotentCreate(
+        compound._id,
+        property._id,
+      );
+
+    this._logger.log({
       message: 'Creating compound property data record in database...',
       data: payload,
     });
 
     const compoundData = await this._compoundDataRepository.create({
       ...payload,
-      compoundId: compound._id,
-      propertyId: property._id,
+      compoundPropertyId: compoundProperty._id,
     });
 
     this._logger.log({
       message: 'Compound property data successfully created.',
       data: payload,
     });
-
-    await this._compoundPropertiesService.idempotentCreate(
-      compound._id,
-      property._id,
-    );
 
     return CompoundData.from(compoundData as any); // How can I avoid this `any`?
   }

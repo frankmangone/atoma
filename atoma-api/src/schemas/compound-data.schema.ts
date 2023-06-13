@@ -4,9 +4,8 @@ import { ObjectType } from '@nestjs/graphql';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Paginated } from '@common/pagination/paginated.schema';
 import { BaseEntity } from '@common/repositories/base.schema';
-import { Compound } from './compound.schema';
-import { Property } from './property.schema';
 import { Condition, ConditionSchema } from './condition.schema';
+import { CompoundProperty } from './compound-property.schema';
 
 @ObjectType()
 @Schema({ collection: 'compound-property-data' })
@@ -15,11 +14,8 @@ export class CompoundData extends BaseEntity {
     return plainToInstance(CompoundData, object.toObject());
   }
 
-  @Prop({ type: Sch.Types.ObjectId, ref: Compound.name })
-  compoundId: Compound;
-
-  @Prop({ type: Sch.Types.ObjectId, ref: Property.name })
-  propertyId: Property;
+  @Prop({ type: Sch.Types.ObjectId, ref: CompoundProperty.name })
+  compoundPropertyId: CompoundProperty;
 
   @Prop({ type: [{ type: ConditionSchema }] })
   conditions: Condition[];
