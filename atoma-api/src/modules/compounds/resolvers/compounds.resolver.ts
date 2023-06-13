@@ -1,4 +1,11 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+} from '@nestjs/graphql';
 import { Document } from 'mongoose';
 import { Compound, PaginatedCompounds } from '@schemas/compound.schema';
 import { CompoundsService } from '../services/compounds.service';
