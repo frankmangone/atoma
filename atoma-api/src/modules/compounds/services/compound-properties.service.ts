@@ -59,20 +59,19 @@ export class CompoundPropertiesService {
   }
 
   /**
-   * findByCompoundAndPropertyUuid
+   * findByCompoundAndPropertyId
    *
    * Finds one `compound-property` by providing both a compound and a
-   * property's uuids.
+   * property's ids.
    *
-   * @param {string} compoundUuid
-   * @param {string} propertyUuid
+   * @param {string} compoundId
+   * @param {string} propertyId
    * @returns {Promise<CompoundProperty>}
    */
-  async findByCompoundAndPropertyUuid(
+  async findByCompoundAndPropertyId(
     compoundId: string,
     propertyId: string,
   ): Promise<Document<CompoundProperty>> {
-    // TODO: Usar uuids
     return this._compoundPropertiesRepository.findOne({
       compoundId,
       propertyId,

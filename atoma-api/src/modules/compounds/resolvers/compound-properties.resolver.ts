@@ -4,12 +4,16 @@ import { NotFoundError } from '@common/errors/not-found.error';
 import { CompoundProperty } from '@schemas/compound-property.schema';
 import { CompoundPropertiesService } from '../services/compound-properties.service';
 import { CompoundPropertyResult } from '../results/compound-property.result';
+import { CompoundsService } from '../services/compounds.service';
+import { PropertiesService } from '@modules/properties/properties.service';
 
 @Resolver(() => CompoundProperty)
 export class CompoundPropertiesResolver {
   private readonly _logger = new Logger(CompoundPropertiesResolver.name);
 
   constructor(
+    private readonly _compoundsService: CompoundsService,
+    private readonly _propertiesService: PropertiesService,
     private readonly _compoundPropertiesService: CompoundPropertiesService,
   ) {}
 
@@ -29,13 +33,18 @@ export class CompoundPropertiesResolver {
   ) {
     this._logger.log({
       message: 'Resolver `compoundProperty` called',
-      data: { compoundUuid },
+      data: { compoundUuid, propertyUuid },
     });
 
+    const [compound, property] = await Promise.all([
+      this._compoundsService.findByUuid(compoundUuid),
+      this._propertiesService.findByUuid(propertyUuid),
+    ]);
+
     const compoundProperty =
-      await this._compoundPropertiesService.findByCompoundAndPropertyUuid(
-        compoundUuid,
-        propertyUuid,
+      await this._compoundPropertiesService.findByCompoundAndPropertyId(
+        compound?._id as any as string,
+        property?._id as any as string,
       );
 
     if (compoundProperty === null) {
