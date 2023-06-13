@@ -79,8 +79,8 @@ type Property {
 }
 
 type Query {
+  compound(name: String!): FindCompoundResult!
   compoundProperty(compoundUuid: String!, propertyUuid: String!): CompoundPropertyResult!
-  findManyCompounds(options: FindPaginatedInput!): PaginatedCompounds!
-  findManyProperties(options: FindPaginatedInput!): PaginatedProperties!
-  findOneCompound(name: String!): FindCompoundResult!
+  compounds(options: FindPaginatedInput!): PaginatedCompounds!
+  properties(options: FindPaginatedInput!): PaginatedProperties!
 }
