@@ -71,9 +71,9 @@ export class CompoundsService {
    *
    * Creates a new compound record from the provided input.
    *
-   * @returns {Promise<Compound>}
+   * @returns {Promise<Document<Compound>>}
    */
-  async create(payload: CreateCompoundInput): Promise<Compound> {
+  async create(payload: CreateCompoundInput): Promise<Document<Compound>> {
     // Transform name to lowercase
     // FIXME: Can we use `class-transformer` for this?
     payload.name = payload.name.toLowerCase();

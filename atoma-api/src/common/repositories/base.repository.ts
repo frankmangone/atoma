@@ -51,7 +51,7 @@ export abstract class BaseRepository<T> {
    *
    * Finds one record that matches the specified query.
    *
-   * @returns {Promise<T>}
+   * @returns {Promise<Document<T> | null>}
    */
   async findOne(query: Record<string, unknown>): Promise<Document<T> | null> {
     return this._model.findOne(query);
@@ -68,7 +68,8 @@ export abstract class BaseRepository<T> {
    * @param {Record<string, any>} payload
    * @returns {Promise<T>}
    */
-  async create(payload: Record<string, any>): Promise<T> {
-    return this._model.create(payload);
+  async create(payload: Record<string, any>): Promise<Document<T>> {
+    const record = await this._model.create(payload);
+    return record as Document<T>;
   }
 }

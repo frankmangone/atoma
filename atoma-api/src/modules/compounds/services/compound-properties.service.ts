@@ -27,7 +27,7 @@ export class CompoundPropertiesService {
   async idempotentCreate(
     compoundId: Compound,
     propertyId: Property,
-  ): Promise<CompoundProperty> {
+  ): Promise<Document<CompoundProperty>> {
     const existingCompoundProperty =
       await this._compoundPropertiesRepository.findOne({
         compoundId,
@@ -40,7 +40,7 @@ export class CompoundPropertiesService {
         data: { compoundId, propertyId },
       });
 
-      return existingCompoundProperty as any as CompoundProperty; // TODO: make it so that they return the same type
+      return existingCompoundProperty;
     }
 
     const newCompoundProperty = await this._compoundPropertiesRepository.create(
