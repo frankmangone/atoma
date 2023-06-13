@@ -13,21 +13,14 @@ import { Property } from './property.schema';
 })
 export class CompoundProperty extends BaseEntity {
   static from(object: Document<CompoundProperty>): CompoundProperty {
-    return plainToInstance(CompoundProperty, object.toObject());
+    return plainToInstance(CompoundProperty, object);
   }
 
-  @Prop(() => Sch.Types.ObjectId)
-  _id: string;
-
   @Prop({ type: Sch.Types.ObjectId, ref: Compound.name })
-  compoundId: Compound;
-
-  @Prop({ type: Sch.Types.ObjectId, ref: Property.name })
-  propertyId: Property;
-
   @Field(() => Compound)
   compound: Compound;
 
+  @Prop({ type: Sch.Types.ObjectId, ref: Property.name })
   @Field(() => Property)
   property: Property;
 }

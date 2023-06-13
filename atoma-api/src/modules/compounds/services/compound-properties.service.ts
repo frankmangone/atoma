@@ -45,8 +45,8 @@ export class CompoundPropertiesService {
 
     const newCompoundProperty = await this._compoundPropertiesRepository.create(
       {
-        compoundId,
-        propertyId,
+        compound: compoundId,
+        property: propertyId,
       },
     );
 
@@ -64,17 +64,48 @@ export class CompoundPropertiesService {
    * Finds one `compound-property` by providing both a compound and a
    * property's ids.
    *
-   * @param {string} compoundId
-   * @param {string} propertyId
+   * @param {string} compoundUuid
+   * @param {string} propertyUuid
    * @returns {Promise<CompoundProperty>}
    */
-  async findByCompoundAndPropertyId(
-    compoundId: string,
-    propertyId: string,
+  async findByCompoundAndPropertyUuid(
+    compoundUuid: string,
+    propertyUuid: string,
   ): Promise<Document<CompoundProperty>> {
-    return this._compoundPropertiesRepository.findOne({
-      compoundId,
-      propertyId,
-    });
+    const result = await this._compoundPropertiesRepository
+      .model()
+      .aggregate([
+        {
+          $lookup: {
+            from: 'compounds',
+            localField: 'compound',
+            foreignField: '_id',
+            as: 'compound',
+          },
+        },
+        {
+          $lookup: {
+            from: 'properties',
+            localField: 'property',
+            foreignField: '_id',
+            as: 'property',
+          },
+        },
+        {
+          $addFields: {
+            compound: { $arrayElemAt: ['$compound', 0] },
+            property: { $arrayElemAt: ['$property', 0] },
+          },
+        },
+        {
+          $match: {
+            'compound.uuid': compoundUuid,
+            'property.uuid': propertyUuid,
+          },
+        },
+      ])
+      .exec();
+
+    return result[0];
   }
 }
