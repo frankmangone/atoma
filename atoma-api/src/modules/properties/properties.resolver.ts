@@ -17,7 +17,7 @@ export class PropertiesResolver {
    *
    * @returns {Promise<PaginatedProperties>}
    */
-  @Query(() => PaginatedProperties)
+  @Query(() => PaginatedProperties, { name: 'properties' })
   async findManyProperties(
     @Args('options') options: FindPaginatedInput,
   ): Promise<PaginatedProperties> {

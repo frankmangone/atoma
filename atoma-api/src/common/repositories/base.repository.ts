@@ -1,9 +1,18 @@
 import { FindPaginatedInput } from '@common/pagination/pagination.input';
 import { Paginated } from '@common/pagination/pagination.types';
-import { Document, Model } from 'mongoose';
+import { Document, FilterQuery, Model, ProjectionType } from 'mongoose';
 
 export abstract class BaseRepository<T> {
   constructor(protected readonly _model: Model<T>) {}
+
+  /**
+   * model
+   *
+   * Getter for the internal _model property
+   */
+  model(): Model<T> {
+    return this._model;
+  }
 
   /**
    * findPaginated
@@ -53,8 +62,11 @@ export abstract class BaseRepository<T> {
    *
    * @returns {Promise<Document<T> | null>}
    */
-  async findOne(query: Record<string, unknown>): Promise<Document<T> | null> {
-    return this._model.findOne(query);
+  async findOne(
+    query: FilterQuery<T>,
+    projection?: ProjectionType<T>,
+  ): Promise<Document<T> | null> {
+    return this._model.findOne(query, projection ?? null);
   }
 
   /**

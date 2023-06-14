@@ -9,6 +9,7 @@ import { CompoundDataRepository } from './repositories/compound-data.repository'
 import { CompoundPropertiesRepository } from './repositories/compound-properties.repository';
 import { CompoundsResolver } from './resolvers/compounds.resolver';
 import { CompoundDataResolver } from './resolvers/compound-data.resolver';
+import { CompoundPropertiesResolver } from './resolvers/compound-properties.resolver';
 import {
   CompoundData,
   CompoundDataSchema,
@@ -35,9 +36,14 @@ import { PropertiesModule } from '@modules/properties/properties.module';
     CompoundsResolver,
     CompoundsService,
     CompoundsRepository,
+    CompoundPropertiesResolver,
     CompoundPropertiesService,
     CompoundPropertiesRepository,
   ],
-  exports: [CompoundsResolver, CompoundDataResolver],
+  exports: [
+    CompoundsResolver,
+    CompoundDataResolver,
+    CompoundPropertiesResolver,
+  ],
 })
 export class CompoundsModule {}

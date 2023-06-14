@@ -1,4 +1,11 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+} from '@nestjs/graphql';
 import { Document } from 'mongoose';
 import { Compound, PaginatedCompounds } from '@schemas/compound.schema';
 import { CompoundsService } from '../services/compounds.service';
@@ -22,7 +29,7 @@ export class CompoundsResolver {
    *
    * @returns {Promise<PaginatedCompounds>}
    */
-  @Query(() => PaginatedCompounds)
+  @Query(() => PaginatedCompounds, { name: 'compounds' })
   async findManyCompounds(
     @Args('options') options: FindPaginatedInput,
   ): Promise<PaginatedCompounds> {
@@ -46,7 +53,7 @@ export class CompoundsResolver {
    * @param {string} name
    * @returns {Promise<FindCompoundResult>}
    */
-  @Query(() => FindCompoundResult)
+  @Query(() => FindCompoundResult, { name: 'compound' })
   async findOneCompound(@Args('name', { type: () => String }) name: string) {
     this._logger.log({
       message: 'Resolver `findOneCompound` called',

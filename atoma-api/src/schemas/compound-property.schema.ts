@@ -1,6 +1,6 @@
 import { plainToInstance } from 'class-transformer';
 import { Paginated } from '@common/pagination/paginated.schema';
-import { ObjectType } from '@nestjs/graphql';
+import { Field, ObjectType } from '@nestjs/graphql';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as Sch } from 'mongoose';
 import { BaseEntity } from '@common/repositories/base.schema';
@@ -13,16 +13,16 @@ import { Property } from './property.schema';
 })
 export class CompoundProperty extends BaseEntity {
   static from(object: Document<CompoundProperty>): CompoundProperty {
-    return plainToInstance(CompoundProperty, object.toObject());
+    return plainToInstance(CompoundProperty, object);
   }
 
-  _id: string;
-
   @Prop({ type: Sch.Types.ObjectId, ref: Compound.name })
-  compoundId: Compound;
+  @Field(() => Compound)
+  compound: Compound;
 
   @Prop({ type: Sch.Types.ObjectId, ref: Property.name })
-  propertyId: Property;
+  @Field(() => Property)
+  property: Property;
 }
 
 @ObjectType()
