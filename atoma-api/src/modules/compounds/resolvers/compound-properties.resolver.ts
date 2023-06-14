@@ -1,9 +1,14 @@
 import { Args, Query, Resolver } from '@nestjs/graphql';
 import { Logger } from '@nestjs/common';
 import { NotFoundError } from '@common/errors/not-found.error';
-import { CompoundProperty } from '@schemas/compound-property.schema';
+import {
+  CompoundProperty,
+  PaginatedCompoundProperties,
+} from '@schemas/compound-property.schema';
 import { CompoundPropertiesService } from '../services/compound-properties.service';
 import { CompoundPropertyResult } from '../results/compound-property.result';
+import { CompoundPropertiesInput } from '../inputs/compound-properties.input';
+import { CompoundPropertyInput } from '../inputs/compound-property.input';
 
 @Resolver(() => CompoundProperty)
 export class CompoundPropertiesResolver {
@@ -12,6 +17,34 @@ export class CompoundPropertiesResolver {
   constructor(
     private readonly _compoundPropertiesService: CompoundPropertiesService,
   ) {}
+
+  /**
+   * findManyCompoundProperties
+   *
+   * Queries for a single compound, by name, for now.
+   *
+   * @param {CompoundPropertiesInput} input
+   * @returns {Promise<PaginatedCompoundProperties>}
+   */
+  @Query(() => PaginatedCompoundProperties, { name: 'compoundProperties' })
+  async findManyCompoundProperties(
+    @Args('input', { type: () => CompoundPropertiesInput })
+    input: CompoundPropertiesInput,
+  ): Promise<PaginatedCompoundProperties> {
+    this._logger.log({
+      message: 'Resolver `compoundProperties` called',
+      data: input,
+    });
+
+    const result = await this._compoundPropertiesService.findPaginated(input);
+
+    this._logger.log({
+      message: 'Found compounds for query options.',
+      data: { nextCursor: result.nextCursor, prevCursor: result.prevCursor },
+    });
+
+    return result;
+  }
 
   /**
    * findOneCompound
@@ -24,24 +57,24 @@ export class CompoundPropertiesResolver {
    */
   @Query(() => CompoundPropertyResult, { name: 'compoundProperty' })
   async findOneCompoundProperty(
-    @Args('compoundUuid', { type: () => String }) compoundUuid: string,
-    @Args('propertyUuid', { type: () => String }) propertyUuid: string,
-  ) {
+    @Args('input', { type: () => CompoundPropertyInput })
+    input: CompoundPropertyInput,
+  ): Promise<CompoundProperty | NotFoundError> {
     this._logger.log({
       message: 'Resolver `compoundProperty` called',
-      data: { compoundUuid, propertyUuid },
+      data: input,
     });
 
-    const compoundProperty =
-      await this._compoundPropertiesService.findByCompoundAndPropertyUuid(
-        compoundUuid,
-        propertyUuid,
-      );
+    const compoundProperties = await this._compoundPropertiesService.find(
+      input,
+    );
+
+    const compoundProperty = compoundProperties[0];
 
     if (!compoundProperty) {
       this._logger.error({
         message: 'No data for compound & property combination.',
-        data: { compoundUuid, propertyUuid },
+        data: input,
       });
 
       return new NotFoundError(`Compound property not found.`);

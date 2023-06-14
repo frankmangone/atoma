@@ -1,6 +1,16 @@
 import { FindPaginatedInput } from '@common/pagination/pagination.input';
 import { Paginated } from '@common/pagination/pagination.types';
-import { Document, FilterQuery, Model, ProjectionType } from 'mongoose';
+import {
+  Document,
+  FilterQuery,
+  Model,
+  PipelineStage,
+  ProjectionType,
+} from 'mongoose';
+
+interface FindPaginatedWithQueryParams extends FindPaginatedInput {
+  aggregate: PipelineStage[];
+}
 
 export abstract class BaseRepository<T> {
   constructor(protected readonly _model: Model<T>) {}
@@ -12,6 +22,58 @@ export abstract class BaseRepository<T> {
    */
   model(): Model<T> {
     return this._model;
+  }
+
+  /**
+   * findPaginatedWithQuery
+   *
+   * Performs a query to get a `limit` amount of elements, paginated by cursor.
+   * Takes an extra `aggregate` parameter that is passed as query arguments to
+   * the `aggregate()` method from mongoose.
+   *
+   * @param {FindPaginatedWithQueryParams | undefined} options
+   * @returns {Promise<Paginated<T>>}
+   */
+  async findPaginatedWithQuery<T>(
+    options?: FindPaginatedWithQueryParams,
+  ): Promise<Paginated<T>> {
+    const { aggregate = [], limit = 3, before, after } = options ?? {};
+
+    let query;
+
+    if (before) query = { _id: { $lt: before } };
+    if (after) query = { _id: { $gt: after } };
+
+    const data = await this._model
+      .aggregate([...aggregate, { $match: query }, { $limit: limit }])
+      .exec();
+
+    if (!data.length) {
+      return { data, nextCursor: null, prevCursor: null };
+    }
+
+    const lastItem = data.at(-1)._id;
+    const firstItem = data[0]._id;
+
+    // If there is an item with id greater than lastItem, then there's a
+    // next page. TODO: Revisit this
+    const hasNextQuery = { _id: { $gt: lastItem } };
+    const nextResults = await this._model
+      .aggregate([...aggregate, { $match: hasNextQuery }, { $limit: 1 }])
+      .exec();
+
+    // If there is an item with id less than firstItem, then there's
+    // a previous page. TODO: Revisit this
+    const hasPrevQuery = { _id: { $lt: firstItem } };
+    const prevResult = await this._model
+      .aggregate([...aggregate, { $match: hasPrevQuery }, { $limit: 1 }])
+      .exec();
+
+    return {
+      data,
+      nextCursor: nextResults.length > 0 ? `${lastItem}` : null,
+      prevCursor: prevResult.length > 0 ? `${firstItem}` : null,
+    };
   }
 
   /**
