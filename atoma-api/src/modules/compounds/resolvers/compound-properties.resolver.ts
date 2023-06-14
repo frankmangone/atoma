@@ -65,11 +65,9 @@ export class CompoundPropertiesResolver {
       data: input,
     });
 
-    const compoundProperties = await this._compoundPropertiesService.find(
+    const compoundProperty = await this._compoundPropertiesService.findOne(
       input,
     );
-
-    const compoundProperty = compoundProperties[0];
 
     if (!compoundProperty) {
       this._logger.error({

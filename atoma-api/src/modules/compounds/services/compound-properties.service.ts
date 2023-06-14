@@ -101,7 +101,7 @@ export class CompoundPropertiesService {
    * @param {FindOneParms} params
    * @returns {Promise<Document<CompoundProperty>>}
    */
-  async find(params: FindOneParms): Promise<Document<CompoundProperty>[]> {
+  async findOne(params: FindOneParms): Promise<Document<CompoundProperty>> {
     const { compoundUuid, propertyUuid } = params;
 
     const lookups = [];
@@ -117,7 +117,7 @@ export class CompoundPropertiesService {
     if (propertyUuid) {
       lookups.push({ $lookup: PROPERTY_AGGREGATION.$lookup });
       $addFields.property = PROPERTY_AGGREGATION.$addField;
-      $match['compound.uuid'] = compoundUuid;
+      $match['property.uuid'] = propertyUuid;
     }
 
     const result = await this._compoundPropertiesRepository
@@ -144,21 +144,18 @@ export class CompoundPropertiesService {
   ): Promise<Paginated<CompoundProperty>> {
     const { compoundUuid, propertyUuid, limit, before, after } = params;
 
-    const lookups = [];
-    const $addFields: Record<string, unknown> = {};
+    const lookups = [
+      { $lookup: COMPOUND_AGGREGATION.$lookup },
+      { $lookup: PROPERTY_AGGREGATION.$lookup },
+    ];
+    const $addFields: Record<string, unknown> = {
+      compound: COMPOUND_AGGREGATION.$addField,
+      property: PROPERTY_AGGREGATION.$addField,
+    };
     const $match: Record<string, unknown> = {};
 
-    if (compoundUuid) {
-      lookups.push({ $lookup: COMPOUND_AGGREGATION.$lookup });
-      $addFields.compound = COMPOUND_AGGREGATION.$addField;
-      $match['compound.uuid'] = compoundUuid;
-    }
-
-    if (propertyUuid) {
-      lookups.push({ $lookup: PROPERTY_AGGREGATION.$lookup });
-      $addFields.property = PROPERTY_AGGREGATION.$addField;
-      $match['property.uuid'] = propertyUuid;
-    }
+    if (compoundUuid) $match['compound.uuid'] = compoundUuid;
+    if (propertyUuid) $match['property.uuid'] = propertyUuid;
 
     const result =
       await this._compoundPropertiesRepository.findPaginatedWithQuery<CompoundProperty>(

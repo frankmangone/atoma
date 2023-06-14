@@ -41,11 +41,11 @@ export abstract class BaseRepository<T> {
 
     let query;
 
-    if (before) query = { _id: { $lt: before } };
-    if (after) query = { _id: { $gt: after } };
+    if (before) query = { $match: { _id: { $lt: before } } };
+    if (after) query = { $match: { _id: { $gt: after } } };
 
     const data = await this._model
-      .aggregate([...aggregate, { $match: query }, { $limit: limit }])
+      .aggregate([...aggregate, ...(query ?? []), { $limit: limit }])
       .exec();
 
     if (!data.length) {
