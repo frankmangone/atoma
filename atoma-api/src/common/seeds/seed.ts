@@ -75,11 +75,11 @@ const seed = async () => {
 
   const COMPOUND_PROPERTIES = [];
 
-  compoundIds.forEach((compoundId) => {
-    propertyIds.forEach((propertyId) => {
+  compoundIds.forEach((compound) => {
+    propertyIds.forEach((property) => {
       COMPOUND_PROPERTIES.push({
-        compoundId,
-        propertyId,
+        compound,
+        property,
         uuid: uuidv4(),
       });
     });
@@ -88,14 +88,14 @@ const seed = async () => {
   await Promise.all(
     COMPOUND_PROPERTIES.map(async (compoundProperty) => {
       try {
-        const { compoundId, propertyId } = compoundProperty;
+        const { compound, property } = compoundProperty;
 
         const createdCompoundProperty = await CompoundPropertyModel.create(
           compoundProperty,
         );
 
         compoundPropertyIds.set(
-          [compoundId, propertyId],
+          [compound, property],
           createdCompoundProperty._id,
         );
         console.log(`Compound property created.`);
