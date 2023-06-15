@@ -1,14 +1,19 @@
 import 'dotenv/config';
 import mongoose, { Types } from 'mongoose';
 import { Property, PropertySchema } from '../../schemas/property.schema';
-import { COMPOUNDS } from './datasets/compounds';
-import { PROPERTIES } from './datasets/properties';
+import { COMPOUNDS, WATER } from './datasets/compounds';
+import { DENSITY, PROPERTIES } from './datasets/properties';
 import { Compound, CompoundSchema } from '@schemas/compound.schema';
 import {
   CompoundProperty,
   CompoundPropertySchema,
 } from '@schemas/compound-property.schema';
 import { v4 as uuidv4 } from 'uuid';
+import { WATER_DENSITY_DATA } from './datasets/compound-property-data';
+import {
+  CompoundData,
+  CompoundDataSchema,
+} from '@schemas/compound-data.schema';
 
 const {
   MONGO_PROTOCOL,
@@ -26,6 +31,7 @@ const CompoundPropertyModel = mongoose.model(
   CompoundProperty.name,
   CompoundPropertySchema,
 );
+const CompoundDataModel = mongoose.model(CompoundData.name, CompoundDataSchema);
 
 const seed = async () => {
   console.log('Connecting to MongoDB instance...');
@@ -34,7 +40,10 @@ const seed = async () => {
 
   const compoundIds = new Map<string, Types.ObjectId>();
   const propertyIds = new Map<string, Types.ObjectId>();
-  const compoundPropertyIds = new Map<[string, string], Types.ObjectId>();
+  const compoundPropertyIds = new Map<
+    [Types.ObjectId, Types.ObjectId],
+    Types.ObjectId
+  >();
 
   //
   //
@@ -105,6 +114,25 @@ const seed = async () => {
     }),
   );
 
+  //
+  //
+  console.log('=========================================');
+  console.log('Seeding compound property data...');
+
+  const waterId = compoundIds.get(WATER);
+  const densityId = propertyIds.get(DENSITY);
+  const waterDensityId = compoundPropertyIds.get([waterId, densityId]);
+
+  await Promise.all(
+    WATER_DENSITY_DATA(waterDensityId).map(async (compoundData) => {
+      try {
+        await CompoundDataModel.create(compoundData);
+        console.log(`Compound property for ${WATER} created.`);
+      } catch {
+        console.log(`Failed to create compound property data for ${WATER}.`);
+      }
+    }),
+  );
   console.log('Seed completed successfully');
   mongoose.connection.close();
 };
