@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import mongoose, { Types } from 'mongoose';
 import { Property, PropertySchema } from '../../schemas/property.schema';
-import { COMPOUNDS, WATER } from './datasets/compounds';
+import { COMPOUNDS, ETHANOL, WATER } from './datasets/compounds';
 import { DENSITY, PROPERTIES } from './datasets/properties';
 import { Compound, CompoundSchema } from '@schemas/compound.schema';
 import {
@@ -9,7 +9,10 @@ import {
   CompoundPropertySchema,
 } from '@schemas/compound-property.schema';
 import { v4 as uuidv4 } from 'uuid';
-import { WATER_DENSITY_DATA } from './datasets/compound-property-data';
+import {
+  ETHANOL_DENSITY_DATA,
+  WATER_DENSITY_DATA,
+} from './datasets/compound-property-data';
 import {
   CompoundData,
   CompoundDataSchema,
@@ -119,12 +122,28 @@ const seed = async () => {
   console.log('=========================================');
   console.log('Seeding compound property data...');
 
+  console.log('Seeding water density data...');
   const waterId = compoundIds.get(WATER);
   const densityId = propertyIds.get(DENSITY);
   const waterDensityId = compoundPropertyIds.get([waterId, densityId]);
 
   await Promise.all(
     WATER_DENSITY_DATA(waterDensityId).map(async (compoundData) => {
+      try {
+        await CompoundDataModel.create(compoundData);
+        console.log(`Compound property for ${WATER} created.`);
+      } catch {
+        console.log(`Failed to create compound property data for ${WATER}.`);
+      }
+    }),
+  );
+
+  console.log('Seeding ethanol density data...');
+  const ethanolId = compoundIds.get(ETHANOL);
+  const ethanolDensityId = compoundPropertyIds.get([ethanolId, densityId]);
+
+  await Promise.all(
+    ETHANOL_DENSITY_DATA(ethanolDensityId).map(async (compoundData) => {
       try {
         await CompoundDataModel.create(compoundData);
         console.log(`Compound property for ${WATER} created.`);
