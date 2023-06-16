@@ -9,7 +9,7 @@ import { BaseEntity } from '@common/repositories/base.schema';
 @Schema()
 export class Compound extends BaseEntity {
   static from(object: Document<Compound>): Compound {
-    return plainToInstance(Compound, object.toObject());
+    return plainToInstance(Compound, object);
   }
 
   @Field(() => String)

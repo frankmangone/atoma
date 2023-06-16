@@ -17,6 +17,7 @@ import { FindCompoundResult } from '../results/find-compound.result';
 import { NotFoundError } from '@common/errors/not-found.error';
 import { Neo4jService } from '@modules/database/neo.service';
 import { v4 as uuidv4 } from 'uuid';
+import { plainToInstance } from 'class-transformer';
 
 @Resolver(() => Compound)
 export class CompoundsResolver {
@@ -74,9 +75,13 @@ export class CompoundsResolver {
       data: { name },
     });
 
-    const compound = await this._compoundsService.findOne({ name });
+    const queryResult = await this._neo4jService.read(
+      'MATCH (c:Compound {name: $name}) RETURN c',
+      { name },
+    );
+    const compoundRecord = queryResult.records[0];
 
-    if (compound === null) {
+    if (!compoundRecord) {
       this._logger.error({
         message: 'No compound found for specified name.',
         data: { name },
@@ -85,12 +90,15 @@ export class CompoundsResolver {
       return new NotFoundError(`Compound "${name}" not found.`);
     }
 
+    const compound = compoundRecord.get('c').properties;
+
     this._logger.log({
       message: 'Compound found for specified name.',
       data: compound,
     });
 
-    return Compound.from(compound);
+    // return Compound.from(compound);
+    return plainToInstance(Compound, compound);
   }
 
   /**
