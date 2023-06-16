@@ -38,6 +38,7 @@
     "fastify": "^4.17.0",
     "graphql": "^16.6.0",
     "mongoose": "^7.2.2",
+    "neo4j-driver": "^5.9.1",
     "nest-winston": "^1.9.2",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
