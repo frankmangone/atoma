@@ -43,27 +43,27 @@ export class CompoundsResolver {
     this._logger.log('Resolver `findManyCompounds` called');
 
     // FIXME: Temporary Neo4j read
-    let query = 'MATCH (c:Compound)';
+    let query = 'MATCH (type:Compound)';
     if (options.after) {
-      query += ' WHERE id(c) > toInteger($after)';
+      query += ' WHERE id(type) > toInteger($after)';
     }
-    query += ` RETURN c ORDER BY id(c) ASC LIMIT ${limit}`;
+    query += ` RETURN type ORDER BY id(type) ASC LIMIT ${limit}`;
 
     const { records } = await this._neo4jService.read(query, {
       after: after,
     });
 
-    const data = await records.map((record) => record.get('c').properties);
+    const data = await records.map((record) => record.get('type').properties);
 
     const prevCursor = after;
 
     let nextCursor = null;
     if (records.length === limit) {
       const lastCompound = records.at(-1);
-      nextCursor = lastCompound.get('c').identity.toString();
+      nextCursor = lastCompound.get('type').identity.toString();
     }
 
-    // const result = await this._compoundsService.findPaginated(options);
+    // const result = await this._compoundsService.sfindPaginated(options);
 
     this._logger.log({
       message: 'Found compounds for query options.',
@@ -89,7 +89,7 @@ export class CompoundsResolver {
     });
 
     const queryResult = await this._neo4jService.read(
-      'MATCH (c:Compound {name: $name}) RETURN c',
+      'MATCH (type:Compound {name: $name}) RETURN type',
       { name },
     );
     const compoundRecord = queryResult.records[0];
@@ -103,7 +103,7 @@ export class CompoundsResolver {
       return new NotFoundError(`Compound "${name}" not found.`);
     }
 
-    const compound = compoundRecord.get('c').properties;
+    const compound = compoundRecord.get('type').properties;
 
     this._logger.log({
       message: 'Compound found for specified name.',
@@ -133,7 +133,7 @@ export class CompoundsResolver {
 
     // FIXME: Temporary Neo4j creation
     await this._neo4jService.write(
-      'CREATE (c:Compound {uuid: $uuid, name: $name, reducedFormula: $reducedFormula})',
+      'CREATE (type:Compound {uuid: $uuid, name: $name, reducedFormula: $reducedFormula})',
       {
         uuid: uuidv4(),
         ...payload,

@@ -4,6 +4,7 @@ import { PropertiesResolver } from './properties.resolver';
 import { Property, PropertySchema } from '@schemas/property.schema';
 import { PropertiesService } from './properties.service';
 import { PropertiesRepository } from './properties.repository';
+import { Neo4jService } from '@modules/database/neo.service';
 
 @Module({
   imports: [
@@ -11,7 +12,12 @@ import { PropertiesRepository } from './properties.repository';
       { name: Property.name, schema: PropertySchema },
     ]),
   ],
-  providers: [PropertiesResolver, PropertiesService, PropertiesRepository],
+  providers: [
+    Neo4jService,
+    PropertiesResolver,
+    PropertiesService,
+    PropertiesRepository,
+  ],
   exports: [PropertiesResolver, PropertiesService],
 })
 export class PropertiesModule {}

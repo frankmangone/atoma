@@ -51,6 +51,14 @@ input CreateCompoundInput {
   reducedFormula: String!
 }
 
+input CreatePropertyInput {
+  description: String!
+  key: String!
+  name: String!
+  type: String!
+  units: String!
+}
+
 union FindCompoundResult = Compound | NotFoundError
 
 input FindPaginatedInput {
@@ -62,6 +70,7 @@ input FindPaginatedInput {
 type Mutation {
   createCompound(payload: CreateCompoundInput!): Compound!
   createCompoundData(payload: CreateCompoundDataInput!): CreateCompoundDataResult!
+  createProperty(payload: CreatePropertyInput!): Property!
 }
 
 type NotFoundError {
