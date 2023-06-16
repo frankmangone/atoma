@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 
+import { DatabaseModule } from './modules/database/neo.module';
 import { LoggingModule } from './modules/logging/logging.module';
 import { CompoundsModule } from './modules/compounds/compounds.module';
 import { PropertiesModule } from './modules/properties/properties.module';
@@ -41,6 +42,13 @@ import { CONFIG } from './common';
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
+    }),
+    DatabaseModule.forRoot({
+      scheme: 'neo4j',
+      host: 'localhost',
+      port: 7687,
+      username: 'neo4j',
+      password: 'password',
     }),
     //
     CompoundsModule,
