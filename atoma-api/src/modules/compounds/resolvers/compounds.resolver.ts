@@ -39,25 +39,38 @@ export class CompoundsResolver {
   async findManyCompounds(
     @Args('options') options: FindPaginatedInput,
   ): Promise<PaginatedCompounds> {
+    const { after, limit } = options;
     this._logger.log('Resolver `findManyCompounds` called');
 
     // FIXME: Temporary Neo4j read
-    const graphResult = await this._neo4jService.read(
-      'MATCH (c:Compound) RETURN c',
-      {},
-    );
-    const graphData = await graphResult.records.map(
-      (record) => record.get('c').properties,
-    );
+    let query = 'MATCH (c:Compound)';
+    if (options.after) {
+      query += ' WHERE id(c) > toInteger($after)';
+    }
+    query += ` RETURN c ORDER BY id(c) ASC LIMIT ${limit}`;
 
-    const result = await this._compoundsService.findPaginated(options);
+    const { records } = await this._neo4jService.read(query, {
+      after: after,
+    });
+
+    const data = await records.map((record) => record.get('c').properties);
+
+    const prevCursor = after;
+
+    let nextCursor = null;
+    if (records.length === limit) {
+      const lastCompound = records.at(-1);
+      nextCursor = lastCompound.get('c').identity.toString();
+    }
+
+    // const result = await this._compoundsService.findPaginated(options);
 
     this._logger.log({
       message: 'Found compounds for query options.',
-      data: { nextCursor: result.nextCursor, prevCursor: result.prevCursor },
+      data: { nextCursor, prevCursor },
     });
 
-    return { ...result, data: graphData };
+    return { data, nextCursor, prevCursor };
   }
 
   /**
