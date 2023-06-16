@@ -18,9 +18,11 @@ export class DatabaseModule {
         },
         {
           provide: NEO4J_DRIVER,
-          useFactory: async () => createDriver(config),
+          useFactory: (neo4jConfig: Neo4jConfig) => createDriver(neo4jConfig),
+          inject: [NEO4J_CONFIG],
         },
       ],
+      exports: [NEO4J_CONFIG, NEO4J_DRIVER],
     };
   }
 }

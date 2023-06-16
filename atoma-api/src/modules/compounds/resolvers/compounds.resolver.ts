@@ -15,12 +15,17 @@ import { Logger } from '@nestjs/common';
 import { FindPaginatedInput } from '@common/pagination/pagination.input';
 import { FindCompoundResult } from '../results/find-compound.result';
 import { NotFoundError } from '@common/errors/not-found.error';
+import { Neo4jService } from '@modules/database/neo.service';
+import { v4 as uuidv4 } from 'uuid';
 
 @Resolver(() => Compound)
 export class CompoundsResolver {
   private readonly _logger = new Logger(CompoundsResolver.name);
 
-  constructor(private readonly _compoundsService: CompoundsService) {}
+  constructor(
+    private readonly _compoundsService: CompoundsService,
+    private readonly _neo4jService: Neo4jService,
+  ) {}
 
   /**
    * findManyCompounds
@@ -35,6 +40,15 @@ export class CompoundsResolver {
   ): Promise<PaginatedCompounds> {
     this._logger.log('Resolver `findManyCompounds` called');
 
+    // FIXME: Temporary Neo4j read
+    const graphResult = await this._neo4jService.read(
+      'MATCH (c:Compound) RETURN c',
+      {},
+    );
+    const graphData = await graphResult.records.map(
+      (record) => record.get('c').properties,
+    );
+
     const result = await this._compoundsService.findPaginated(options);
 
     this._logger.log({
@@ -42,7 +56,7 @@ export class CompoundsResolver {
       data: { nextCursor: result.nextCursor, prevCursor: result.prevCursor },
     });
 
-    return result;
+    return { ...result, data: graphData };
   }
 
   /**
@@ -95,6 +109,15 @@ export class CompoundsResolver {
       message: 'Resolver `createCompound` called',
       data: payload,
     });
+
+    // FIXME: Temporary Neo4j creation
+    await this._neo4jService.write(
+      'CREATE (c:Compound {uuid: $uuid, name: $name, reducedFormula: $reducedFormula})',
+      {
+        uuid: uuidv4(),
+        ...payload,
+      },
+    );
 
     return this._compoundsService.create(payload);
   }

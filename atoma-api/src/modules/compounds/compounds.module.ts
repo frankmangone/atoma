@@ -19,6 +19,7 @@ import {
   CompoundPropertySchema,
 } from '@schemas/compound-property.schema';
 import { PropertiesModule } from '@modules/properties/properties.module';
+import { Neo4jService } from '@modules/database/neo.service';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { PropertiesModule } from '@modules/properties/properties.module';
     PropertiesModule,
   ],
   providers: [
+    Neo4jService,
     CompoundDataResolver,
     CompoundDataService,
     CompoundDataRepository,
