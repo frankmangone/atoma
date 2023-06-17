@@ -23,6 +23,7 @@ export class DatabaseModule {
               port: Number(configService.get(CONFIG.NEO_PORT)),
               username: configService.get(CONFIG.NEO_USERNAME),
               password: configService.get(CONFIG.NEO_PASSWORD),
+              database: configService.get(CONFIG.DATABASE_NAME),
             } as Neo4jConfig),
           inject: [ConfigService],
         },
