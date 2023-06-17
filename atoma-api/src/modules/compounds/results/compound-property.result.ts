@@ -1,4 +1,4 @@
-import { NotFoundError } from '@common/errors/not-found.error';
+import { NotFoundError } from '@common/graphql/errors/not-found.error';
 import { createUnionType } from '@nestjs/graphql';
 import { CompoundProperty } from '@schemas/compound-property.schema';
 

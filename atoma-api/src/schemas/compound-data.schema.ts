@@ -1,6 +1,6 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { Paginated } from '@common/pagination/paginated.schema';
-import { BaseEntity } from '@common/repositories/base.schema';
+import { Paginated } from '@common/graphql/pagination/paginated.schema';
+import { BaseEntity } from '@common/graphql/base.schema';
 import { Condition } from './condition.schema';
 import { CompoundProperty } from './compound-property.schema';
 

@@ -1,7 +1,7 @@
 import { Mutation, Resolver } from '@nestjs/graphql';
 import { CompoundData } from '@schemas/compound-data.schema';
 import { Payload } from '@common/decorators';
-import { NotFoundError } from '@common/errors/not-found.error';
+import { NotFoundError } from '@common/graphql/errors/not-found.error';
 import { Logger } from '@nestjs/common';
 import { CreateCompoundDataInput } from '../inputs/create-compount-data.input';
 import { CompoundDataService } from '../services/compound-data.service';

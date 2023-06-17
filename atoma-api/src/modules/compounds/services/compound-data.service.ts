@@ -3,7 +3,7 @@ import { CompoundsService } from './compounds.service';
 import { CompoundPropertiesService } from './compound-properties.service';
 import { CreateCompoundDataInput } from '../inputs/create-compount-data.input';
 import { Compound } from '@schemas/compound.schema';
-import { NotFoundError } from '@common/errors/not-found.error';
+import { NotFoundError } from '@common/graphql/errors/not-found.error';
 import { PropertiesService } from '@modules/properties/properties.service';
 import { Property } from '@schemas/property.schema';
 import { CompoundDataRepository } from '../repositories/compound-data.repository';

@@ -1,7 +1,7 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { Paginated } from '@common/pagination/paginated.schema';
+import { Paginated } from '@common/graphql/pagination/paginated.schema';
 import { PropertyType } from '@common/enums';
-import { BaseEntity } from '@common/repositories/base.schema';
+import { BaseEntity } from '@common/graphql/base.schema';
 
 @ObjectType()
 export class Property extends BaseEntity {

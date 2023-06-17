@@ -1,6 +1,6 @@
-import { Paginated } from '@common/pagination/paginated.schema';
+import { Paginated } from '@common/graphql/pagination/paginated.schema';
 import { Field, ObjectType } from '@nestjs/graphql';
-import { BaseEntity } from '@common/repositories/base.schema';
+import { BaseEntity } from '@common/graphql/base.schema';
 
 @ObjectType()
 export class Compound extends BaseEntity {

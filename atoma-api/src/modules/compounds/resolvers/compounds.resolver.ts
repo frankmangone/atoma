@@ -11,7 +11,7 @@ import { CompoundsService } from '../services/compounds.service';
 import { CreateCompoundInput } from '../inputs/create-compound.input';
 import { Payload } from '@common/decorators';
 import { Logger } from '@nestjs/common';
-import { FindPaginatedInput } from '@common/pagination/pagination.input';
+import { FindPaginatedInput } from '@common/graphql/pagination/pagination.input';
 import { FindCompoundResult } from '../results/find-compound.result';
 
 @Resolver(() => Compound)

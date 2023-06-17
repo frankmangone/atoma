@@ -1,4 +1,4 @@
-import { BaseRepository } from '@common/repositories/base.repository';
+import { BaseRepository } from '@common/neo4j-utils/base.repository';
 import { Neo4jService } from '@modules/database/neo.service';
 import { Injectable } from '@nestjs/common';
 import { Property } from '@schemas/property.schema';

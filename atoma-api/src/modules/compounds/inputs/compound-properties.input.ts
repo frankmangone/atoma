@@ -1,4 +1,4 @@
-import { FindPaginatedInput } from '@common/pagination/pagination.input';
+import { FindPaginatedInput } from '@common/graphql/pagination/pagination.input';
 import { InputType, Field } from '@nestjs/graphql';
 
 @InputType()

@@ -6,10 +6,10 @@ import {
 import { Compound } from '@schemas/compound.schema';
 import { CreateCompoundInput } from '../inputs/create-compound.input';
 import { CompoundsRepository } from '../repositories/compounds.repository';
-import { NotFoundError } from '@common/errors/not-found.error';
+import { NotFoundError } from '@common/graphql/errors/not-found.error';
 import { v4 as uuidv4 } from 'uuid';
-import { FindPaginatedInput } from '@common/pagination/pagination.input';
-import { Paginated } from '@common/pagination/pagination.types';
+import { FindPaginatedInput } from '@common/graphql/pagination/pagination.input';
+import { Paginated } from '@common/graphql/pagination/pagination.types';
 
 @Injectable()
 export class CompoundsService {
