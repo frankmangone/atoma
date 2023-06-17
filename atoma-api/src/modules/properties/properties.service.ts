@@ -35,7 +35,7 @@ export class PropertiesService {
    * @returns {Promise<Property | NotFoundError>}
    */
   async findOne(query: Query<Property>): Promise<Property | NotFoundError> {
-    const property = this._propertiesRepository.findOne(query);
+    const property = await this._propertiesRepository.findOneNode(query);
 
     if (!property) {
       this._logger.error({

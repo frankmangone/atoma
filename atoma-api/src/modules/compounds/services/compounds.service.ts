@@ -50,7 +50,7 @@ export class CompoundsService {
   async findOne(
     query: Partial<Record<keyof Compound, Compound[keyof Compound]>>,
   ): Promise<Compound | NotFoundError> {
-    const compound = this._compoundsRepository.findOne(query);
+    const compound = await this._compoundsRepository.findOneNode(query);
 
     if (!compound) {
       this._logger.error({
@@ -87,32 +87,24 @@ export class CompoundsService {
         data: payload,
       });
 
-      // FIXME: Temporary Neo4j creation
-      const result = await this._neo4jService.write(
-        `CREATE
-          (c:Compound {uuid: $uuid, name: $name, reducedFormula: $reducedFormula})
-        RETURN c`,
-        {
-          uuid: uuidv4(),
-          ...payload,
-        },
-      );
+      const result = await this._compoundsRepository.findOneNode({
+        uuid: uuidv4(),
+        ...payload,
+      });
 
       this._logger.log({
         message: 'Compound successfully created in database.',
         data: payload,
       });
 
-      return plainToInstance(Compound, result.records[0].get('c').properties);
+      return result;
     } catch (error) {
       this._logger.error('Failed to create record in database.');
 
-      // TODO: Move error parsing to a shared utility
-      if (error.code === 11000) {
-        throw new UserInputError(`Name "${payload.name}" already exists`);
-      }
+      // TODO: Discriminate validation errors
+      // throw new UserInputError(`Name "${payload.name}" already exists.`);
 
-      throw new InternalServerErrorException('Internal server error');
+      throw new InternalServerErrorException('Internal server error.');
     }
   }
 }

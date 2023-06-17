@@ -9,41 +9,95 @@ export abstract class BaseRepository<T> {
   ) {}
 
   /**
-   * findOne
+   * findOneNode
    *
-   * Finds one record that matches the specified query.
+   * Finds the first record that matches the specified query.
    *
    * @param {Query<T>} query
    * @returns {Promise<T | undefined>}
    */
-  async findOne(query: Query<T>): Promise<T | undefined> {
-    // Build query fields
+  async findOneNode(query: Query<T>): Promise<T | undefined> {
+    const fields = this._buildQueryFields(query);
+
+    const cypher = `
+      MATCH 
+        (r:${this._schema.name} {${fields.slice(0, -1)}})
+      RETURN r
+      LIMIT 1
+    `;
+
+    const queryResult = await this._neo4jService.read(cypher, query);
+
+    return queryResult.records[0]?.get('r').properties;
+  }
+
+  /**
+   * findNodes
+   *
+   * Finds all the nodes that match the specified query.
+   * TODO: Pagination
+   *
+   * @param {Query<T>} query
+   * @returns {Promise<T | undefined>}
+   */
+  async findNodes(query: Query<T>): Promise<T[]> {
+    const fields = this._buildQueryFields(query);
+
+    const cypher = `
+      MATCH 
+        (r:${this._schema.name} {${fields.slice(0, -1)}})
+      RETURN r
+    `;
+
+    const queryResult = await this._neo4jService.read(cypher, query);
+
+    return queryResult.records.map((record) => {
+      const recordProperties = record.get('r').properties;
+      return plainToInstance(this._schema, recordProperties);
+    });
+  }
+
+  /**
+   * createNode
+   *
+   * Creates a node for the specified model, provided that the
+   * payload is valid.
+   *
+   * TODO: validation
+   *
+   * @param {T} payload
+   * @returns {Promise<T>}
+   */
+  async create(payload: T): Promise<T> {
+    const fields = this._buildQueryFields(payload);
+
+    const queryResult = await this._neo4jService.read(
+      `CREATE (r:${this._schema.name} {${fields.slice(0, -1)}}) RETURN r`,
+      payload,
+    );
+
+    const record = queryResult.records[0].get('r').properties;
+
+    return plainToInstance(this._schema, record);
+  }
+
+  /**
+   * _buildQueryFields
+   *
+   * Builds query fields for a given payload.
+   *
+   * @param {Query<T>} query
+   * @returns {string}
+   */
+  private _buildQueryFields(query: Query<T>): string {
     let fields = '';
+
     Object.keys(query).forEach((key) => {
       fields += `${key}: $${key},`;
     });
 
-    const queryResult = await this._neo4jService.read(
-      `MATCH (r:${this._schema.name} {${fields.slice(0, -1)}}) RETURN r`,
-      query,
-    );
-    const record = queryResult.records[0];
-
-    if (!record) return undefined;
-
-    const recordProperties = record.get('r').properties;
-
-    return plainToInstance(this._schema, recordProperties) as T;
+    return fields.slice(0, -1);
   }
-
-  // /**
-  //  * model
-  //  *
-  //  * Getter for the internal _model property
-  //  */
-  // model(): Model<T> {
-  //   return this._model;
-  // }
 
   // /**
   //  * findPaginatedWithQuery
@@ -136,21 +190,5 @@ export abstract class BaseRepository<T> {
   //     nextCursor: hasNextResult ? `${lastItem}` : null,
   //     prevCursor: hasPrevResult ? `${firstItem}` : null,
   //   };
-  // }
-
-  // /**
-  //  * create
-  //  *
-  //  * Creates a record for the specified model, provided that the
-  //  * payload is valid.
-  //  *
-  //  * TODO: validation
-  //  *
-  //  * @param {Record<string, any>} payload
-  //  * @returns {Promise<T>}
-  //  */
-  // async create(payload: Record<string, any>): Promise<Document<T>> {
-  //   const record = await this._model.create(payload);
-  //   return record as Document<T>;
   // }
 }
