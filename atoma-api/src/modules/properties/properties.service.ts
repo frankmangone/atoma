@@ -8,6 +8,8 @@ import { PropertiesRepository } from './properties.repository';
 import { NotFoundError } from '@common/errors/not-found.error';
 import { Query } from '@common/repositories';
 import { v4 as uuidv4 } from 'uuid';
+import { FindPaginatedInput } from '@common/pagination/pagination.input';
+import { Paginated } from '@common/pagination/pagination.types';
 
 @Injectable()
 export class PropertiesService {
@@ -15,21 +17,18 @@ export class PropertiesService {
 
   constructor(private readonly _propertiesRepository: PropertiesRepository) {}
 
-  // /**
-  //  * findPaginated
-  //  *
-  //  * Gets all property records.
-  //  *
-  //  * @param {FindPaginatedInput | undefined} options
-  //  * @returns {Promise<Paginated<Property>>}
-  //  */
-  // async findPaginated(
-  //   options?: FindPaginatedInput,
-  // ): Promise<Paginated<Property>> {
-  //   this._logger.log('Querying DB for compound records...');
+  /**
+   * find
+   *
+   * Gets all property records, paginated.
+   *
+   * @returns {Promise<Paginated<Compound>>}
+   */
+  async find(options?: FindPaginatedInput): Promise<Paginated<Property>> {
+    this._logger.log('Querying DB for compound records...');
 
-  //   return this._propertiesRepository.findPaginated(options);
-  // }
+    return this._propertiesRepository.findNodes({}, options);
+  }
 
   /**
    * findOne

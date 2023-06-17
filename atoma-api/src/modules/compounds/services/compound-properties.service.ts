@@ -3,11 +3,13 @@ import { CompoundPropertiesRepository } from '../repositories/compound-propertie
 import { CompoundProperty } from '@schemas/compound-property.schema';
 import { Neo4jService } from '@modules/database/neo.service';
 import { v4 as uuidv4 } from 'uuid';
+import { FindPaginatedInput } from '@common/pagination/pagination.input';
+import { Paginated } from '@common/pagination/pagination.types';
 
-interface FindOneParms {
-  compoundUuid: string;
-  propertyUuid: string;
-}
+// interface FindOneParms {
+//   compoundUuid: string;
+//   propertyUuid: string;
+// }
 
 @Injectable()
 export class CompoundPropertiesService {
@@ -66,15 +68,16 @@ export class CompoundPropertiesService {
   }
 
   /**
-   * findOne
+   * find
    *
-   * Finds one `compound-property` record by providing the `compoundUuid`
-   * and `propertyUuid`.
+   * Gets all compound property records, paginated.
    *
-   * @param {FindOneParms} params
-   * @returns {Promise<Document<CompoundProperty>>}
+   * @returns {Promise<Paginated<CompoundProperty>>}
    */
-  async findOne(params: FindOneParms): Promise<CompoundProperty> {
-    return this._compoundPropertiesRepository.findOneNode(params);
+  async find(
+    options?: FindPaginatedInput,
+  ): Promise<Paginated<CompoundProperty>> {
+    this._logger.log('Querying DB for compound records...');
+    return this._compoundPropertiesRepository.findNodes({}, options);
   }
 }

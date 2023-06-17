@@ -18,33 +18,35 @@ export class CompoundPropertiesResolver {
     private readonly _compoundPropertiesService: CompoundPropertiesService,
   ) {}
 
-  // /**
-  //  * findManyCompoundProperties
-  //  *
-  //  * Queries for a single compound, by name, for now.
-  //  *
-  //  * @param {CompoundPropertiesInput} input
-  //  * @returns {Promise<PaginatedCompoundProperties>}
-  //  */
-  // @Query(() => PaginatedCompoundProperties, { name: 'compoundProperties' })
-  // async findManyCompoundProperties(
-  //   @Args('input', { type: () => CompoundPropertiesInput })
-  //   input: CompoundPropertiesInput,
-  // ): Promise<PaginatedCompoundProperties> {
-  //   this._logger.log({
-  //     message: 'Resolver `compoundProperties` called',
-  //     data: input,
-  //   });
+  /**
+   * findManyCompoundProperties
+   *
+   * Queries for a single compound, by name, for now.
+   *
+   * @param {CompoundPropertiesInput} input
+   * @returns {Promise<PaginatedCompoundProperties>}
+   */
+  @Query(() => PaginatedCompoundProperties, { name: 'compoundProperties' })
+  async findManyCompoundProperties(
+    @Args('input', { type: () => CompoundPropertiesInput })
+    input: CompoundPropertiesInput,
+  ): Promise<PaginatedCompoundProperties> {
+    this._logger.log({
+      message: 'Resolver `compoundProperties` called',
+      data: input,
+    });
 
-  //   const result = await this._compoundPropertiesService.findPaginated(input);
+    const result = await this._compoundPropertiesService.find(input);
 
-  //   this._logger.log({
-  //     message: 'Found compounds for query options.',
-  //     data: { nextCursor: result.nextCursor, prevCursor: result.prevCursor },
-  //   });
+    console.log(result);
 
-  //   return result;
-  // }
+    this._logger.log({
+      message: 'Found compounds for query options.',
+      data: { nextCursor: result.nextCursor, prevCursor: result.prevCursor },
+    });
+
+    return result;
+  }
 
   // /**
   //  * findOneCompound

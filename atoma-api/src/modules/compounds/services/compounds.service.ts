@@ -26,7 +26,6 @@ export class CompoundsService {
    */
   async find(options?: FindPaginatedInput): Promise<Paginated<Compound>> {
     this._logger.log('Querying DB for compound records...');
-
     return this._compoundsRepository.findNodes({}, options);
   }
 
