@@ -19,6 +19,8 @@ $ docker compose up -d --build
 
 The `--build` flag is generally only required on the first run of this command. Additionally, a database may need to be created (although that should not be the case).
 
+Finally, development seeds are provided for you to start working right away. To get those set up, just run `$ pnpm db:seed`.
+
 Once your setup is complete, simply start the application by running `$ pnpm start:dev`
 
 ## Neo4j playground
