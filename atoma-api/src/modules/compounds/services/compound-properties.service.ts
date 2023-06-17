@@ -55,15 +55,16 @@ export class CompoundPropertiesService {
    *
    * Creates a new HAS_PROPERTY_DATA connection between the specified compound
    * and property if it doesn't already exist.
+   * Returns the connection's uuid
    *
    * @param {string} compoundUuid
    * @param {string} propertyUuid
-   * @returns {Promise<void>}
+   * @returns {Promise<string>}
    */
   async idempotentCreateConnection(
     compoundUuid: string,
     propertyUuid: string,
-  ): Promise<void> {
+  ): Promise<string> {
     const existingConnection = await this._neo4jService.read(
       `MATCH
         (:Compound {uuid: $compoundUuid})
@@ -73,7 +74,9 @@ export class CompoundPropertiesService {
       { compoundUuid, propertyUuid },
     );
 
-    if (existingConnection.records.length !== 0) return;
+    if (existingConnection.records.length !== 0) {
+      return existingConnection.records[0].get('c').properties.uuid;
+    }
 
     const compoundPropertyUuid = uuidv4();
 
@@ -82,11 +85,16 @@ export class CompoundPropertiesService {
       MATCH
         (c:Compound {uuid: $compoundUuid}),
         (p:Property {uuid: $propertyUuid})
-      CREATE (c)-[r:HAS_PROPERTY_DATA {uuid: $compoundPropertyUuid}]->(p)
-      RETURN r
+      CREATE (c)-[:HAS_PROPERTY_DATA {uuid: $compoundPropertyUuid}]->(p)
       `,
       { compoundUuid, propertyUuid, compoundPropertyUuid },
     );
+
+    await this._neo4jService.write('CREATE (:CompoundProperty {uuid: $uuid})', {
+      uuid: compoundPropertyUuid,
+    });
+
+    return compoundPropertyUuid;
   }
 
   /**

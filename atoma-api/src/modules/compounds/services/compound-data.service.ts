@@ -5,16 +5,16 @@ import { CompoundDataRepository } from '../repositories/compound-data.repository
 import { CreateCompoundDataInput } from '../inputs/create-compount-data.input';
 import { Compound } from '@schemas/compound.schema';
 import { NotFoundError } from '@common/errors/not-found.error';
-import { CompoundData } from '@schemas/compound-data.schema';
 import { PropertiesService } from '@modules/properties/properties.service';
 import { Property } from '@schemas/property.schema';
+import { Neo4jService } from '@modules/database/neo.service';
 
 @Injectable()
 export class CompoundDataService {
   private readonly _logger = new Logger(CompoundDataService.name);
 
   constructor(
-    private readonly _compoundDataRepository: CompoundDataRepository,
+    private readonly _neo4jService: Neo4jService,
     private readonly _compoundsService: CompoundsService,
     private readonly _compoundPropertiesService: CompoundPropertiesService,
     private readonly _propertiesService: PropertiesService,
@@ -60,14 +60,21 @@ export class CompoundDataService {
       data: payload,
     });
 
-    await this._compoundPropertiesService.idempotentCreateConnection(
-      compoundUuid,
-      propertyUuid,
-    );
+    const connectionUuid =
+      await this._compoundPropertiesService.idempotentCreateConnection(
+        compoundUuid,
+        propertyUuid,
+      );
 
     this._logger.log({
       message: 'Creating compound property data record in database...',
       data: payload,
+    });
+
+    // FIXME: Temporary Neo4j creation
+    await this._neo4jService.write('CREATE (:CompoundData {uuid: $uuid})', {
+      uuid: connectionUuid,
+      // ...payload,
     });
 
     // const compoundData = await this._compoundDataRepository.create({
