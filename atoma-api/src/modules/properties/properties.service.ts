@@ -34,20 +34,6 @@ export class PropertiesService {
   }
 
   /**
-   * findByUuid
-   *
-   * Gets a property record by its uuid.
-   *
-   * @param {string} uuid
-   * @returns {Promise<Document<Property> | null>}
-   */
-  async findByUuid(uuid: string): Promise<Document<Property> | null> {
-    this._logger.log(`Querying DB for property with uuid "${uuid}"...`);
-
-    return this._propertiesRepository.findOne({ uuid });
-  }
-
-  /**
    * findByConstraint
    *
    * Finds a property record by providing a partial set of expected key values.

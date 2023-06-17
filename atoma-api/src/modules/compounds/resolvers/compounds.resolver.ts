@@ -6,7 +6,6 @@ import {
   ResolveField,
   Resolver,
 } from '@nestjs/graphql';
-import { Document } from 'mongoose';
 import { Compound, PaginatedCompounds } from '@schemas/compound.schema';
 import { CompoundsService } from '../services/compounds.service';
 import { CreateCompoundInput } from '../inputs/create-compound.input';
@@ -14,10 +13,7 @@ import { Payload } from '@common/decorators';
 import { Logger } from '@nestjs/common';
 import { FindPaginatedInput } from '@common/pagination/pagination.input';
 import { FindCompoundResult } from '../results/find-compound.result';
-import { NotFoundError } from '@common/errors/not-found.error';
 import { Neo4jService } from '@modules/database/neo.service';
-import { v4 as uuidv4 } from 'uuid';
-import { plainToInstance } from 'class-transformer';
 
 @Resolver(() => Compound)
 export class CompoundsResolver {
@@ -102,20 +98,11 @@ export class CompoundsResolver {
   @Mutation(() => Compound)
   async createCompound(
     @Payload() payload: CreateCompoundInput,
-  ): Promise<Document<Compound>> {
+  ): Promise<Compound> {
     this._logger.log({
       message: 'Resolver `createCompound` called',
       data: payload,
     });
-
-    // FIXME: Temporary Neo4j creation
-    await this._neo4jService.write(
-      'CREATE (type:Compound {uuid: $uuid, name: $name, reducedFormula: $reducedFormula})',
-      {
-        uuid: uuidv4(),
-        ...payload,
-      },
-    );
 
     return this._compoundsService.create(payload);
   }

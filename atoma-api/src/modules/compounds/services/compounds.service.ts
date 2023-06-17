@@ -10,9 +10,9 @@ import { UserInputError } from '@nestjs/apollo';
 import { CompoundsRepository } from '../repositories/compounds.repository';
 import { Paginated } from '@common/pagination/pagination.types';
 import { FindPaginatedInput } from '@common/pagination/pagination.input';
-import { FindOneCompoundInput } from '../inputs/find-one-compound.input';
 import { Neo4jService } from '@modules/database/neo.service';
 import { NotFoundError } from '@common/errors/not-found.error';
+import { v4 as uuidv4 } from 'uuid';
 import { plainToInstance } from 'class-transformer';
 
 @Injectable()
@@ -37,39 +37,6 @@ export class CompoundsService {
     this._logger.log('Querying DB for compound records...');
 
     return this._compoundsRepository.findPaginated(options);
-  }
-
-  /**
-   * findOne
-   *
-   * Gets a compound, querying by name, for now.
-   *
-   * @param {FindOneCompoundInput | undefined} options
-   * @returns {Promise<Document<Compound> | null>}
-   */
-  async findOne(
-    options?: FindOneCompoundInput,
-  ): Promise<Document<Compound> | null> {
-    this._logger.log({
-      message: 'Querying DB for one compound...',
-      data: options,
-    });
-
-    return this._compoundsRepository.findOne({ name: options.name });
-  }
-
-  /**
-   * findByUuid
-   *
-   * Gets a compound record by its uuid.
-   *
-   * @param {string} uuid
-   * @returns {Promise<Document<Compound> | null>}
-   */
-  async findByUuid(uuid: string): Promise<Document<Compound> | null> {
-    this._logger.log(`Querying DB for compound with uuid "${uuid}"...`);
-
-    return this._compoundsRepository.findOne({ uuid });
   }
 
   /**
@@ -119,9 +86,9 @@ export class CompoundsService {
    *
    * Creates a new compound record from the provided input.
    *
-   * @returns {Promise<Document<Compound>>}
+   * @returns {Promise<Compound>}
    */
-  async create(payload: CreateCompoundInput): Promise<Document<Compound>> {
+  async create(payload: CreateCompoundInput): Promise<Compound> {
     // Transform name to lowercase
     // FIXME: Can we use `class-transformer` for this?
     payload.name = payload.name.toLowerCase();
@@ -132,14 +99,23 @@ export class CompoundsService {
         data: payload,
       });
 
-      const compound = await this._compoundsRepository.create(payload);
+      // FIXME: Temporary Neo4j creation
+      const result = await this._neo4jService.write(
+        `CREATE
+          (c:Compound {uuid: $uuid, name: $name, reducedFormula: $reducedFormula})
+        RETURN c`,
+        {
+          uuid: uuidv4(),
+          ...payload,
+        },
+      );
 
       this._logger.log({
         message: 'Compound successfully created in database.',
         data: payload,
       });
 
-      return compound;
+      return plainToInstance(Compound, result.records[0].get('c').properties);
     } catch (error) {
       this._logger.error('Failed to create record in database.');
 
