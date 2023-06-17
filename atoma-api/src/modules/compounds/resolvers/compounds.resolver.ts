@@ -13,16 +13,12 @@ import { Payload } from '@common/decorators';
 import { Logger } from '@nestjs/common';
 import { FindPaginatedInput } from '@common/pagination/pagination.input';
 import { FindCompoundResult } from '../results/find-compound.result';
-import { Neo4jService } from '@modules/database/neo.service';
 
 @Resolver(() => Compound)
 export class CompoundsResolver {
   private readonly _logger = new Logger(CompoundsResolver.name);
 
-  constructor(
-    private readonly _compoundsService: CompoundsService,
-    private readonly _neo4jService: Neo4jService,
-  ) {}
+  constructor(private readonly _compoundsService: CompoundsService) {}
 
   /**
    * findManyCompounds
@@ -35,38 +31,12 @@ export class CompoundsResolver {
   async findManyCompounds(
     @Args('options') options: FindPaginatedInput,
   ): Promise<PaginatedCompounds> {
-    const { after, limit } = options;
-    this._logger.log('Resolver `findManyCompounds` called');
-
-    // FIXME: Temporary Neo4j read
-    let query = 'MATCH (type:Compound)';
-    if (options.after) {
-      query += ' WHERE id(type) > toInteger($after)';
-    }
-    query += ` RETURN type ORDER BY id(type) ASC LIMIT ${limit}`;
-
-    const { records } = await this._neo4jService.read(query, {
-      after: after,
-    });
-
-    const data = await records.map((record) => record.get('type').properties);
-
-    const prevCursor = after;
-
-    let nextCursor = null;
-    if (records.length === limit) {
-      const lastCompound = records.at(-1);
-      nextCursor = lastCompound.get('type').identity.toString();
-    }
-
-    // const result = await this._compoundsService.sfindPaginated(options);
-
     this._logger.log({
-      message: 'Found compounds for query options.',
-      data: { nextCursor, prevCursor },
+      message: 'Resolver `compounds` called',
+      data: options,
     });
 
-    return { data, nextCursor, prevCursor };
+    return this._compoundsService.find(options);
   }
 
   /**
@@ -80,7 +50,7 @@ export class CompoundsResolver {
   @Query(() => FindCompoundResult, { name: 'compound' })
   async findOneCompound(@Args('name', { type: () => String }) name: string) {
     this._logger.log({
-      message: 'Resolver `findOneCompound` called',
+      message: 'Resolver `compound` called',
       data: { name },
     });
 

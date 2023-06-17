@@ -1,6 +1,7 @@
 import { Neo4jService } from '@modules/database/neo.service';
 import { ClassConstructor, plainToInstance } from 'class-transformer';
 import { Query } from './types';
+import { Paginated } from '@common/pagination/pagination.types';
 
 export abstract class BaseRepository<T> {
   constructor(
@@ -40,21 +41,58 @@ export abstract class BaseRepository<T> {
    * @param {Query<T>} query
    * @returns {Promise<T | undefined>}
    */
-  async findNodes(query: Query<T>): Promise<T[]> {
+  async findNodes(
+    query: Query<T>,
+    paginationOptions: any,
+  ): Promise<Paginated<T>> {
+    const { limit, after, before } = paginationOptions;
     const fields = this._buildQueryFields(query);
+
+    let where = '';
+    let orderBy = `LIMIT ${limit}`;
+    const cursorParam: Record<string, unknown> = {};
+
+    // if (before) {
+    //   where = 'WHERE id(type) < toInteger($before)';
+    //   orderBy = `ORDER BY id(type) DESC LIMIT ${limit}`;
+    //   cursorParam.before = before;
+    // }
+
+    if (after) {
+      where = 'WHERE id(r) > toInteger($after)';
+      orderBy = `ORDER BY id(r) ASC ${orderBy}`;
+      cursorParam.after = after;
+    }
 
     const cypher = `
       MATCH 
         (r:${this._schema.name} {${fields.slice(0, -1)}})
+      ${where}
       RETURN r
+      ${orderBy}
     `;
 
-    const queryResult = await this._neo4jService.read(cypher, query);
+    const { records } = await this._neo4jService.read(cypher, {
+      ...query,
+      ...cursorParam,
+    });
 
-    return queryResult.records.map((record) => {
+    const data = records.map((record) => {
       const recordProperties = record.get('r').properties;
       return plainToInstance(this._schema, recordProperties);
     });
+
+    // After:
+    let nextCursor = null;
+    if (records.length === limit) {
+      const lastCompound = records.at(-1);
+      nextCursor = lastCompound.get('r').identity.toString();
+    }
+
+    // Before: TODO:
+    const prevCursor = after;
+
+    return { data, nextCursor, prevCursor };
   }
 
   /**
