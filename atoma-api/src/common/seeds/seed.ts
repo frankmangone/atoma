@@ -1,139 +1,165 @@
 import 'dotenv/config';
-import { Property } from '../../schemas/property.schema';
+import neo4j from 'neo4j-driver';
+import { v4 as uuidv4 } from 'uuid';
+
 import { COMPOUNDS, ETHANOL, WATER } from './datasets/compounds';
 import { DENSITY, PROPERTIES } from './datasets/properties';
-import { Compound } from '@schemas/compound.schema';
-import { CompoundProperty } from '@schemas/compound-property.schema';
-import { v4 as uuidv4 } from 'uuid';
 import {
   ETHANOL_DENSITY_DATA,
   WATER_DENSITY_DATA,
 } from './datasets/compound-property-data';
-import { CompoundData } from '@schemas/compound-data.schema';
 
-// const {
-//   MONGO_PROTOCOL,
-//   MONGO_USERNAME,
-//   MONGO_PASSWORD,
-//   MONGO_PORT,
-//   MONGO_HOST,
-//   COMPOUNDS_DB_NAME,
-// } = process.env;
-// const mongoUri = `${MONGO_PROTOCOL}://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST}:${MONGO_PORT}/${COMPOUNDS_DB_NAME}?authSource=admin`;
+const {
+  NEO_PROTOCOL,
+  NEO_USERNAME,
+  NEO_PASSWORD,
+  NEO_PORT,
+  NEO_HOST,
+  DATABASE_NAME,
+} = process.env;
 
-// const CompoundModel = mongoose.model(Compound.name, CompoundSchema);
-// const PropertyModel = mongoose.model(Property.name, PropertySchema);
-// const CompoundPropertyModel = mongoose.model(
-//   CompoundProperty.name,
-//   CompoundPropertySchema,
-// );
-// const CompoundDataModel = mongoose.model(CompoundData.name, CompoundDataSchema);
-
-// TODO: Disabled for now; need to rework this to Neo4j version
 const seed = async () => {
-  // console.log('Connecting to MongoDB instance...');
-  // await mongoose.connect(mongoUri);
-  // console.log('Connection successful.');
-  // const compoundIds = new Map<string, Types.ObjectId>();
-  // const propertyIds = new Map<string, Types.ObjectId>();
-  // const compoundPropertyIds = new Map<
-  //   [Types.ObjectId, Types.ObjectId],
-  //   Types.ObjectId
-  // >();
-  // //
-  // //
-  // console.log('=========================================');
-  // console.log('Seeding compounds...');
-  // await Promise.all(
-  //   COMPOUNDS.map(async (compound) => {
-  //     try {
-  //       const createdCompound = await CompoundModel.create(compound);
-  //       compoundIds.set(createdCompound.name, createdCompound._id);
-  //       console.log(`Compound "${compound.name}" created.`);
-  //     } catch {
-  //       console.log(`Compound "${compound.name}" already exists.`);
-  //     }
-  //   }),
-  // );
-  // //
-  // //
-  // console.log('=========================================');
-  // console.log('Seeding properties...');
-  // await Promise.all(
-  //   PROPERTIES.map(async (property) => {
-  //     try {
-  //       const createdProperty = await PropertyModel.create(property);
-  //       propertyIds.set(createdProperty.name, createdProperty._id);
-  //       console.log(`Property "${property.name}" created.`);
-  //     } catch {
-  //       console.log(`Property "${property.name}" already exists.`);
-  //     }
-  //   }),
-  // );
-  // //
-  // //
-  // console.log('=========================================');
-  // console.log('Seeding compound properties...');
-  // const COMPOUND_PROPERTIES = [];
-  // compoundIds.forEach((compound) => {
-  //   propertyIds.forEach((property) => {
-  //     COMPOUND_PROPERTIES.push({
-  //       compound,
-  //       property,
-  //       uuid: uuidv4(),
-  //     });
-  //   });
-  // });
-  // await Promise.all(
-  //   COMPOUND_PROPERTIES.map(async (compoundProperty) => {
-  //     try {
-  //       const { compound, property } = compoundProperty;
-  //       const createdCompoundProperty = await CompoundPropertyModel.create(
-  //         compoundProperty,
-  //       );
-  //       compoundPropertyIds.set(
-  //         [compound, property],
-  //         createdCompoundProperty._id,
-  //       );
-  //       console.log(`Compound property created.`);
-  //     } catch {
-  //       console.log(`Compound property already exists.`);
-  //     }
-  //   }),
-  // );
-  // //
-  // //
-  // console.log('=========================================');
-  // console.log('Seeding compound property data...');
-  // console.log('Seeding water density data...');
-  // const waterId = compoundIds.get(WATER);
-  // const densityId = propertyIds.get(DENSITY);
-  // const waterDensityId = compoundPropertyIds.get([waterId, densityId]);
-  // await Promise.all(
-  //   WATER_DENSITY_DATA(waterDensityId).map(async (compoundData) => {
-  //     try {
-  //       await CompoundDataModel.create(compoundData);
-  //       console.log(`Compound property for ${WATER} created.`);
-  //     } catch {
-  //       console.log(`Failed to create compound property data for ${WATER}.`);
-  //     }
-  //   }),
-  // );
-  // console.log('Seeding ethanol density data...');
-  // const ethanolId = compoundIds.get(ETHANOL);
-  // const ethanolDensityId = compoundPropertyIds.get([ethanolId, densityId]);
-  // await Promise.all(
-  //   ETHANOL_DENSITY_DATA(ethanolDensityId).map(async (compoundData) => {
-  //     try {
-  //       await CompoundDataModel.create(compoundData);
-  //       console.log(`Compound property for ${WATER} created.`);
-  //     } catch {
-  //       console.log(`Failed to create compound property data for ${WATER}.`);
-  //     }
-  //   }),
-  // );
-  // console.log('Seed completed successfully');
-  // mongoose.connection.close();
+  console.log('Connecting to Neo4j instance...');
+
+  // Create a Driver instance
+  const driver = neo4j.driver(
+    `${NEO_PROTOCOL}://${NEO_HOST}:${NEO_PORT}`,
+    neo4j.auth.basic(NEO_USERNAME, NEO_PASSWORD),
+  );
+
+  // Verify the connection details or throw an Error
+  await driver.getServerInfo();
+  console.log('Connection successful.');
+
+  const session = driver.session({
+    database: DATABASE_NAME,
+    defaultAccessMode: neo4j.session.WRITE,
+  });
+  //
+
+  const compoundUuids = new Map<string, string>();
+  const propertyUuids = new Map<string, string>();
+  const compoundPropertyUuids = new Map<string, string>();
+
+  console.log('=========================================');
+  console.log('Seeding compounds...');
+  for (const compound of COMPOUNDS) {
+    try {
+      await session.run(
+        'CREATE (c:Compound {name: $name, reducedFormula: $reducedFormula, uuid: $uuid}) RETURN c',
+        compound,
+      );
+      compoundUuids.set(compound.name, compound.uuid);
+      console.log(`Compound "${compound.name}" created.`);
+    } catch {
+      console.log(`Compound "${compound.name}" already exists.`);
+    }
+  }
+
+  console.log('=========================================');
+  console.log('Seeding properties...');
+  for (const property of PROPERTIES) {
+    try {
+      await session.run(
+        'CREATE (p:Property {key: $key, name: $name, description: $description, uuid: $uuid, units: $units, type: $type}) RETURN p',
+        property,
+      );
+      propertyUuids.set(property.name, property.uuid);
+      console.log(`Property "${property.name}" created.`);
+    } catch {
+      console.log(`Property "${property.name}" already exists.`);
+    }
+  }
+
+  console.log('=========================================');
+  console.log('Seeding compound properties...');
+  const COMPOUND_PROPERTIES = [];
+  compoundUuids.forEach((compoundUuid) => {
+    propertyUuids.forEach((propertyUuid) => {
+      COMPOUND_PROPERTIES.push({
+        compoundUuid,
+        propertyUuid,
+        uuid: uuidv4(),
+      });
+    });
+  });
+  for (const compoundProperty of COMPOUND_PROPERTIES) {
+    try {
+      const { compoundUuid, propertyUuid, uuid } = compoundProperty;
+
+      // Create node
+      await session.run(
+        'CREATE (c:CompoundProperty {uuid: $uuid, compoundUuid: $compoundUuid, propertyUuid: $propertyUuid}) RETURN c',
+        compoundProperty,
+      );
+
+      // Create connection between compound and property
+      await session.run(
+        `
+          MATCH
+            (c:Compound {uuid: $compoundUuid}),
+            (p:Property {uuid: $propertyUuid})
+          CREATE (c)-[:HAS_PROPERTY_DATA {uuid: $uuid}]->(p)
+          `,
+        compoundProperty,
+      );
+      compoundPropertyUuids.set(compoundUuid + propertyUuid, uuid);
+      console.log(`Compound property created.`);
+    } catch {
+      console.log(`Compound property already exists.`);
+    }
+  }
+
+  console.log('=========================================');
+  console.log('Seeding compound property data...');
+  console.log('Seeding water density data...');
+  const waterUuid = compoundUuids.get(WATER);
+  const densityUuid = propertyUuids.get(DENSITY);
+  const waterDensityUuid = compoundPropertyUuids.get(waterUuid + densityUuid);
+
+  for (const compoundData of WATER_DENSITY_DATA(waterDensityUuid)) {
+    try {
+      // Create node and connection
+      await session.run(
+        `
+          MATCH
+            (c:CompoundProperty {uuid: $compoundPropertyUuid})
+          CREATE (c)-[:HAS_DATA]->(d:CompoundData { value: $value })
+          `,
+        { ...compoundData, compoundPropertyUuid: waterDensityUuid },
+      );
+      console.log(`Compound property for ${WATER} created.`);
+    } catch {
+      console.log(`Failed to create compound property data for ${WATER}.`);
+    }
+  }
+  //
+  console.log('Seeding ethanol density data...');
+  const ethanolUuid = compoundUuids.get(ETHANOL);
+  const ethanolDensityUuid = compoundPropertyUuids.get(
+    ethanolUuid + densityUuid,
+  );
+
+  for (const compoundData of ETHANOL_DENSITY_DATA(ethanolDensityUuid)) {
+    try {
+      // Create node and connection
+      await session.run(
+        `
+          MATCH
+            (c:CompoundProperty {uuid: $compoundPropertyUuid})
+          CREATE (c)-[:HAS_DATA]->(d:CompoundData { value: $value })
+          `,
+        { ...compoundData, compoundPropertyUuid: ethanolDensityUuid },
+      );
+      console.log(`Compound property for ${ETHANOL} created.`);
+    } catch (error) {
+      console.log(error);
+      console.log(`Failed to create compound property data for ${ETHANOL}.`);
+    }
+  }
+
+  console.log('Seed completed successfully, closing connection...');
+  driver.close();
 };
 
 seed();
