@@ -15,14 +15,14 @@ The application also requires docker to run. Before running the app, you need to
 $ docker compose up -d --build
 ```
 
-The `--build` flag is generally only required on the first run of this command. Additionally, a database may need to be created (although that should not be the case). But if it is, use either the mongo shell or the [Compass UI](https://www.mongodb.com/products/compass). In case you choose to use the mongo shell, then you can use the following command to access it:
+The `--build` flag is generally only required on the first run of this command. Additionally, a database may need to be created (although that should not be the case).
 
-```bash
-$ pnpm db:enter
-```
+Once your setup is complete, simply start the application by running `$ pnpm start:dev`
 
-This is also handy if you want to create records manually with `db.collection.insert({ ...document... })`.
-Once your DB setup is complete, simply start the application by running `$ pnpm start:dev`
+## Neo4j playground
+
+This project uses the graph database _Neo4j_ as its backbone for data modeling.
+A graphical interface is provided out of the box with the Neo4j container, which can be accessed at `http://localhost:7474/`.
 
 ## GraphQL playground
 
