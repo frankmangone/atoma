@@ -1,149 +1,137 @@
-import { FindPaginatedInput } from '@common/pagination/pagination.input';
+import { Neo4jService } from '@modules/database/neo.service';
+import { ClassConstructor, plainToInstance } from 'class-transformer';
+import { Query } from './types';
 import { Paginated } from '@common/pagination/pagination.types';
-import {
-  Document,
-  FilterQuery,
-  Model,
-  PipelineStage,
-  ProjectionType,
-} from 'mongoose';
-
-interface FindPaginatedWithQueryParams extends FindPaginatedInput {
-  aggregate: PipelineStage[];
-}
 
 export abstract class BaseRepository<T> {
-  constructor(protected readonly _model: Model<T>) {}
+  constructor(
+    protected readonly _schema: ClassConstructor<T>,
+    protected readonly _neo4jService: Neo4jService,
+  ) {}
 
   /**
-   * model
+   * findOneNode
    *
-   * Getter for the internal _model property
+   * Finds the first record that matches the specified query.
+   *
+   * @param {Query<T>} query
+   * @returns {Promise<T | undefined>}
    */
-  model(): Model<T> {
-    return this._model;
+  async findOneNode(query: Query<T>): Promise<T | undefined> {
+    const fields = this._buildQueryFields(query);
+
+    const cypher = `
+      MATCH 
+        (r:${this._schema.name} {${fields}})
+      RETURN r
+      LIMIT 1
+    `;
+
+    const queryResult = await this._neo4jService.read(cypher, query);
+    const recordProperties = queryResult.records[0]?.get('r').properties;
+
+    return plainToInstance(this._schema, recordProperties);
   }
 
   /**
-   * findPaginatedWithQuery
+   * findNodes
    *
-   * Performs a query to get a `limit` amount of elements, paginated by cursor.
-   * Takes an extra `aggregate` parameter that is passed as query arguments to
-   * the `aggregate()` method from mongoose.
+   * Finds all the nodes that match the specified query.
+   * TODO: Pagination
    *
-   * @param {FindPaginatedWithQueryParams | undefined} options
-   * @returns {Promise<Paginated<T>>}
+   * @param {Query<T>} query
+   * @returns {Promise<T | undefined>}
    */
-  async findPaginatedWithQuery<T>(
-    options?: FindPaginatedWithQueryParams,
+  async findNodes(
+    query: Query<T>,
+    paginationOptions: any,
   ): Promise<Paginated<T>> {
-    const { aggregate = [], limit = 3, before, after } = options ?? {};
+    const { limit, after, before } = paginationOptions;
+    const fields = this._buildQueryFields(query);
 
-    let query;
+    let where = '';
+    let orderBy = `LIMIT ${limit}`;
+    const cursorParam: Record<string, unknown> = {};
 
-    if (before) query = { $match: { _id: { $lt: before } } };
-    if (after) query = { $match: { _id: { $gt: after } } };
-
-    const data = await this._model
-      .aggregate([...aggregate, ...(query ?? []), { $limit: limit }])
-      .exec();
-
-    if (!data.length) {
-      return { data, nextCursor: null, prevCursor: null };
+    if (before) {
+      where = 'WHERE id(type) < toInteger($before)';
+      orderBy = `ORDER BY id(type) DESC LIMIT ${limit}`;
+      cursorParam.before = before;
     }
 
-    const lastItem = data.at(-1)._id;
-    const firstItem = data[0]._id;
-
-    // If there is an item with id greater than lastItem, then there's a
-    // next page. TODO: Revisit this
-    const hasNextQuery = { _id: { $gt: lastItem } };
-    const nextResults = await this._model
-      .aggregate([...aggregate, { $match: hasNextQuery }, { $limit: 1 }])
-      .exec();
-
-    // If there is an item with id less than firstItem, then there's
-    // a previous page. TODO: Revisit this
-    const hasPrevQuery = { _id: { $lt: firstItem } };
-    const prevResult = await this._model
-      .aggregate([...aggregate, { $match: hasPrevQuery }, { $limit: 1 }])
-      .exec();
-
-    return {
-      data,
-      nextCursor: nextResults.length > 0 ? `${lastItem}` : null,
-      prevCursor: prevResult.length > 0 ? `${firstItem}` : null,
-    };
-  }
-
-  /**
-   * findPaginated
-   *
-   * Find a list of paginated records for the specified model, using cursor pagination.
-   *
-   * @returns {Promise<Paginated<T>>}
-   */
-  async findPaginated(options?: FindPaginatedInput): Promise<Paginated<T>> {
-    const { limit = 3, before, after } = options ?? {};
-
-    let query;
-
-    if (before) query = { _id: { $lt: before } };
-    if (after) query = { _id: { $gt: after } };
-
-    const data = await this._model.find(query, undefined, { limit }).exec();
-
-    if (!data.length) {
-      return { data, nextCursor: null, prevCursor: null };
+    if (after) {
+      where = 'WHERE id(r) > toInteger($after)';
+      orderBy = `ORDER BY id(r) ASC ${orderBy}`;
+      cursorParam.after = after;
     }
 
-    const lastItem = data.at(-1)._id;
-    const firstItem = data[0]._id;
+    const cypher = `
+      MATCH 
+        (r:${this._schema.name} {${fields}})
+      ${where}
+      RETURN r
+      ${orderBy}
+    `;
 
-    // If there is an item with id greater than lastItem, then there's a
-    // next page. TODO: Revisit this
-    const hasNextQuery = { _id: { $gt: lastItem } };
-    const hasNextResult = await this._model.findOne(hasNextQuery);
+    const { records } = await this._neo4jService.read(cypher, {
+      ...query,
+      ...cursorParam,
+    });
 
-    // If there is an item with id less than firstItem, then there's
-    // a previous page. TODO: Revisit this
-    const hasPrevQuery = { _id: { $lt: firstItem } };
-    const hasPrevResult = await this._model.findOne(hasPrevQuery);
+    const data = records.map((record) => {
+      const recordProperties = record.get('r').properties;
+      return plainToInstance(this._schema, recordProperties);
+    });
 
-    return {
-      data,
-      nextCursor: hasNextResult ? `${lastItem}` : null,
-      prevCursor: hasPrevResult ? `${firstItem}` : null,
-    };
+    // After:
+    let nextCursor = null;
+    if (records.length === limit) {
+      const lastCompound = records.at(-1);
+      nextCursor = lastCompound.get('r').identity.toString();
+    }
+
+    // Before: TODO: improve
+    const prevCursor = after;
+
+    return { data, nextCursor, prevCursor };
   }
 
   /**
-   * findOne
+   * createNode
    *
-   * Finds one record that matches the specified query.
-   *
-   * @returns {Promise<Document<T> | null>}
-   */
-  async findOne(
-    query: FilterQuery<T>,
-    projection?: ProjectionType<T>,
-  ): Promise<Document<T> | null> {
-    return this._model.findOne(query, projection ?? null);
-  }
-
-  /**
-   * create
-   *
-   * Creates a record for the specified model, provided that the
+   * Creates a node for the specified model, provided that the
    * payload is valid.
    *
    * TODO: validation
    *
-   * @param {Record<string, any>} payload
+   * @param {Partial<T>} payload
    * @returns {Promise<T>}
    */
-  async create(payload: Record<string, any>): Promise<Document<T>> {
-    const record = await this._model.create(payload);
-    return record as Document<T>;
+  async createNode(payload: Partial<T>): Promise<T> {
+    const fields = this._buildQueryFields(payload);
+
+    const cypher = `CREATE (r:${this._schema.name} {${fields}}) RETURN r`;
+    const queryResult = await this._neo4jService.write(cypher, payload);
+    const record = queryResult.records[0].get('r').properties;
+
+    return plainToInstance(this._schema, record);
+  }
+
+  /**
+   * _buildQueryFields
+   *
+   * Builds query fields for a given payload.
+   *
+   * @param {Query<T>} query
+   * @returns {string}
+   */
+  private _buildQueryFields(query: Query<T>): string {
+    let fields = '';
+
+    Object.keys(query).forEach((key) => {
+      fields += `${key}: $${key},`;
+    });
+
+    return fields.slice(0, -1);
   }
 }

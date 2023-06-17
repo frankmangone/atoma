@@ -36,7 +36,9 @@ export class CompoundPropertiesResolver {
       data: input,
     });
 
-    const result = await this._compoundPropertiesService.findPaginated(input);
+    const result = await this._compoundPropertiesService.find(input);
+
+    console.log(result);
 
     this._logger.log({
       message: 'Found compounds for query options.',
@@ -46,43 +48,43 @@ export class CompoundPropertiesResolver {
     return result;
   }
 
-  /**
-   * findOneCompound
-   *
-   * Queries for a single compound, by name, for now.
-   *
-   * @param {string} compoundUuid
-   * @param {string} propertyUuid
-   * @returns {Promise<CompoundPropertyResult>}
-   */
-  @Query(() => CompoundPropertyResult, { name: 'compoundProperty' })
-  async findOneCompoundProperty(
-    @Args('input', { type: () => CompoundPropertyInput })
-    input: CompoundPropertyInput,
-  ): Promise<CompoundProperty | NotFoundError> {
-    this._logger.log({
-      message: 'Resolver `compoundProperty` called',
-      data: input,
-    });
+  // /**
+  //  * findOneCompound
+  //  *
+  //  * Queries for a single compound, by name, for now.
+  //  *
+  //  * @param {string} compoundUuid
+  //  * @param {string} propertyUuid
+  //  * @returns {Promise<CompoundPropertyResult>}
+  //  */
+  // @Query(() => CompoundPropertyResult, { name: 'compoundProperty' })
+  // async findOneCompoundProperty(
+  //   @Args('input', { type: () => CompoundPropertyInput })
+  //   input: CompoundPropertyInput,
+  // ): Promise<CompoundProperty | NotFoundError> {
+  //   this._logger.log({
+  //     message: 'Resolver `compoundProperty` called',
+  //     data: input,
+  //   });
 
-    const compoundProperty = await this._compoundPropertiesService.findOne(
-      input,
-    );
+  //   const compoundProperty = await this._compoundPropertiesService.findOne(
+  //     input,
+  //   );
 
-    if (!compoundProperty) {
-      this._logger.error({
-        message: 'No data for compound & property combination.',
-        data: input,
-      });
+  //   if (!compoundProperty) {
+  //     this._logger.error({
+  //       message: 'No data for compound & property combination.',
+  //       data: input,
+  //     });
 
-      return new NotFoundError(`Compound property not found.`);
-    }
+  //     return new NotFoundError(`Compound property not found.`);
+  //   }
 
-    this._logger.log({
-      message: 'Property found for specified compound.',
-      data: compoundProperty,
-    });
+  //   this._logger.log({
+  //     message: 'Property found for specified compound.',
+  //     data: compoundProperty,
+  //   });
 
-    return CompoundProperty.from(compoundProperty);
-  }
+  //   return CompoundProperty.from(compoundProperty);
+  // }
 }

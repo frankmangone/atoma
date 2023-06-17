@@ -1,4 +1,3 @@
-import { Document } from 'mongoose';
 import {
   Injectable,
   Logger,
@@ -6,11 +5,11 @@ import {
 } from '@nestjs/common';
 import { Compound } from '@schemas/compound.schema';
 import { CreateCompoundInput } from '../inputs/create-compound.input';
-import { UserInputError } from '@nestjs/apollo';
 import { CompoundsRepository } from '../repositories/compounds.repository';
-import { Paginated } from '@common/pagination/pagination.types';
+import { NotFoundError } from '@common/errors/not-found.error';
+import { v4 as uuidv4 } from 'uuid';
 import { FindPaginatedInput } from '@common/pagination/pagination.input';
-import { FindOneCompoundInput } from '../inputs/find-one-compound.input';
+import { Paginated } from '@common/pagination/pagination.types';
 
 @Injectable()
 export class CompoundsService {
@@ -19,51 +18,45 @@ export class CompoundsService {
   constructor(private readonly _compoundsRepository: CompoundsRepository) {}
 
   /**
-   * findPaginated
+   * find
    *
-   * Gets all compound records.
+   * Gets all compound records, paginated.
    *
    * @returns {Promise<Paginated<Compound>>}
    */
-  async findPaginated(
-    options?: FindPaginatedInput,
-  ): Promise<Paginated<Compound>> {
+  async find(options?: FindPaginatedInput): Promise<Paginated<Compound>> {
     this._logger.log('Querying DB for compound records...');
-
-    return this._compoundsRepository.findPaginated(options);
+    return this._compoundsRepository.findNodes({}, options);
   }
 
   /**
    * findOne
    *
-   * Gets a compound, querying by name, for now.
+   * Finds a compound record by providing a partial set of expected key values.
    *
-   * @param {FindOneCompoundInput | undefined} options
-   * @returns {Promise<Document<Compound> | null>}
+   * @param {Partial<Record<keyof Compound, Compound[keyof Compound]>>} query
+   * @returns {Promise<Compound | NotFoundError>}
    */
   async findOne(
-    options?: FindOneCompoundInput,
-  ): Promise<Document<Compound> | null> {
+    query: Partial<Record<keyof Compound, Compound[keyof Compound]>>,
+  ): Promise<Compound | NotFoundError> {
+    const compound = await this._compoundsRepository.findOneNode(query);
+
+    if (!compound) {
+      this._logger.error({
+        message: 'No compound found for specified constraints.',
+        data: query,
+      });
+
+      return new NotFoundError(`Compound not found.`);
+    }
+
     this._logger.log({
-      message: 'Querying DB for one compound...',
-      data: options,
+      message: 'Compound found for specified constraints.',
+      data: compound,
     });
 
-    return this._compoundsRepository.findOne({ name: options.name });
-  }
-
-  /**
-   * findByUuid
-   *
-   * Gets a compound record by its uuid.
-   *
-   * @param {string} uuid
-   * @returns {Promise<Document<Compound> | null>}
-   */
-  async findByUuid(uuid: string): Promise<Document<Compound> | null> {
-    this._logger.log(`Querying DB for compound with uuid "${uuid}"...`);
-
-    return this._compoundsRepository.findOne({ uuid });
+    return compound;
   }
 
   /**
@@ -71,9 +64,9 @@ export class CompoundsService {
    *
    * Creates a new compound record from the provided input.
    *
-   * @returns {Promise<Document<Compound>>}
+   * @returns {Promise<Compound>}
    */
-  async create(payload: CreateCompoundInput): Promise<Document<Compound>> {
+  async create(payload: CreateCompoundInput): Promise<Compound> {
     // Transform name to lowercase
     // FIXME: Can we use `class-transformer` for this?
     payload.name = payload.name.toLowerCase();
@@ -84,23 +77,24 @@ export class CompoundsService {
         data: payload,
       });
 
-      const compound = await this._compoundsRepository.create(payload);
+      const result = await this._compoundsRepository.createNode({
+        uuid: uuidv4(),
+        ...payload,
+      });
 
       this._logger.log({
         message: 'Compound successfully created in database.',
         data: payload,
       });
 
-      return compound;
+      return result;
     } catch (error) {
       this._logger.error('Failed to create record in database.');
 
-      // TODO: Move error parsing to a shared utility
-      if (error.code === 11000) {
-        throw new UserInputError(`Name "${payload.name}" already exists`);
-      }
+      // TODO: Discriminate validation errors - unique name!!
+      // throw new UserInputError(`Name "${payload.name}" already exists.`);
 
-      throw new InternalServerErrorException('Internal server error');
+      throw new InternalServerErrorException('Internal server error.');
     }
   }
 }

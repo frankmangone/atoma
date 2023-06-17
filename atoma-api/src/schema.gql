@@ -9,7 +9,9 @@ type Compound {
 }
 
 type CompoundData {
+  compoundProperty: CompoundProperty!
   uuid: String!
+  value: String!
 }
 
 input CompoundPropertiesInput {
@@ -21,16 +23,11 @@ input CompoundPropertiesInput {
 
 type CompoundProperty {
   compound: Compound!
+  compoundUuid: String!
   property: Property!
+  propertyUuid: String!
   uuid: String!
 }
-
-input CompoundPropertyInput {
-  compoundUuid: String!
-  propertyUuid: String!
-}
-
-union CompoundPropertyResult = CompoundProperty | NotFoundError
 
 input ConditionInput {
   value: Float!
@@ -51,6 +48,14 @@ input CreateCompoundInput {
   reducedFormula: String!
 }
 
+input CreatePropertyInput {
+  description: String!
+  key: String!
+  name: String!
+  type: String!
+  units: String!
+}
+
 union FindCompoundResult = Compound | NotFoundError
 
 input FindPaginatedInput {
@@ -62,6 +67,7 @@ input FindPaginatedInput {
 type Mutation {
   createCompound(payload: CreateCompoundInput!): Compound!
   createCompoundData(payload: CreateCompoundDataInput!): CreateCompoundDataResult!
+  createProperty(payload: CreatePropertyInput!): Property!
 }
 
 type NotFoundError {
@@ -99,7 +105,6 @@ type Property {
 type Query {
   compound(name: String!): FindCompoundResult!
   compoundProperties(input: CompoundPropertiesInput!): PaginatedCompoundProperties!
-  compoundProperty(input: CompoundPropertyInput!): CompoundPropertyResult!
   compounds(options: FindPaginatedInput!): PaginatedCompounds!
   properties(options: FindPaginatedInput!): PaginatedProperties!
 }
