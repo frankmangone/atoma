@@ -1,14 +1,11 @@
 import { BaseRepository } from '@common/repositories/base.repository';
+import { Neo4jService } from '@modules/database/neo.service';
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
 import { Property } from '@schemas/property.schema';
-import { Model } from 'mongoose';
 
 @Injectable()
 export class PropertiesRepository extends BaseRepository<Property> {
-  constructor(
-    @InjectModel(Property.name) private readonly _property: Model<Property>,
-  ) {
-    super(_property);
+  constructor(protected readonly _neo4jService: Neo4jService) {
+    super(Property, _neo4jService);
   }
 }

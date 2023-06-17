@@ -84,7 +84,7 @@ export class CompoundsResolver {
       data: { name },
     });
 
-    return this._compoundsService.findByConstraint({ name });
+    return this._compoundsService.findOne({ name });
   }
 
   /**

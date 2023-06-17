@@ -109,8 +109,8 @@ export class CompoundDataService {
     });
 
     return Promise.all([
-      this._compoundsService.findByConstraint({ uuid: compoundUuid }),
-      this._propertiesService.findByConstraint({ uuid: propertyUuid }),
+      this._compoundsService.findOne({ uuid: compoundUuid }),
+      this._propertiesService.findOne({ uuid: propertyUuid }),
     ]);
   }
 }

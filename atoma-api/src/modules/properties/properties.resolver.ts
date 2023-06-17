@@ -17,28 +17,28 @@ export class PropertiesResolver {
     private readonly _neo4jService: Neo4jService,
   ) {}
 
-  /**
-   * findManyProperties
-   *
-   * Queries for multiple properties.
-   *
-   * @returns {Promise<PaginatedProperties>}
-   */
-  @Query(() => PaginatedProperties, { name: 'properties' })
-  async findManyProperties(
-    @Args('options') options: FindPaginatedInput,
-  ): Promise<PaginatedProperties> {
-    this._logger.log('Resolver `properties` called');
+  // /**
+  //  * findManyProperties
+  //  *
+  //  * Queries for multiple properties.
+  //  *
+  //  * @returns {Promise<PaginatedProperties>}
+  //  */
+  // @Query(() => PaginatedProperties, { name: 'properties' })
+  // async findManyProperties(
+  //   @Args('options') options: FindPaginatedInput,
+  // ): Promise<PaginatedProperties> {
+  //   this._logger.log('Resolver `properties` called');
 
-    const result = await this._propertiesService.findPaginated(options);
+  //   const result = await this._propertiesService.findPaginated(options);
 
-    this._logger.log({
-      message: 'Found properties for query options.',
-      data: { nextCursor: result.nextCursor, prevCursor: result.prevCursor },
-    });
+  //   this._logger.log({
+  //     message: 'Found properties for query options.',
+  //     data: { nextCursor: result.nextCursor, prevCursor: result.prevCursor },
+  //   });
 
-    return result;
-  }
+  //   return result;
+  // }
 
   /**
    * createProperty

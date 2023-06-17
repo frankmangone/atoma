@@ -70,12 +70,6 @@ type PaginatedCompounds {
   prevCursor: String
 }
 
-type PaginatedProperties {
-  data: [Property!]
-  nextCursor: String
-  prevCursor: String
-}
-
 type Property {
   description: String!
   key: String!
@@ -88,5 +82,4 @@ type Property {
 type Query {
   compound(name: String!): FindCompoundResult!
   compounds(options: FindPaginatedInput!): PaginatedCompounds!
-  properties(options: FindPaginatedInput!): PaginatedProperties!
 }
