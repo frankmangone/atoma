@@ -5,6 +5,8 @@ import { Compound } from '@schemas/compound.schema';
 import { Property } from '@schemas/property.schema';
 import { CompoundProperty } from '@schemas/compound-property.schema';
 import { Paginated } from '@common/pagination/pagination.types';
+import { Neo4jService } from '@modules/database/neo.service';
+import { v4 as uuidv4 } from 'uuid';
 
 interface FindOneParms {
   compoundUuid: string;
@@ -44,52 +46,47 @@ export class CompoundPropertiesService {
   private readonly _logger = new Logger(CompoundPropertiesService.name);
 
   constructor(
+    private readonly _neo4jService: Neo4jService,
     private readonly _compoundPropertiesRepository: CompoundPropertiesRepository,
   ) {}
 
   /**
-   * idempotentCreate
+   * idempotentCreateConnection
    *
-   * Creates a new `compound-property` record if it doesn't already exist for
-   * the given `compound` and `property` ids. If it exists, it returns the existing value.
-   * That's why it's an idempotent action.
+   * Creates a new HAS_PROPERTY_DATA connection between the specified compound
+   * and property if it doesn't already exist.
    *
-   * @param {number} compound
-   * @param {number} property
-   * @returns {Promise<CompoundProperty>}
+   * @param {string} compoundUuid
+   * @param {string} propertyUuid
+   * @returns {Promise<void>}
    */
-  async idempotentCreate(
-    compoundId: number,
-    propertyId: number,
-  ): Promise<Document<CompoundProperty>> {
-    const existingCompoundProperty =
-      await this._compoundPropertiesRepository.findOne({
-        compoundId,
-        propertyId,
-      });
-
-    if (existingCompoundProperty) {
-      this._logger.log({
-        message: 'Compound property already exists, returning value...',
-        data: { compoundId, propertyId },
-      });
-
-      return existingCompoundProperty;
-    }
-
-    const newCompoundProperty = await this._compoundPropertiesRepository.create(
-      {
-        compound: compoundId,
-        property: propertyId,
-      },
+  async idempotentCreateConnection(
+    compoundUuid: string,
+    propertyUuid: string,
+  ): Promise<void> {
+    const existingConnection = await this._neo4jService.read(
+      `MATCH
+        (:Compound {uuid: $compoundUuid})
+        -[c:HAS_PROPERTY_DATA]->
+        (:Property {uuid: $propertyUuid})
+      RETURN c`,
+      { compoundUuid, propertyUuid },
     );
 
-    this._logger.log({
-      message: 'Compound property created successfully.',
-      data: { compoundId, propertyId },
-    });
+    if (existingConnection.records.length !== 0) return;
 
-    return newCompoundProperty;
+    const compoundPropertyUuid = uuidv4();
+
+    await this._neo4jService.write(
+      `
+      MATCH
+        (c:Compound {uuid: $compoundUuid}),
+        (p:Property {uuid: $propertyUuid})
+      CREATE (c)-[r:HAS_PROPERTY_DATA {uuid: $compoundPropertyUuid}]->(p)
+      RETURN r
+      `,
+      { compoundUuid, propertyUuid, compoundPropertyUuid },
+    );
   }
 
   /**

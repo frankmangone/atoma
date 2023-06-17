@@ -35,7 +35,8 @@ export class CompoundDataService {
    */
   async create(
     payload: CreateCompoundDataInput,
-  ): Promise<CompoundData | NotFoundError> {
+  ): Promise<void | NotFoundError> {
+    // Promise<CompoundData | NotFoundError> {
     const { compoundUuid, propertyUuid } = payload;
     const [compound, property] = await this._findCompoundAndProperty(
       compoundUuid,
@@ -59,28 +60,27 @@ export class CompoundDataService {
       data: payload,
     });
 
-    const compoundProperty =
-      await this._compoundPropertiesService.idempotentCreate(
-        compound.id,
-        property.id,
-      );
+    await this._compoundPropertiesService.idempotentCreateConnection(
+      compoundUuid,
+      propertyUuid,
+    );
 
     this._logger.log({
       message: 'Creating compound property data record in database...',
       data: payload,
     });
 
-    const compoundData = await this._compoundDataRepository.create({
-      ...payload,
-      compoundPropertyId: compoundProperty._id,
-    });
+    // const compoundData = await this._compoundDataRepository.create({
+    //   ...payload,
+    //   compoundPropertyId: compoundProperty._id,
+    // });
 
     this._logger.log({
       message: 'Compound property data successfully created.',
       data: payload,
     });
 
-    return CompoundData.from(compoundData as any); // How can I avoid this `any`?
+    // return CompoundData.from(compoundData as any); // How can I avoid this `any`?
   }
 
   /**
