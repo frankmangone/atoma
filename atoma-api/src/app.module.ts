@@ -23,13 +23,7 @@ import { CONFIG } from './common';
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
     }),
-    DatabaseModule.forRoot({
-      scheme: 'neo4j',
-      host: 'localhost',
-      port: 7687,
-      username: 'neo4j',
-      password: 'password',
-    }),
+    DatabaseModule.forRoot(),
     //
     CompoundsModule,
     PropertiesModule,
