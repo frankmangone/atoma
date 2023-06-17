@@ -1,5 +1,4 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Document } from 'mongoose';
 import { Property } from '@schemas/property.schema';
 import { PropertiesRepository } from './properties.repository';
 import { Paginated } from '@common/pagination/pagination.types';
@@ -51,7 +50,7 @@ export class PropertiesService {
     });
 
     const queryResult = await this._neo4jService.read(
-      `MATCH (type:Property {${fields.slice(0, -1)}}) RETURN type`,
+      `MATCH (p:Property {${fields.slice(0, -1)}}) RETURN p`,
       query,
     );
     const record = queryResult.records[0];
@@ -65,7 +64,7 @@ export class PropertiesService {
       return new NotFoundError(`Property not found.`);
     }
 
-    const property = record.get('type').properties;
+    const property = record.get('p').properties;
 
     this._logger.log({
       message: 'Property found for specified constraints.',

@@ -7,7 +7,7 @@ import {
 import { Compound } from '@schemas/compound.schema';
 import { CreateCompoundInput } from '../inputs/create-compound.input';
 import { UserInputError } from '@nestjs/apollo';
-import { CompoundsRepository } from '../repositories/compounds.repository';
+// import { CompoundsRepository } from '../repositories/compounds.repository';
 import { Paginated } from '@common/pagination/pagination.types';
 import { FindPaginatedInput } from '@common/pagination/pagination.input';
 import { Neo4jService } from '@modules/database/neo.service';
@@ -20,24 +20,24 @@ export class CompoundsService {
   private readonly _logger = new Logger(CompoundsService.name);
 
   constructor(
-    private readonly _compoundsRepository: CompoundsRepository,
+    // private readonly _compoundsRepository: CompoundsRepository,
     private readonly _neo4jService: Neo4jService,
   ) {}
 
-  /**
-   * findPaginated
-   *
-   * Gets all compound records.
-   *
-   * @returns {Promise<Paginated<Compound>>}
-   */
-  async findPaginated(
-    options?: FindPaginatedInput,
-  ): Promise<Paginated<Compound>> {
-    this._logger.log('Querying DB for compound records...');
+  // /**
+  //  * findPaginated
+  //  *
+  //  * Gets all compound records.
+  //  *
+  //  * @returns {Promise<Paginated<Compound>>}
+  //  */
+  // async findPaginated(
+  //   options?: FindPaginatedInput,
+  // ): Promise<Paginated<Compound>> {
+  //   this._logger.log('Querying DB for compound records...');
 
-    return this._compoundsRepository.findPaginated(options);
-  }
+  //   return this._compoundsRepository.findPaginated(options);
+  // }
 
   /**
    * findByConstraint

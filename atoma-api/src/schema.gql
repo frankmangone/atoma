@@ -12,25 +12,11 @@ type CompoundData {
   uuid: String!
 }
 
-input CompoundPropertiesInput {
-  after: String
-  before: String
-  compoundUuid: String!
-  limit: Int!
-}
-
 type CompoundProperty {
   compound: Compound!
   property: Property!
   uuid: String!
 }
-
-input CompoundPropertyInput {
-  compoundUuid: String!
-  propertyUuid: String!
-}
-
-union CompoundPropertyResult = CompoundProperty | NotFoundError
 
 input ConditionInput {
   value: Float!
@@ -78,12 +64,6 @@ type NotFoundError {
   message: String!
 }
 
-type PaginatedCompoundProperties {
-  data: [CompoundProperty!]
-  nextCursor: String
-  prevCursor: String
-}
-
 type PaginatedCompounds {
   data: [Compound!]
   nextCursor: String
@@ -107,8 +87,6 @@ type Property {
 
 type Query {
   compound(name: String!): FindCompoundResult!
-  compoundProperties(input: CompoundPropertiesInput!): PaginatedCompoundProperties!
-  compoundProperty(input: CompoundPropertyInput!): CompoundPropertyResult!
   compounds(options: FindPaginatedInput!): PaginatedCompounds!
   properties(options: FindPaginatedInput!): PaginatedProperties!
 }

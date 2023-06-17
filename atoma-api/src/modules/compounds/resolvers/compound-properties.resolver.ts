@@ -18,71 +18,71 @@ export class CompoundPropertiesResolver {
     private readonly _compoundPropertiesService: CompoundPropertiesService,
   ) {}
 
-  /**
-   * findManyCompoundProperties
-   *
-   * Queries for a single compound, by name, for now.
-   *
-   * @param {CompoundPropertiesInput} input
-   * @returns {Promise<PaginatedCompoundProperties>}
-   */
-  @Query(() => PaginatedCompoundProperties, { name: 'compoundProperties' })
-  async findManyCompoundProperties(
-    @Args('input', { type: () => CompoundPropertiesInput })
-    input: CompoundPropertiesInput,
-  ): Promise<PaginatedCompoundProperties> {
-    this._logger.log({
-      message: 'Resolver `compoundProperties` called',
-      data: input,
-    });
+  // /**
+  //  * findManyCompoundProperties
+  //  *
+  //  * Queries for a single compound, by name, for now.
+  //  *
+  //  * @param {CompoundPropertiesInput} input
+  //  * @returns {Promise<PaginatedCompoundProperties>}
+  //  */
+  // @Query(() => PaginatedCompoundProperties, { name: 'compoundProperties' })
+  // async findManyCompoundProperties(
+  //   @Args('input', { type: () => CompoundPropertiesInput })
+  //   input: CompoundPropertiesInput,
+  // ): Promise<PaginatedCompoundProperties> {
+  //   this._logger.log({
+  //     message: 'Resolver `compoundProperties` called',
+  //     data: input,
+  //   });
 
-    const result = await this._compoundPropertiesService.findPaginated(input);
+  //   const result = await this._compoundPropertiesService.findPaginated(input);
 
-    this._logger.log({
-      message: 'Found compounds for query options.',
-      data: { nextCursor: result.nextCursor, prevCursor: result.prevCursor },
-    });
+  //   this._logger.log({
+  //     message: 'Found compounds for query options.',
+  //     data: { nextCursor: result.nextCursor, prevCursor: result.prevCursor },
+  //   });
 
-    return result;
-  }
+  //   return result;
+  // }
 
-  /**
-   * findOneCompound
-   *
-   * Queries for a single compound, by name, for now.
-   *
-   * @param {string} compoundUuid
-   * @param {string} propertyUuid
-   * @returns {Promise<CompoundPropertyResult>}
-   */
-  @Query(() => CompoundPropertyResult, { name: 'compoundProperty' })
-  async findOneCompoundProperty(
-    @Args('input', { type: () => CompoundPropertyInput })
-    input: CompoundPropertyInput,
-  ): Promise<CompoundProperty | NotFoundError> {
-    this._logger.log({
-      message: 'Resolver `compoundProperty` called',
-      data: input,
-    });
+  // /**
+  //  * findOneCompound
+  //  *
+  //  * Queries for a single compound, by name, for now.
+  //  *
+  //  * @param {string} compoundUuid
+  //  * @param {string} propertyUuid
+  //  * @returns {Promise<CompoundPropertyResult>}
+  //  */
+  // @Query(() => CompoundPropertyResult, { name: 'compoundProperty' })
+  // async findOneCompoundProperty(
+  //   @Args('input', { type: () => CompoundPropertyInput })
+  //   input: CompoundPropertyInput,
+  // ): Promise<CompoundProperty | NotFoundError> {
+  //   this._logger.log({
+  //     message: 'Resolver `compoundProperty` called',
+  //     data: input,
+  //   });
 
-    const compoundProperty = await this._compoundPropertiesService.findOne(
-      input,
-    );
+  //   const compoundProperty = await this._compoundPropertiesService.findOne(
+  //     input,
+  //   );
 
-    if (!compoundProperty) {
-      this._logger.error({
-        message: 'No data for compound & property combination.',
-        data: input,
-      });
+  //   if (!compoundProperty) {
+  //     this._logger.error({
+  //       message: 'No data for compound & property combination.',
+  //       data: input,
+  //     });
 
-      return new NotFoundError(`Compound property not found.`);
-    }
+  //     return new NotFoundError(`Compound property not found.`);
+  //   }
 
-    this._logger.log({
-      message: 'Property found for specified compound.',
-      data: compoundProperty,
-    });
+  //   this._logger.log({
+  //     message: 'Property found for specified compound.',
+  //     data: compoundProperty,
+  //   });
 
-    return CompoundProperty.from(compoundProperty);
-  }
+  //   return CompoundProperty.from(compoundProperty);
+  // }
 }

@@ -1,7 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { CompoundsService } from './compounds.service';
 import { CompoundPropertiesService } from './compound-properties.service';
-import { CompoundDataRepository } from '../repositories/compound-data.repository';
 import { CreateCompoundDataInput } from '../inputs/create-compount-data.input';
 import { Compound } from '@schemas/compound.schema';
 import { NotFoundError } from '@common/errors/not-found.error';
