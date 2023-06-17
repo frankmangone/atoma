@@ -9,6 +9,8 @@ make sure to be using `pnpm`. Remember to install packages before you start work
 
 First and foremost, you'll need to run `$ pnpm prepare`. This does some things for you so you don't have many problems during setup.
 
+After that, make sure you have appropriate environment variables. An example `.env` file is provided in `.env.example`. Copy the contents into a `.env` file, and you should be good to go for local development.
+
 The application also requires docker to run. Before running the app, you need to start the database container with:
 
 ```bash
