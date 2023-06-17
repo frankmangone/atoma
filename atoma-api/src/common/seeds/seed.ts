@@ -1,5 +1,4 @@
 import 'dotenv/config';
-import mongoose, { Types } from 'mongoose';
 import { Property } from '../../schemas/property.schema';
 import { COMPOUNDS, ETHANOL, WATER } from './datasets/compounds';
 import { DENSITY, PROPERTIES } from './datasets/properties';

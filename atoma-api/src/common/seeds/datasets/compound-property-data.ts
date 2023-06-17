@@ -1,6 +1,4 @@
-import { Types } from 'mongoose';
-
-export const WATER_DENSITY_DATA = (compoundProperty: Types.ObjectId) => [
+export const WATER_DENSITY_DATA = (compoundProperty: string) => [
   {
     compoundProperty,
     conditions: [
@@ -93,7 +91,7 @@ export const WATER_DENSITY_DATA = (compoundProperty: Types.ObjectId) => [
   },
 ];
 
-export const ETHANOL_DENSITY_DATA = (compoundProperty: Types.ObjectId) => [
+export const ETHANOL_DENSITY_DATA = (compoundProperty: string) => [
   {
     compoundProperty,
     conditions: [

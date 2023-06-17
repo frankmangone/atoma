@@ -1,5 +1,4 @@
 import { Field, Float, InputType } from '@nestjs/graphql';
-import { raw } from '@nestjs/mongoose';
 
 @InputType()
 export class ConditionInput {
@@ -12,7 +11,7 @@ export class ConditionInput {
 
 export type Condition = typeof ConditionInput;
 
-export const ConditionSchema = raw({
+export const ConditionSchema = {
   variable: { type: String },
   value: { type: Number },
-});
+};
