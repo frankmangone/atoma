@@ -78,7 +78,7 @@ export class CompoundsService {
         data: payload,
       });
 
-      const result = await this._compoundsRepository.findOneNode({
+      const result = await this._compoundsRepository.createNode({
         uuid: uuidv4(),
         ...payload,
       });

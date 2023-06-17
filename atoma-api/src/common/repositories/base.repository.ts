@@ -22,14 +22,15 @@ export abstract class BaseRepository<T> {
 
     const cypher = `
       MATCH 
-        (r:${this._schema.name} {${fields.slice(0, -1)}})
+        (r:${this._schema.name} {${fields}})
       RETURN r
       LIMIT 1
     `;
 
     const queryResult = await this._neo4jService.read(cypher, query);
+    const recordProperties = queryResult.records[0]?.get('r').properties;
 
-    return queryResult.records[0]?.get('r').properties;
+    return plainToInstance(this._schema, recordProperties);
   }
 
   /**
@@ -66,7 +67,7 @@ export abstract class BaseRepository<T> {
 
     const cypher = `
       MATCH 
-        (r:${this._schema.name} {${fields.slice(0, -1)}})
+        (r:${this._schema.name} {${fields}})
       ${where}
       RETURN r
       ${orderBy}
@@ -106,14 +107,11 @@ export abstract class BaseRepository<T> {
    * @param {Partial<T>} payload
    * @returns {Promise<T>}
    */
-  async create(payload: Partial<T>): Promise<T> {
+  async createNode(payload: Partial<T>): Promise<T> {
     const fields = this._buildQueryFields(payload);
 
-    const queryResult = await this._neo4jService.read(
-      `CREATE (r:${this._schema.name} {${fields.slice(0, -1)}}) RETURN r`,
-      payload,
-    );
-
+    const cypher = `CREATE (r:${this._schema.name} {${fields}}) RETURN r`;
+    const queryResult = await this._neo4jService.write(cypher, payload);
     const record = queryResult.records[0].get('r').properties;
 
     return plainToInstance(this._schema, record);

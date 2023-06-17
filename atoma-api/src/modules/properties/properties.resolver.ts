@@ -59,11 +59,8 @@ export class PropertiesResolver {
       ...payload,
     };
 
-    await this._neo4jService.write(
-      'CREATE (type:Property {uuid: $uuid, key: $key, name: $name, description: $description, units: $units, type: $type})',
-      recordData,
-    );
+    const record = await this._propertiesService.create(recordData);
 
-    return plainToInstance(Property, recordData);
+    return record;
   }
 }

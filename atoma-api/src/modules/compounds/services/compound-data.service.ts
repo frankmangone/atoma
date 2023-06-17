@@ -70,7 +70,7 @@ export class CompoundDataService {
       data: payload,
     });
 
-    const compoundData = await this._compoundDataRepository.create({
+    const compoundData = await this._compoundDataRepository.createNode({
       uuid: connectionUuid,
       // ...payload,
     });
