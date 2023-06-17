@@ -13,6 +13,8 @@ export class Property extends BaseEntity {
     return plainToInstance(Property, object.toObject());
   }
 
+  id?: number;
+
   @Field(() => String)
   @Prop({ unique: true })
   key: string;

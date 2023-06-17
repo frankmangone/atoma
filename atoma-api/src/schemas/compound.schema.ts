@@ -12,6 +12,8 @@ export class Compound extends BaseEntity {
     return plainToInstance(Compound, object);
   }
 
+  id?: number;
+
   @Field(() => String)
   @Prop({ unique: true })
   name: string;

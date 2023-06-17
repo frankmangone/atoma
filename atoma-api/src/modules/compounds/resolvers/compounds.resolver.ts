@@ -88,30 +88,7 @@ export class CompoundsResolver {
       data: { name },
     });
 
-    const queryResult = await this._neo4jService.read(
-      'MATCH (type:Compound {name: $name}) RETURN type',
-      { name },
-    );
-    const compoundRecord = queryResult.records[0];
-
-    if (!compoundRecord) {
-      this._logger.error({
-        message: 'No compound found for specified name.',
-        data: { name },
-      });
-
-      return new NotFoundError(`Compound "${name}" not found.`);
-    }
-
-    const compound = compoundRecord.get('type').properties;
-
-    this._logger.log({
-      message: 'Compound found for specified name.',
-      data: compound,
-    });
-
-    // return Compound.from(compound);
-    return plainToInstance(Compound, compound);
+    return this._compoundsService.findByConstraint({ name });
   }
 
   /**

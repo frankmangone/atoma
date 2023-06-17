@@ -54,13 +54,13 @@ export class CompoundPropertiesService {
    * the given `compound` and `property` ids. If it exists, it returns the existing value.
    * That's why it's an idempotent action.
    *
-   * @param {Compound} compound
-   * @param {Property} property
+   * @param {number} compound
+   * @param {number} property
    * @returns {Promise<CompoundProperty>}
    */
   async idempotentCreate(
-    compoundId: Compound,
-    propertyId: Property,
+    compoundId: number,
+    propertyId: number,
   ): Promise<Document<CompoundProperty>> {
     const existingCompoundProperty =
       await this._compoundPropertiesRepository.findOne({

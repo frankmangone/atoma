@@ -11,12 +11,18 @@ import { CompoundsRepository } from '../repositories/compounds.repository';
 import { Paginated } from '@common/pagination/pagination.types';
 import { FindPaginatedInput } from '@common/pagination/pagination.input';
 import { FindOneCompoundInput } from '../inputs/find-one-compound.input';
+import { Neo4jService } from '@modules/database/neo.service';
+import { NotFoundError } from '@common/errors/not-found.error';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class CompoundsService {
   private readonly _logger = new Logger(CompoundsService.name);
 
-  constructor(private readonly _compoundsRepository: CompoundsRepository) {}
+  constructor(
+    private readonly _compoundsRepository: CompoundsRepository,
+    private readonly _neo4jService: Neo4jService,
+  ) {}
 
   /**
    * findPaginated
@@ -64,6 +70,48 @@ export class CompoundsService {
     this._logger.log(`Querying DB for compound with uuid "${uuid}"...`);
 
     return this._compoundsRepository.findOne({ uuid });
+  }
+
+  /**
+   * findByConstraint
+   *
+   * Finds a compound record by providing a partial set of expected key values.
+   *
+   * @param {Partial<Record<keyof Compound, Compound[keyof Compound]>>} query
+   * @returns {Promise<Compound | NotFoundError>}
+   */
+  async findByConstraint(
+    query: Partial<Record<keyof Compound, Compound[keyof Compound]>>,
+  ): Promise<Compound | NotFoundError> {
+    // Build query fields
+    let fields = '';
+    Object.keys(query).forEach((key) => {
+      fields += `${key}: $${key},`;
+    });
+
+    const queryResult = await this._neo4jService.read(
+      `MATCH (type:Compound {${fields.slice(0, -1)}}) RETURN type`,
+      query,
+    );
+    const compoundRecord = queryResult.records[0];
+
+    if (!compoundRecord) {
+      this._logger.error({
+        message: 'No compound found for specified constraints.',
+        data: query,
+      });
+
+      return new NotFoundError(`Compound not found.`);
+    }
+
+    const compound = compoundRecord.get('type').properties;
+
+    this._logger.log({
+      message: 'Compound found for specified constraints.',
+      data: compound,
+    });
+
+    return plainToInstance(Compound, compound);
   }
 
   /**
