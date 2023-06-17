@@ -6,14 +6,15 @@ import { Compound } from '@schemas/compound.schema';
 import { NotFoundError } from '@common/errors/not-found.error';
 import { PropertiesService } from '@modules/properties/properties.service';
 import { Property } from '@schemas/property.schema';
-import { Neo4jService } from '@modules/database/neo.service';
+import { CompoundDataRepository } from '../repositories/compound-data.repository';
+import { CompoundData } from '@schemas/compound-data.schema';
 
 @Injectable()
 export class CompoundDataService {
   private readonly _logger = new Logger(CompoundDataService.name);
 
   constructor(
-    private readonly _neo4jService: Neo4jService,
+    private readonly _compoundDataRepository: CompoundDataRepository,
     private readonly _compoundsService: CompoundsService,
     private readonly _compoundPropertiesService: CompoundPropertiesService,
     private readonly _propertiesService: PropertiesService,
@@ -34,8 +35,7 @@ export class CompoundDataService {
    */
   async create(
     payload: CreateCompoundDataInput,
-  ): Promise<void | NotFoundError> {
-    // Promise<CompoundData | NotFoundError> {
+  ): Promise<CompoundData | NotFoundError> {
     const { compoundUuid, propertyUuid } = payload;
     const [compound, property] = await this._findCompoundAndProperty(
       compoundUuid,
@@ -70,23 +70,17 @@ export class CompoundDataService {
       data: payload,
     });
 
-    // FIXME: Temporary Neo4j creation
-    await this._neo4jService.write('CREATE (:CompoundData {uuid: $uuid})', {
+    const compoundData = await this._compoundDataRepository.create({
       uuid: connectionUuid,
       // ...payload,
     });
-
-    // const compoundData = await this._compoundDataRepository.create({
-    //   ...payload,
-    //   compoundPropertyId: compoundProperty._id,
-    // });
 
     this._logger.log({
       message: 'Compound property data successfully created.',
       data: payload,
     });
 
-    // return CompoundData.from(compoundData as any); // How can I avoid this `any`?
+    return compoundData;
   }
 
   /**

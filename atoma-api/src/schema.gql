@@ -9,12 +9,16 @@ type Compound {
 }
 
 type CompoundData {
+  compoundProperty: CompoundProperty!
   uuid: String!
+  value: String!
 }
 
 type CompoundProperty {
   compound: Compound!
+  compoundUuid: String!
   property: Property!
+  propertyUuid: String!
   uuid: String!
 }
 

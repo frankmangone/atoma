@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
-import { Compound, CompoundSchema } from '@schemas/compound.schema';
 import { CompoundsService } from './services/compounds.service';
 import { CompoundDataService } from './services/compound-data.service';
 import { CompoundPropertiesService } from './services/compound-properties.service';
@@ -10,26 +8,11 @@ import { CompoundPropertiesRepository } from './repositories/compound-properties
 import { CompoundsResolver } from './resolvers/compounds.resolver';
 import { CompoundDataResolver } from './resolvers/compound-data.resolver';
 import { CompoundPropertiesResolver } from './resolvers/compound-properties.resolver';
-import {
-  CompoundData,
-  CompoundDataSchema,
-} from '@schemas/compound-data.schema';
-import {
-  CompoundProperty,
-  CompoundPropertySchema,
-} from '@schemas/compound-property.schema';
 import { PropertiesModule } from '@modules/properties/properties.module';
 import { Neo4jService } from '@modules/database/neo.service';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([
-      { name: Compound.name, schema: CompoundSchema },
-      { name: CompoundData.name, schema: CompoundDataSchema },
-      { name: CompoundProperty.name, schema: CompoundPropertySchema },
-    ]),
-    PropertiesModule,
-  ],
+  imports: [PropertiesModule],
   providers: [
     Neo4jService,
     CompoundDataResolver,

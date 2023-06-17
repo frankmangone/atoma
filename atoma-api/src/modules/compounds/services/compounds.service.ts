@@ -20,7 +20,7 @@ export class CompoundsService {
   /**
    * find
    *
-   * Gets all compound records.
+   * Gets all compound records, paginated.
    *
    * @returns {Promise<Paginated<Compound>>}
    */
@@ -92,7 +92,7 @@ export class CompoundsService {
     } catch (error) {
       this._logger.error('Failed to create record in database.');
 
-      // TODO: Discriminate validation errors
+      // TODO: Discriminate validation errors - unique name!!
       // throw new UserInputError(`Name "${payload.name}" already exists.`);
 
       throw new InternalServerErrorException('Internal server error.');

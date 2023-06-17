@@ -24,8 +24,7 @@ export class CompoundDataResolver {
   @Mutation(() => CreateCompoundDataResult)
   async createCompoundData(
     @Payload() payload: CreateCompoundDataInput,
-  ): Promise<void | NotFoundError> {
-    // Promise<CompoundData | NotFoundError> {
+  ): Promise<CompoundData | NotFoundError> {
     this._logger.log({
       message: 'Resolver `createCompoundPropertyData` called',
       data: payload,
