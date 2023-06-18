@@ -1,4 +1,4 @@
-import { IS_PROPERTY_UNIQUE } from '../constants';
+import { ANNOTATED_KEYS, IS_PROPERTY_UNIQUE } from '../constants';
 
 /**
  * Unique
@@ -12,7 +12,13 @@ import { IS_PROPERTY_UNIQUE } from '../constants';
 export const Unique = (): PropertyDecorator => {
   return (object: object, propertyName: string) => {
     Reflect.defineMetadata(IS_PROPERTY_UNIQUE, true, object, propertyName);
+
+    const annotatedKeys = Reflect.getMetadata(ANNOTATED_KEYS, object) ?? [];
+
+    Reflect.defineMetadata(
+      ANNOTATED_KEYS,
+      [...annotatedKeys, propertyName],
+      object,
+    );
   };
 };
-
-// CREATE CONSTRAINT ON (n:NodeType) ASSERT n.propertyName IS UNIQUE

@@ -1,6 +1,6 @@
 // import * as fs from 'fs';
 
-import { IS_NODE_TYPE, IS_NODE_PROPERTY, ANNOTATED_KEYS } from '../constants';
+import { IS_NODE_TYPE, ANNOTATED_KEYS, IS_PROPERTY_UNIQUE } from '../constants';
 
 /**
  * setConstraints
@@ -26,11 +26,19 @@ export const setConstraints = async () => {
     const keys = Reflect.getMetadata(ANNOTATED_KEYS, class_.prototype);
 
     keys.forEach((key) => {
-      // Getting to this point OK!
-      console.log(
+      // TODO: check more complex constraints. For now, it just checks UNIQUE
+      const isPropertyUnique = Reflect.getMetadata(
+        IS_PROPERTY_UNIQUE,
+        class_.prototype,
         key,
-        Reflect.getMetadata(IS_NODE_PROPERTY, class_.prototype, key),
       );
+
+      if (!isPropertyUnique) return;
+
+      // TODO: Get session and run queries
+      console.log(key, isPropertyUnique);
+
+      // CREATE CONSTRAINT ON (n:NodeType) ASSERT n.propertyName IS UNIQUE
     });
   });
 };
