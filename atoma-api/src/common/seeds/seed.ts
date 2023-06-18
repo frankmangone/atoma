@@ -89,18 +89,21 @@ const seed = async () => {
 
       // Create node
       await session.run(
-        'CREATE (c:CompoundProperty {uuid: $uuid, compoundUuid: $compoundUuid, propertyUuid: $propertyUuid}) RETURN c',
-        compoundProperty,
-      );
-
-      // Create connection between compound and property
-      await session.run(
         `
-          MATCH
-            (c:Compound {uuid: $compoundUuid}),
-            (p:Property {uuid: $propertyUuid})
-          CREATE (c)-[:HAS_PROPERTY_DATA {uuid: $uuid}]->(p)
-          `,
+        MATCH
+          (compound:Compound {uuid: $compoundUuid}),
+          (property:Property {uuid: $propertyUuid})
+        CREATE
+          (compound)
+          <-[:BELONGS_TO]-
+          (compoundProperty:CompoundProperty {
+            uuid: $uuid,
+            name: property.name,
+            compound: compound.name
+          })
+          -[:IS_PROPERTY]->
+          (property)
+        `,
         compoundProperty,
       );
       compoundPropertyUuids.set(compoundUuid + propertyUuid, uuid);
