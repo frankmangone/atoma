@@ -21,31 +21,42 @@ export class CompoundPropertiesService {
   ) {}
 
   /**
-   * idempotentCreateConnection
+   * idempotentCreateCompoundProperty
    *
-   * Creates a new HAS_PROPERTY_DATA connection between the specified compound
-   * and property if it doesn't already exist.
-   * Returns the connection's uuid
+   * Tries creating a new `CommpoundProperty` node, connected to a `Compound`
+   * node through a `BELONGS_TO` edge, and to a `Property` node through a
+   * `IS_PROPERTY` edge.
+   *
+   * This could be done with constraints like:
+   * CREATE CONSTRAINT ON (a:A)-[:CONNECTED_1]->(b:B), (a)-[:CONNECTED_2]->(c:C)
+   * ASSERT (a)-[:CONNECTED_1]->(b) AND (a)-[:CONNECTED_2]->(c) IS UNIQUE
+   *
+   * But that's only available in the enterprise edition of Neo4j. So, we just perform
+   * a query first!\, to check if the record already exists!
    *
    * @param {string} compoundUuid
    * @param {string} propertyUuid
    * @returns {Promise<string>}
    */
-  async idempotentCreateConnection(
+  async idempotentCreateCompoundProperty(
     compoundUuid: string,
     propertyUuid: string,
   ): Promise<string> {
-    const existingConnection = await this._neo4jService.read(
-      `MATCH
+    const existingCompoundProperty = await this._neo4jService.read(
+      `
+      MATCH 
         (:Compound {uuid: $compoundUuid})
-        -[c:HAS_PROPERTY_DATA]->
+        <-[:BELONGS_TO]-
+        (compoundProperty:CompoundProperty)
+        -[:IS_PROPERTY]->
         (:Property {uuid: $propertyUuid})
-      RETURN c`,
+      RETURN compoundProperty`,
       { compoundUuid, propertyUuid },
     );
 
-    if (existingConnection.records.length !== 0) {
-      return existingConnection.records[0].get('c').properties.uuid;
+    if (existingCompoundProperty.records.length !== 0) {
+      // Compound property already exists, stop execution.
+      return;
     }
 
     const compoundPropertyUuid = uuidv4();
@@ -53,16 +64,21 @@ export class CompoundPropertiesService {
     await this._neo4jService.write(
       `
       MATCH
-        (c:Compound {uuid: $compoundUuid}),
-        (p:Property {uuid: $propertyUuid})
-      CREATE (c)-[:HAS_PROPERTY_DATA {uuid: $compoundPropertyUuid}]->(p)
+        (compound:Compound {uuid: $compoundUuid}),
+        (property:Property {uuid: $propertyUuid})
+      CREATE
+        (compound)
+        <-[:BELONGS_TO]-
+        (compoundProperty:CompoundProperty {
+          uuid: $compoundPropertyUuid,
+          name: property.name,
+          compound: compound.name
+        })
+        -[:IS_PROPERTY]->
+        (property)
       `,
       { compoundUuid, propertyUuid, compoundPropertyUuid },
     );
-
-    await this._neo4jService.write('CREATE (:CompoundProperty {uuid: $uuid})', {
-      uuid: compoundPropertyUuid,
-    });
 
     return compoundPropertyUuid;
   }
