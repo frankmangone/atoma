@@ -5,11 +5,13 @@ import { Neo4jService } from '@modules/neo4j/neo4j.service';
 import { v4 as uuidv4 } from 'uuid';
 import { FindPaginatedInput } from '@common/graphql/pagination/pagination.input';
 import { Paginated } from '@common/graphql/pagination/pagination.types';
+import { NotFoundError } from '@common/graphql/errors/not-found.error';
+import { plainToInstance } from 'class-transformer';
 
-// interface FindOneParms {
-//   compoundUuid: string;
-//   propertyUuid: string;
-// }
+interface FindOneParms {
+  compoundUuid: string;
+  propertyUuid: string;
+}
 
 @Injectable()
 export class CompoundPropertiesService {
@@ -96,5 +98,48 @@ export class CompoundPropertiesService {
   ): Promise<Paginated<CompoundProperty>> {
     this._logger.log('Querying DB for compound records...');
     return this._compoundPropertiesRepository.findNodes({}, options);
+  }
+
+  /**
+   * findByCompoundAndPropertyUuid
+   *
+   * Finds a compound property by providing a both a compound and a property uuid.
+   *
+   * @param {FindOneParms} params
+   * @returns {Promise<CompoundProperty | NotFoundError>}
+   */
+  async findByCompoundAndPropertyUuid(
+    params: FindOneParms,
+  ): Promise<CompoundProperty | NotFoundError> {
+    const { records } = await this._neo4jService.read(
+      `
+      MATCH
+        (compound:Compound {uuid: $compoundUuid})
+        <-[:BELONGS_TO]-
+        (compoundProperty:CompoundProperty)
+        -[:IS_PROPERTY]->
+        (property:Property {uuid: $propertyUuid})
+      RETURN compoundProperty
+      `,
+      params,
+    );
+
+    const compoundProperty = records[0]?.get('compoundProperty')?.properties;
+
+    if (!compoundProperty) {
+      this._logger.error({
+        message: 'No compound property found for specified constraints.',
+        data: params,
+      });
+
+      return new NotFoundError(`Compound property not found.`);
+    }
+
+    this._logger.log({
+      message: 'Compound found for specified constraints.',
+      data: compoundProperty,
+    });
+
+    return plainToInstance(CompoundProperty, compoundProperty);
   }
 }

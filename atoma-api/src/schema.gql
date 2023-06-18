@@ -31,6 +31,13 @@ type CompoundProperty {
   uuid: String!
 }
 
+input CompoundPropertyInput {
+  compoundUuid: String!
+  propertyUuid: String!
+}
+
+union CompoundPropertyResult = CompoundProperty | NotFoundError
+
 input ConditionInput {
   value: Float!
   variable: String!
@@ -107,6 +114,7 @@ type Property {
 type Query {
   compound(name: String!): FindCompoundResult!
   compoundProperties(input: CompoundPropertiesInput!): PaginatedCompoundProperties!
+  compoundProperty(input: CompoundPropertyInput!): CompoundPropertyResult!
   compounds(options: FindPaginatedInput!): PaginatedCompounds!
   properties(options: FindPaginatedInput!): PaginatedProperties!
 }
