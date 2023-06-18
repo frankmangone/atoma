@@ -1,9 +1,11 @@
 import { Paginated } from '@common/graphql/pagination/paginated.schema';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { BaseEntity } from '@common/graphql/base.schema';
+import { Unique } from '@common/neo4j-utils/decorators/unique.decorator';
 
 @ObjectType()
 export class Compound extends BaseEntity {
+  @Unique()
   @Field(() => String)
   name: string;
 
