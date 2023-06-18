@@ -1,5 +1,4 @@
-// import * as fs from 'fs';
-
+import * as fs from 'fs';
 import { Session } from 'neo4j-driver';
 import { IS_NODE_TYPE, ANNOTATED_KEYS, IS_PROPERTY_UNIQUE } from '../constants';
 
@@ -11,38 +10,44 @@ import { IS_NODE_TYPE, ANNOTATED_KEYS, IS_PROPERTY_UNIQUE } from '../constants';
  */
 export const setConstraints = async (session: Session) => {
   // TODO: Use fs to detect all schema files.
+  // Read files in the schemas directory
 
-  const module = await import(
-    __dirname + '/../../../../schemas/compound.schema.js'
-  );
+  const folder = '../../../../schemas';
+  const files = fs
+    .readdirSync(`${__dirname}/${folder}`)
+    .filter((file) => !file.includes('.d.ts') && !file.includes('.js.map'));
 
-  // Iterate over exports to find the ones marked as node types
-  for (const class_ of Object.values(module) as any[]) {
-    const isNodeSchema = Reflect.getMetadata(IS_NODE_TYPE, class_);
-    if (!isNodeSchema) return;
+  for (const file of files) {
+    const module = await import(`${__dirname}/${folder}/${file}`);
 
-    // In case it is a node schema, we need to determine which constraints
-    // are applied through annotations
+    // Iterate over exports to find the ones marked as node types
+    for (const class_ of Object.values(module) as any[]) {
+      const isNodeSchema = Reflect.getMetadata(IS_NODE_TYPE, class_);
 
-    const keys = Reflect.getMetadata(ANNOTATED_KEYS, class_.prototype);
+      if (!isNodeSchema) continue;
 
-    for (const key of keys) {
-      // TODO: check more complex constraints. For now, it just checks UNIQUE
-      const isPropertyUnique = Reflect.getMetadata(
-        IS_PROPERTY_UNIQUE,
-        class_.prototype,
-        key,
-      );
+      // In case it is a node schema, we need to determine which constraints
+      // are applied through annotations
 
-      if (!isPropertyUnique) return;
+      const keys = Reflect.getMetadata(ANNOTATED_KEYS, class_.prototype) ?? [];
 
-      // Check if constraint exists first ?
-      try {
-        await session.run(
-          `CREATE CONSTRAINT FOR (n:${class_.name}) REQUIRE n.${key} IS UNIQUE`,
+      for (const key of keys) {
+        // TODO: check more complex constraints. For now, it just checks UNIQUE
+        const isPropertyUnique = Reflect.getMetadata(
+          IS_PROPERTY_UNIQUE,
+          class_.prototype,
+          key,
         );
-      } catch {
-        // Constraint already exists; nothing should happen
+
+        if (!isPropertyUnique) continue;
+
+        try {
+          await session.run(
+            `CREATE CONSTRAINT FOR (n:${class_.name}) REQUIRE n.${key} IS UNIQUE`,
+          );
+        } catch {
+          // Constraint already exists; nothing should happen
+        }
       }
     }
   }
