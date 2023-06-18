@@ -7,6 +7,8 @@ import { FindPaginatedInput } from '@common/graphql/pagination/pagination.input'
 import { Paginated } from '@common/graphql/pagination/pagination.types';
 import { NotFoundError } from '@common/graphql/errors/not-found.error';
 import { plainToInstance } from 'class-transformer';
+import { Compound } from '@schemas/compound.schema';
+import { Property } from '@schemas/property.schema';
 
 interface FindOneParms {
   compoundUuid: string;
@@ -141,5 +143,47 @@ export class CompoundPropertiesService {
     });
 
     return plainToInstance(CompoundProperty, compoundProperty);
+  }
+
+  /**
+   * findConnectedCompound
+   *
+   * Gets the compound connected to the specified compound property, through a
+   * :BELONGS_TO edge.
+   *
+   * @param {string} compoundPropertyUuid
+   * @returns {Promise<Compound>}
+   */
+  async findConnectedCompound(compoundPropertyUuid: string): Promise<Compound> {
+    const { records } = await this._neo4jService.read(
+      `
+      MATCH (cp:CompoundProperty {uuid: $uuid})-[:BELONGS_TO]->(c:Compound)
+      RETURN c
+      `,
+      { uuid: compoundPropertyUuid },
+    );
+
+    return plainToInstance(Compound, records[0].get('c').properties);
+  }
+
+  /**
+   * findConnectedProperty
+   *
+   * Gets the property connected to the specified compound property, through a
+   * :IS_PROPERTY edge.
+   *
+   * @param {string} compoundPropertyUuid
+   * @returns {Promise<Property>}
+   */
+  async findConnectedProperty(compoundPropertyUuid: string): Promise<Property> {
+    const { records } = await this._neo4jService.read(
+      `
+      MATCH (cp:CompoundProperty {uuid: $uuid})-[:IS_PROPERTY]->(p:Property)
+      RETURN p
+      `,
+      { uuid: compoundPropertyUuid },
+    );
+
+    return plainToInstance(Property, records[0].get('p').properties);
   }
 }

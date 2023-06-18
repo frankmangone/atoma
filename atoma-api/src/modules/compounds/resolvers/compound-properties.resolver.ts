@@ -1,4 +1,4 @@
-import { Args, Query, Resolver } from '@nestjs/graphql';
+import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { Logger } from '@nestjs/common';
 import { NotFoundError } from '@common/graphql/errors/not-found.error';
 import {
@@ -9,6 +9,8 @@ import { CompoundPropertiesService } from '../services/compound-properties.servi
 import { CompoundPropertyResult } from '../results/compound-property.result';
 import { CompoundPropertiesInput } from '../inputs/compound-properties.input';
 import { CompoundPropertyInput } from '../inputs/compound-property.input';
+import { Compound } from '@schemas/compound.schema';
+import { Property } from '@schemas/property.schema';
 
 @Resolver(() => CompoundProperty)
 export class CompoundPropertiesResolver {
@@ -80,5 +82,39 @@ export class CompoundPropertiesResolver {
     });
 
     return compoundProperty;
+  }
+
+  /**
+   * compound
+   *
+   * Resolves the field `compound` for a given CompoundProperty
+   *
+   * @param {CompoundProperty} compoundProperty
+   * @returns {Promise<Compound>}
+   */
+  @ResolveField()
+  async compound(
+    @Parent() compoundProperty: CompoundProperty,
+  ): Promise<Compound> {
+    return this._compoundPropertiesService.findConnectedCompound(
+      compoundProperty.uuid,
+    );
+  }
+
+  /**
+   * property
+   *
+   * Resolves the field `property` for a given CompoundProperty
+   *
+   * @param {CompoundProperty} compoundProperty
+   * @returns {Promise<Property>}
+   */
+  @ResolveField()
+  async property(
+    @Parent() compoundProperty: CompoundProperty,
+  ): Promise<Property> {
+    return this._compoundPropertiesService.findConnectedProperty(
+      compoundProperty.uuid,
+    );
   }
 }
