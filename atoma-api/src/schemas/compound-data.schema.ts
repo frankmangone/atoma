@@ -14,10 +14,10 @@ export class CompoundData extends BaseEntity {
   @Field(() => String)
   value: number;
 
-  @Field(() => Float)
+  @Field(() => Float, { nullable: true })
   [CONDITIONS.TEMPERATURE]: number;
 
-  @Field(() => Float)
+  @Field(() => Float, { nullable: true })
   [CONDITIONS.PRESSURE]: number;
 }
 

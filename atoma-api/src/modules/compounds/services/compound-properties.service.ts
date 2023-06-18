@@ -56,7 +56,8 @@ export class CompoundPropertiesService {
 
     if (existingCompoundProperty.records.length !== 0) {
       // Compound property already exists, stop execution.
-      return;
+      return existingCompoundProperty.records[0].get('compoundProperty')
+        .properties.uuid;
     }
 
     const compoundPropertyUuid = uuidv4();

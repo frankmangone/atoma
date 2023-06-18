@@ -16,12 +16,30 @@ export class CompoundDataRepository extends BaseRepository<CompoundData> {
    * _createConnected
    *
    * Creates a `CompoundData` node connected to a `CompoundProperty` record.`
+   *
+   * @param {string} compoundPropertyUuid
+   * @param {CreateCompoundDataInput} payload
+   * @returns {Promise<CompoundData>}
    */
   async createConnected(
     compoundPropertyUuid: string,
     payload: CreateCompoundDataInput,
   ): Promise<CompoundData> {
     const uuid = uuidv4();
+    const { conditions, ...remainingPayload } = payload;
+
+    const conditionsCypherData = {
+      query: '',
+      params: {},
+    };
+
+    for (const condition of conditions) {
+      if (condition.value) {
+        conditionsCypherData.query += `${condition.variable}: ${condition.value},`;
+        conditionsCypherData.params[condition.variable] = condition.value;
+      }
+    }
+    conditionsCypherData.query = conditionsCypherData.query.slice(0, -1);
 
     const { records } = await this._neo4jService.write(
       `
@@ -30,10 +48,15 @@ export class CompoundDataRepository extends BaseRepository<CompoundData> {
       CREATE
         (compoundProperty)
         -[:HAS_DATA]->
-        (compoundData:CompoundData {value: $value, uuid: $uuid})
+        (compoundData:CompoundData {value: $value, uuid: $uuid, ${conditionsCypherData.query}})
       RETURN compoundData
       `,
-      { ...payload, uuid, compoundPropertyUuid },
+      {
+        ...remainingPayload,
+        ...conditionsCypherData.params,
+        uuid,
+        compoundPropertyUuid,
+      },
     );
 
     return plainToInstance(
