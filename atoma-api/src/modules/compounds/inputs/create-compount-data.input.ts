@@ -1,5 +1,5 @@
 import { InputType, Field, Float } from '@nestjs/graphql';
-import { Condition, ConditionInput } from '@schemas/condition.schema';
+import { ConditionInput } from '@schemas/condition.schema';
 
 @InputType()
 export class CreateCompoundDataInput {
@@ -13,5 +13,5 @@ export class CreateCompoundDataInput {
   value: number;
 
   @Field(() => [ConditionInput])
-  conditions: Condition[];
+  conditions: ConditionInput[];
 }

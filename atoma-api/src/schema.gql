@@ -10,6 +10,8 @@ type Compound {
 
 type CompoundData {
   compoundProperty: CompoundProperty!
+  pressure: Float!
+  temperature: Float!
   uuid: String!
   value: String!
 }
