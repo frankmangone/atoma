@@ -1,3 +1,5 @@
+import { IS_PROPERTY_UNIQUE } from '../constants';
+
 /**
  * Unique
  *
@@ -9,7 +11,7 @@
  */
 export const Unique = (): PropertyDecorator => {
   return (object: object, propertyName: string) => {
-    Reflect.defineMetadata('unique', true, object, propertyName);
+    Reflect.defineMetadata(IS_PROPERTY_UNIQUE, true, object, propertyName);
   };
 };
 

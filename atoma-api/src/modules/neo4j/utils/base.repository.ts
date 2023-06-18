@@ -1,4 +1,4 @@
-import { Neo4jService } from '@modules/database/neo.service';
+import { Neo4jService } from '@modules/neo4j/neo4j.service';
 import { ClassConstructor, plainToInstance } from 'class-transformer';
 import { Query } from './types';
 import { Paginated } from '@common/graphql/pagination/pagination.types';

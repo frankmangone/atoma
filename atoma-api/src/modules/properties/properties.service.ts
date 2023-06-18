@@ -6,7 +6,7 @@ import {
 import { Property } from '@schemas/property.schema';
 import { PropertiesRepository } from './properties.repository';
 import { NotFoundError } from '@common/graphql/errors/not-found.error';
-import { Query } from '@common/neo4j-utils';
+import { Query } from '@modules/neo4j/utils';
 import { v4 as uuidv4 } from 'uuid';
 import { FindPaginatedInput } from '@common/graphql/pagination/pagination.input';
 import { Paginated } from '@common/graphql/pagination/pagination.types';

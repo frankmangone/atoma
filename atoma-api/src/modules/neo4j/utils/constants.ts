@@ -1,0 +1,5 @@
+export const IS_NODE_TYPE = 'IS_NODE_TYPE';
+export const IS_NODE_PROPERTY = 'IS_NODE_PROPERTY';
+export const IS_PROPERTY_UNIQUE = 'IS_PROPERTY_UNIQUE';
+
+export const ANNOTATED_KEYS = 'ANNOTATED_KEYS';

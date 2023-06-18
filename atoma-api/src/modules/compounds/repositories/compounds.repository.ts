@@ -1,5 +1,5 @@
-import { BaseRepository } from '@common/neo4j-utils/base.repository';
-import { Neo4jService } from '@modules/database/neo.service';
+import { BaseRepository } from '@modules/neo4j/utils/base.repository';
+import { Neo4jService } from '@modules/neo4j/neo4j.service';
 import { Injectable } from '@nestjs/common';
 import { Compound } from '@schemas/compound.schema';
 

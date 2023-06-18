@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { PropertiesResolver } from './properties.resolver';
 import { PropertiesService } from './properties.service';
 import { PropertiesRepository } from './properties.repository';
-import { Neo4jService } from '@modules/database/neo.service';
+import { Neo4jService } from '@modules/neo4j/neo4j.service';
 
 @Module({
   providers: [
