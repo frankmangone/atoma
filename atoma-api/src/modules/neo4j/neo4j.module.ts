@@ -4,6 +4,7 @@ import { Neo4jConfig } from './neo4j.config';
 import { ConfigService } from '@nestjs/config';
 import { CONFIG } from '@common/enums';
 import { setConstraints } from './utils/actions/set-constraints';
+import { session as sess } from 'neo4j-driver';
 
 export const NEO4J_CONFIG = 'NEO4J_CONFIG';
 export const NEO4J_DRIVER = 'NEO4J_DRIVER';
@@ -12,8 +13,6 @@ export const NEO4J_DRIVER = 'NEO4J_DRIVER';
 @Module({})
 export class Neo4jModule {
   static forRoot(): DynamicModule {
-    setConstraints();
-
     return {
       module: Neo4jModule,
       providers: [
@@ -32,7 +31,16 @@ export class Neo4jModule {
         },
         {
           provide: NEO4J_DRIVER,
-          useFactory: (neo4jConfig: Neo4jConfig) => createDriver(neo4jConfig),
+          useFactory: async (neo4jConfig: Neo4jConfig) => {
+            const driver = await createDriver(neo4jConfig);
+            const session = await driver.session({
+              database: neo4jConfig.database,
+              defaultAccessMode: sess.WRITE,
+            });
+            await setConstraints(session);
+
+            return driver;
+          },
           inject: [NEO4J_CONFIG],
         },
       ],

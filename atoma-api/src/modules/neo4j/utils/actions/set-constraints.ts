@@ -1,5 +1,6 @@
 // import * as fs from 'fs';
 
+import { Session } from 'neo4j-driver';
 import { IS_NODE_TYPE, ANNOTATED_KEYS, IS_PROPERTY_UNIQUE } from '../constants';
 
 /**
@@ -8,7 +9,7 @@ import { IS_NODE_TYPE, ANNOTATED_KEYS, IS_PROPERTY_UNIQUE } from '../constants';
  * Sets the appropriate constraints in the DB, by analyzing the metadata
  * added by decorator annotations on schema definitions.
  */
-export const setConstraints = async () => {
+export const setConstraints = async (session: Session) => {
   // TODO: Use fs to detect all schema files.
 
   const module = await import(
@@ -16,7 +17,7 @@ export const setConstraints = async () => {
   );
 
   // Iterate over exports to find the ones marked as node types
-  Object.values(module).forEach((class_: any) => {
+  for (const class_ of Object.values(module) as any[]) {
     const isNodeSchema = Reflect.getMetadata(IS_NODE_TYPE, class_);
     if (!isNodeSchema) return;
 
@@ -25,7 +26,7 @@ export const setConstraints = async () => {
 
     const keys = Reflect.getMetadata(ANNOTATED_KEYS, class_.prototype);
 
-    keys.forEach((key) => {
+    for (const key of keys) {
       // TODO: check more complex constraints. For now, it just checks UNIQUE
       const isPropertyUnique = Reflect.getMetadata(
         IS_PROPERTY_UNIQUE,
@@ -35,10 +36,14 @@ export const setConstraints = async () => {
 
       if (!isPropertyUnique) return;
 
-      // TODO: Get session and run queries
-      console.log(key, isPropertyUnique);
-
-      // CREATE CONSTRAINT ON (n:NodeType) ASSERT n.propertyName IS UNIQUE
-    });
-  });
+      // Check if constraint exists first ?
+      try {
+        await session.run(
+          `CREATE CONSTRAINT FOR (n:${class_.name}) REQUIRE n.${key} IS UNIQUE`,
+        );
+      } catch {
+        // Constraint already exists; nothing should happen
+      }
+    }
+  }
 };
