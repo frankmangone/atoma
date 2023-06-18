@@ -59,21 +59,21 @@ export class CompoundDataService {
       data: payload,
     });
 
-    const connectionUuid =
-      await this._compoundPropertiesService.idempotentCreateConnection(
+    const compoundPropertyUuid =
+      await this._compoundPropertiesService.idempotentCreateCompoundProperty(
         compoundUuid,
         propertyUuid,
       );
 
     this._logger.log({
-      message: 'Creating compound property data record in database...',
+      message: 'Creating compound data record in database...',
       data: payload,
     });
 
-    const compoundData = await this._compoundDataRepository.createNode({
-      uuid: connectionUuid,
-      // ...payload,
-    });
+    const compoundData = await this._compoundDataRepository.createConnected(
+      compoundPropertyUuid,
+      payload,
+    );
 
     this._logger.log({
       message: 'Compound property data successfully created.',
@@ -82,6 +82,8 @@ export class CompoundDataService {
 
     return compoundData;
   }
+
+  /**
 
   /**
    * _findCompoundAndProperty
