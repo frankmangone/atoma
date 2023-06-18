@@ -1,10 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { CompoundPropertiesRepository } from '../repositories/compound-properties.repository';
 import { CompoundProperty } from '@schemas/compound-property.schema';
-import { Neo4jService } from '@modules/database/neo.service';
+import { Neo4jService } from '@modules/neo4j/neo4j.service';
 import { v4 as uuidv4 } from 'uuid';
-import { FindPaginatedInput } from '@common/pagination/pagination.input';
-import { Paginated } from '@common/pagination/pagination.types';
+import { FindPaginatedInput } from '@common/graphql/pagination/pagination.input';
+import { Paginated } from '@common/graphql/pagination/pagination.types';
 
 // interface FindOneParms {
 //   compoundUuid: string;

@@ -9,7 +9,7 @@ import { CompoundsResolver } from './resolvers/compounds.resolver';
 import { CompoundDataResolver } from './resolvers/compound-data.resolver';
 import { CompoundPropertiesResolver } from './resolvers/compound-properties.resolver';
 import { PropertiesModule } from '@modules/properties/properties.module';
-import { Neo4jService } from '@modules/database/neo.service';
+import { Neo4jService } from '@modules/neo4j/neo4j.service';
 
 @Module({
   imports: [PropertiesModule],

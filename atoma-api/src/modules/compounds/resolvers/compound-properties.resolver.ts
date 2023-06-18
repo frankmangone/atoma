@@ -1,6 +1,6 @@
 import { Args, Query, Resolver } from '@nestjs/graphql';
 import { Logger } from '@nestjs/common';
-import { NotFoundError } from '@common/errors/not-found.error';
+import { NotFoundError } from '@common/graphql/errors/not-found.error';
 import {
   CompoundProperty,
   PaginatedCompoundProperties,

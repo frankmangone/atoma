@@ -2,7 +2,7 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { Property, PaginatedProperties } from '@schemas/property.schema';
 import { PropertiesService } from './properties.service';
 import { Logger } from '@nestjs/common';
-import { FindPaginatedInput } from '@common/pagination/pagination.input';
+import { FindPaginatedInput } from '@common/graphql/pagination/pagination.input';
 import { CreatePropertyInput } from './inputs/create-property.input';
 import { v4 as uuidv4 } from 'uuid';
 

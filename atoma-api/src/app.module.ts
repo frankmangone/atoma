@@ -4,12 +4,10 @@ import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 
-import { DatabaseModule } from './modules/database/neo.module';
+import { Neo4jModule } from './modules/neo4j/neo4j.module';
 import { LoggingModule } from './modules/logging/logging.module';
 import { CompoundsModule } from './modules/compounds/compounds.module';
 import { PropertiesModule } from './modules/properties/properties.module';
-
-import { CONFIG } from './common';
 
 @Module({
   imports: [
@@ -23,7 +21,7 @@ import { CONFIG } from './common';
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
     }),
-    DatabaseModule.forRoot(),
+    Neo4jModule.forRoot(),
     //
     CompoundsModule,
     PropertiesModule,
