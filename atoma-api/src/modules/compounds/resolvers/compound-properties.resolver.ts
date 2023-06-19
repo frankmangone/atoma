@@ -141,19 +141,24 @@ export class CompoundPropertiesResolver {
   @ResolveField('value', () => Float)
   async value(
     @Parent() _compoundProperty: CompoundProperty,
-    @Args('conditions', { type: () => [ConditionInput] })
-    conditions: ConditionInput[],
+    @Args('conditions', { type: () => ConditionInput })
+    conditions: ConditionInput,
   ): Promise<number> {
-    const temperature = conditions.find(
-      (condition) => condition.variable === CONDITIONS.TEMPERATURE,
-    ).value;
+    const { temperature } = conditions;
 
-    // TODO: estimate property based on input
     const data = await this._compoundDataService.findDataForValueEstimation(
       _compoundProperty.uuid,
       temperature,
     );
 
-    return data;
+    // Interpolate using inverse distance weighting interpolation to begin with.
+    // https://sci-hub.se/https://doi.org/10.1007/BF01601941
+
+    // FIXME: To produce a first result, use linear interpolation
+    // Only 2 values are used here!
+    const { temperature: t1, value: v1 } = data[0];
+    const { temperature: t2, value: v2 } = data[1];
+
+    return v1 + ((v2 - v1) * (temperature - t1)) / (t2 - t1);
   }
 }

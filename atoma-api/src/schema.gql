@@ -29,7 +29,7 @@ type CompoundProperty {
   property: Property!
   propertyUuid: String!
   uuid: String!
-  value(conditions: [ConditionInput!]!): Float!
+  value(conditions: ConditionInput!): Float!
 }
 
 input CompoundPropertyInput {
@@ -40,8 +40,8 @@ input CompoundPropertyInput {
 union CompoundPropertyResult = CompoundProperty | NotFoundError
 
 input ConditionInput {
-  value: Float!
-  variable: String!
+  pressure: Float
+  temperature: Float
 }
 
 input CreateCompoundDataInput {

@@ -33,10 +33,9 @@ export class CompoundDataRepository extends BaseRepository<CompoundData> {
       params: {},
     };
 
-    for (const condition of conditions) {
-      if (condition.value) {
-        conditionsCypherData.query += `${condition.variable}: ${condition.value},`;
-        conditionsCypherData.params[condition.variable] = condition.value;
+    for (const [variable, value] of Object.entries(conditions)) {
+      if (value) {
+        conditionsCypherData.query += `${variable}: ${value},`;
       }
     }
     conditionsCypherData.query = conditionsCypherData.query.slice(0, -1);

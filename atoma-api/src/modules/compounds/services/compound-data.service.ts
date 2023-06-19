@@ -9,6 +9,7 @@ import { Property } from '@schemas/property.schema';
 import { CompoundDataRepository } from '../repositories/compound-data.repository';
 import { CompoundData } from '@schemas/compound-data.schema';
 import { Neo4jService } from '@modules/neo4j/neo4j.service';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class CompoundDataService {
@@ -120,6 +121,7 @@ export class CompoundDataService {
     temperature: number,
   ): Promise<any> {
     // FIXME: Improve this with more conditions
+    // TODO: Return N > 2 points, not just 2
     const { records } = await this._neo4jService.read(
       `
       MATCH
@@ -127,18 +129,15 @@ export class CompoundDataService {
         WHERE cd.temperature IS NOT NULL
         WITH cd
       ORDER BY (cd.temperature - $temperature)^2 ASC
-      LIMIT 4
+      LIMIT 2
       RETURN cd
       `,
       { uuid: compoundPropertyUuid, temperature },
     );
 
-    // Interpolate using inverse distance weighting interpolation to begin with.
-    // https://sci-hub.se/https://doi.org/10.1007/BF01601941
-
-    console.log(records);
-
-    // TODO: Perform interpolation in another method
-    return records[0].get('cd').properties.value;
+    return plainToInstance(
+      CompoundData,
+      records.map((record) => record.get('cd').properties),
+    );
   }
 }
