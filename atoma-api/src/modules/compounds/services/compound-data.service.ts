@@ -136,6 +136,8 @@ export class CompoundDataService {
     // Interpolate using inverse distance weighting interpolation to begin with.
     // https://sci-hub.se/https://doi.org/10.1007/BF01601941
 
+    console.log(records);
+
     // TODO: Perform interpolation in another method
     return records[0].get('cd').properties.value;
   }
