@@ -1,4 +1,11 @@
-import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  Float,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+} from '@nestjs/graphql';
 import { Logger } from '@nestjs/common';
 import { NotFoundError } from '@common/graphql/errors/not-found.error';
 import {
@@ -11,6 +18,7 @@ import { CompoundPropertiesInput } from '../inputs/compound-properties.input';
 import { CompoundPropertyInput } from '../inputs/compound-property.input';
 import { Compound } from '@schemas/compound.schema';
 import { Property } from '@schemas/property.schema';
+import { ConditionInput } from '@schemas/condition.schema';
 
 @Resolver(() => CompoundProperty)
 export class CompoundPropertiesResolver {
@@ -116,5 +124,24 @@ export class CompoundPropertiesResolver {
     return this._compoundPropertiesService.findConnectedProperty(
       compoundProperty.uuid,
     );
+  }
+
+  /**
+   * value
+   *
+   * Resolves the field `value` for a given CompoundProperty,
+   * by performing an estimation using the data stored in the DB.
+   *
+   * @param {CompoundProperty} compoundProperty
+   * @returns {Promise<Property>}
+   */
+  @ResolveField('value', () => Float)
+  async value(
+    @Parent() _compoundProperty: CompoundProperty,
+    @Args('conditions', { type: () => [ConditionInput] })
+    conditions: ConditionInput[],
+  ): Promise<number> {
+    // TODO: estimate property based on input
+    return 42;
   }
 }

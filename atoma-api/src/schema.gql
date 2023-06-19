@@ -29,6 +29,7 @@ type CompoundProperty {
   property: Property!
   propertyUuid: String!
   uuid: String!
+  value(conditions: [ConditionInput!]!): Float!
 }
 
 input CompoundPropertyInput {
