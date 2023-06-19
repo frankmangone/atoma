@@ -19,7 +19,6 @@ import { CompoundPropertyInput } from '../inputs/compound-property.input';
 import { Compound } from '@schemas/compound.schema';
 import { Property } from '@schemas/property.schema';
 import { ConditionInput } from '@schemas/condition.schema';
-import { CONDITIONS } from '@common/enums/conditions.enum';
 import { CompoundDataService } from '../services/compound-data.service';
 
 @Resolver(() => CompoundProperty)
