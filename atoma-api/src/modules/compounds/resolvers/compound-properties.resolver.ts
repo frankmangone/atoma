@@ -19,12 +19,15 @@ import { CompoundPropertyInput } from '../inputs/compound-property.input';
 import { Compound } from '@schemas/compound.schema';
 import { Property } from '@schemas/property.schema';
 import { ConditionInput } from '@schemas/condition.schema';
+import { CONDITIONS } from '@common/enums/conditions.enum';
+import { CompoundDataService } from '../services/compound-data.service';
 
 @Resolver(() => CompoundProperty)
 export class CompoundPropertiesResolver {
   private readonly _logger = new Logger(CompoundPropertiesResolver.name);
 
   constructor(
+    private readonly _compoundDataService: CompoundDataService,
     private readonly _compoundPropertiesService: CompoundPropertiesService,
   ) {}
 
@@ -141,7 +144,16 @@ export class CompoundPropertiesResolver {
     @Args('conditions', { type: () => [ConditionInput] })
     conditions: ConditionInput[],
   ): Promise<number> {
+    const temperature = conditions.find(
+      (condition) => condition.variable === CONDITIONS.TEMPERATURE,
+    ).value;
+
     // TODO: estimate property based on input
-    return 42;
+    const data = await this._compoundDataService.findDataForValueEstimation(
+      _compoundProperty.uuid,
+      temperature,
+    );
+
+    return data;
   }
 }
