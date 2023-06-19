@@ -8,12 +8,15 @@ import { PropertiesService } from '@modules/properties/properties.service';
 import { Property } from '@schemas/property.schema';
 import { CompoundDataRepository } from '../repositories/compound-data.repository';
 import { CompoundData } from '@schemas/compound-data.schema';
+import { Neo4jService } from '@modules/neo4j/neo4j.service';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class CompoundDataService {
   private readonly _logger = new Logger(CompoundDataService.name);
 
   constructor(
+    private readonly _neo4jService: Neo4jService,
     private readonly _compoundDataRepository: CompoundDataRepository,
     private readonly _compoundsService: CompoundsService,
     private readonly _compoundPropertiesService: CompoundPropertiesService,
@@ -84,8 +87,6 @@ export class CompoundDataService {
   }
 
   /**
-
-  /**
    * _findCompoundAndProperty
    *
    * Fetches both a property and a compound from the database. This will be used at
@@ -108,5 +109,35 @@ export class CompoundDataService {
       this._compoundsService.findOne({ uuid: compoundUuid }),
       this._propertiesService.findOne({ uuid: propertyUuid }),
     ]);
+  }
+
+  /**
+   * findDataForValueEstimation
+   *
+   *
+   */
+  async findDataForValueEstimation(
+    compoundPropertyUuid: string,
+    temperature: number,
+  ): Promise<any> {
+    // FIXME: Improve this with more conditions
+    // TODO: Return N > 2 points, not just 2
+    const { records } = await this._neo4jService.read(
+      `
+      MATCH
+        (cp:CompoundProperty {uuid: $uuid})-[:HAS_DATA]->(cd:CompoundData)
+        WHERE cd.temperature IS NOT NULL
+        WITH cd
+      ORDER BY (cd.temperature - $temperature)^2 ASC
+      LIMIT 2
+      RETURN cd
+      `,
+      { uuid: compoundPropertyUuid, temperature },
+    );
+
+    return plainToInstance(
+      CompoundData,
+      records.map((record) => record.get('cd').properties),
+    );
   }
 }

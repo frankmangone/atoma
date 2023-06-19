@@ -10,6 +10,8 @@ type Compound {
 
 type CompoundData {
   compoundProperty: CompoundProperty!
+  pressure: Float
+  temperature: Float
   uuid: String!
   value: String!
 }
@@ -27,11 +29,19 @@ type CompoundProperty {
   property: Property!
   propertyUuid: String!
   uuid: String!
+  value(conditions: ConditionInput!): Float!
 }
 
+input CompoundPropertyInput {
+  compoundUuid: String!
+  propertyUuid: String!
+}
+
+union CompoundPropertyResult = CompoundProperty | NotFoundError
+
 input ConditionInput {
-  value: Float!
-  variable: String!
+  pressure: Float
+  temperature: Float
 }
 
 input CreateCompoundDataInput {
@@ -105,6 +115,7 @@ type Property {
 type Query {
   compound(name: String!): FindCompoundResult!
   compoundProperties(input: CompoundPropertiesInput!): PaginatedCompoundProperties!
+  compoundProperty(input: CompoundPropertyInput!): CompoundPropertyResult!
   compounds(options: FindPaginatedInput!): PaginatedCompounds!
   properties(options: FindPaginatedInput!): PaginatedProperties!
 }

@@ -120,17 +120,19 @@ const seed = async () => {
   const densityUuid = propertyUuids.get(DENSITY);
   const waterDensityUuid = compoundPropertyUuids.get(waterUuid + densityUuid);
 
+  const cypher = `
+    MATCH
+      (c:CompoundProperty {uuid: $compoundPropertyUuid})
+    CREATE (c)-[:HAS_DATA]->(d:CompoundData {value: $value, temperature: $temperature})
+  `;
+
   for (const compoundData of WATER_DENSITY_DATA(waterDensityUuid)) {
     try {
       // Create node and connection
-      await session.run(
-        `
-          MATCH
-            (c:CompoundProperty {uuid: $compoundPropertyUuid})
-          CREATE (c)-[:HAS_DATA]->(d:CompoundData { value: $value })
-          `,
-        { ...compoundData, compoundPropertyUuid: waterDensityUuid },
-      );
+      await session.run(cypher, {
+        ...compoundData,
+        compoundPropertyUuid: waterDensityUuid,
+      });
       console.log(`Compound property for ${WATER} created.`);
     } catch {
       console.log(`Failed to create compound property data for ${WATER}.`);
@@ -146,14 +148,10 @@ const seed = async () => {
   for (const compoundData of ETHANOL_DENSITY_DATA(ethanolDensityUuid)) {
     try {
       // Create node and connection
-      await session.run(
-        `
-          MATCH
-            (c:CompoundProperty {uuid: $compoundPropertyUuid})
-          CREATE (c)-[:HAS_DATA]->(d:CompoundData { value: $value })
-          `,
-        { ...compoundData, compoundPropertyUuid: ethanolDensityUuid },
-      );
+      await session.run(cypher, {
+        ...compoundData,
+        compoundPropertyUuid: ethanolDensityUuid,
+      });
       console.log(`Compound property for ${ETHANOL} created.`);
     } catch (error) {
       console.log(error);
