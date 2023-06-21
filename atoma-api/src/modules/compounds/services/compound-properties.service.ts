@@ -4,11 +4,12 @@ import { CompoundProperty } from '@schemas/compound-property.schema';
 import { Neo4jService } from '@modules/neo4j/neo4j.service';
 import { v4 as uuidv4 } from 'uuid';
 import { FindPaginatedInput } from '@common/graphql/pagination/pagination.input';
-import { Paginated } from '@common/graphql/pagination/pagination.types';
+import { PaginatedType } from '@common/graphql/pagination/paginated.schema';
 import { NotFoundError } from '@common/graphql/errors/not-found.error';
 import { plainToInstance } from 'class-transformer';
 import { Compound } from '@schemas/compound.schema';
 import { Property } from '@schemas/property.schema';
+import { CompoundPropertiesInput } from '../inputs/compound-properties.input';
 
 interface FindOneParms {
   compoundUuid: string;
@@ -93,13 +94,20 @@ export class CompoundPropertiesService {
    *
    * Gets all compound property records, paginated.
    *
-   * @returns {Promise<Paginated<CompoundProperty>>}
+   * @param {CompoundPropertiesInput} options
+   * @returns {Promise<PaginatedType<CompoundProperty>>}
    */
   async find(
-    options?: FindPaginatedInput,
-  ): Promise<Paginated<CompoundProperty>> {
+    options: CompoundPropertiesInput,
+  ): Promise<PaginatedType<CompoundProperty>> {
     this._logger.log('Querying DB for compound records...');
-    return this._compoundPropertiesRepository.findNodes({}, options);
+
+    // TODO: Build a query that actually works here!
+    const { compoundUuid, ...paginationOptions } = options;
+    return this._compoundPropertiesRepository.findNodes(
+      { compoundUuid },
+      paginationOptions,
+    );
   }
 
   /**

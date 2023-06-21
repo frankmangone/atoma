@@ -1,7 +1,11 @@
 import { Neo4jService } from '@modules/neo4j/neo4j.service';
 import { ClassConstructor, plainToInstance } from 'class-transformer';
 import { Query } from './types';
-import { Paginated } from '@common/graphql/pagination/pagination.types';
+import {
+  Paginated,
+  PaginatedType,
+} from '@common/graphql/pagination/paginated.schema';
+import { FindPaginatedInput } from '@common/graphql/pagination/pagination.input';
 
 export abstract class BaseRepository<T> {
   constructor(
@@ -40,60 +44,60 @@ export abstract class BaseRepository<T> {
    * TODO: Pagination
    *
    * @param {Query<T>} query
-   * @returns {Promise<T | undefined>}
+   * @returns {PaginatedType<T>}
    */
   async findNodes(
     query: Query<T>,
-    paginationOptions: any,
-  ): Promise<Paginated<T>> {
-    const { limit, after, before } = paginationOptions;
+    paginationOptions: FindPaginatedInput,
+  ): Promise<PaginatedType<T>> {
+    const { first, after } = paginationOptions;
     const fields = this._buildQueryFields(query);
 
     let where = '';
-    let orderBy = `LIMIT ${limit}`;
-    const cursorParam: Record<string, unknown> = {};
-
-    if (before) {
-      where = 'WHERE id(type) < toInteger($before)';
-      orderBy = `ORDER BY id(type) DESC LIMIT ${limit}`;
-      cursorParam.before = before;
-    }
+    let orderBy = `LIMIT toInteger($first)`;
 
     if (after) {
-      where = 'WHERE id(r) > toInteger($after)';
-      orderBy = `ORDER BY id(r) ASC ${orderBy}`;
-      cursorParam.after = after;
+      where = 'WHERE id(node) > toInteger($after)';
+      orderBy = `ORDER BY id(node) ASC ${orderBy}`;
     }
 
     const cypher = `
       MATCH 
-        (r:${this._schema.name} {${fields}})
+        (node:${this._schema.name} {${fields}})
       ${where}
-      RETURN r
+      RETURN node
       ${orderBy}
     `;
 
     const { records } = await this._neo4jService.read(cypher, {
       ...query,
-      ...cursorParam,
+      ...paginationOptions,
     });
 
-    const data = records.map((record) => {
-      const recordProperties = record.get('r').properties;
-      return plainToInstance(this._schema, recordProperties);
+    const nodes = [];
+    const edges = [];
+
+    records?.forEach((record) => {
+      const id = record.get('node').identity;
+      const node = record.get('node').properties;
+
+      nodes.push(node);
+      edges.push({
+        node,
+        cursor: id.toString(),
+      });
     });
 
-    // After:
-    let nextCursor = null;
-    if (records.length === limit) {
-      const lastCompound = records.at(-1);
-      nextCursor = lastCompound.get('r').identity.toString();
-    }
+    // Parse page info
+    const totalCount = records.length;
+    const hasNextPage = records.length === first;
+    const endCursor = records.at(-1)?.get('node').identity.toString() ?? null;
 
-    // Before: TODO: improve
-    const prevCursor = after;
-
-    return { data, nextCursor, prevCursor };
+    return plainToInstance(Paginated(this._schema), {
+      nodes,
+      edges,
+      pageInfo: { totalCount, hasNextPage, endCursor },
+    });
   }
 
   /**

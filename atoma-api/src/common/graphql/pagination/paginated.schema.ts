@@ -9,8 +9,19 @@ interface EdgeType<T> {
 export interface PaginatedType<T> {
   edges: EdgeType<T>[];
   nodes: T[];
-  totalCount: number;
+  pageInfo: PageInfo;
+}
+
+@ObjectType()
+class PageInfo {
+  @Field(() => String)
+  endCursor: string;
+
+  @Field()
   hasNextPage: boolean;
+
+  @Field(() => Int)
+  totalCount: number;
 }
 
 export function Paginated<T>(classRef: Type<T>): Type<PaginatedType<T>> {
@@ -31,11 +42,8 @@ export function Paginated<T>(classRef: Type<T>): Type<PaginatedType<T>> {
     @Field(() => [classRef], { nullable: true })
     nodes: T[];
 
-    @Field(() => Int)
-    totalCount: number;
-
-    @Field()
-    hasNextPage: boolean;
+    @Field(() => PageInfo)
+    pageInfo: PageInfo;
   }
   return PaginatedSchema as Type<PaginatedType<T>>;
 }

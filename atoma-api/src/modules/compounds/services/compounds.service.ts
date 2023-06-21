@@ -9,7 +9,7 @@ import { CompoundsRepository } from '../repositories/compounds.repository';
 import { NotFoundError } from '@common/graphql/errors/not-found.error';
 import { v4 as uuidv4 } from 'uuid';
 import { FindPaginatedInput } from '@common/graphql/pagination/pagination.input';
-import { Paginated } from '@common/graphql/pagination/pagination.types';
+import { PaginatedType } from '@common/graphql/pagination/paginated.schema';
 
 @Injectable()
 export class CompoundsService {
@@ -22,9 +22,10 @@ export class CompoundsService {
    *
    * Gets all compound records, paginated.
    *
-   * @returns {Promise<Paginated<Compound>>}
+   * @param {FindPaginatedInput} options
+   * @returns {Promise<PaginatedType<Compound>>}
    */
-  async find(options?: FindPaginatedInput): Promise<Paginated<Compound>> {
+  async find(options?: FindPaginatedInput): Promise<PaginatedType<Compound>> {
     this._logger.log('Querying DB for compound records...');
     return this._compoundsRepository.findNodes({}, options);
   }
