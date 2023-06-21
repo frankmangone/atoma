@@ -14,7 +14,7 @@ export interface PaginatedType<T> {
 
 @ObjectType()
 class PageInfo {
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   endCursor: string;
 
   @Field()

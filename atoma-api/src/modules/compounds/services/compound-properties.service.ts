@@ -102,12 +102,10 @@ export class CompoundPropertiesService {
   ): Promise<PaginatedType<CompoundProperty>> {
     this._logger.log('Querying DB for compound records...');
 
-    // TODO: Build a query that actually works here!
+    // TODO: Build a query that actually uses the compound uuid here!
     const { compoundUuid, ...paginationOptions } = options;
-    return this._compoundPropertiesRepository.findNodes(
-      { compoundUuid },
-      paginationOptions,
-    );
+
+    return this._compoundPropertiesRepository.findNodes({}, paginationOptions);
   }
 
   /**

@@ -50,15 +50,16 @@ export abstract class BaseRepository<T> {
     query: Query<T>,
     paginationOptions: FindPaginatedInput,
   ): Promise<PaginatedType<T>> {
-    const { first, after } = paginationOptions;
+    const { first = 10, after: afterCursor } = paginationOptions;
     const fields = this._buildQueryFields(query);
 
     let where = '';
-    let orderBy = `LIMIT toInteger($first)`;
+    let after;
 
-    if (after) {
-      where = 'WHERE id(node) > toInteger($after)';
-      orderBy = `ORDER BY id(node) ASC ${orderBy}`;
+    if (afterCursor) {
+      // Decode cursor from base64
+      after = atob(afterCursor);
+      where = `WHERE id(node) > ${after}`;
     }
 
     const cypher = `
@@ -66,32 +67,43 @@ export abstract class BaseRepository<T> {
         (node:${this._schema.name} {${fields}})
       ${where}
       RETURN node
-      ${orderBy}
+      ORDER BY id(node) ASC LIMIT toInteger($first)
     `;
 
+    // Query for 1 more than the requested records to know if there's an additional page
     const { records } = await this._neo4jService.read(cypher, {
+      first: paginationOptions.first + 1,
       ...query,
-      ...paginationOptions,
     });
 
+    // Parse page info
+    const hasNextPage = records.length > first;
+
+    // If there's a next page, slice the last element of the records array, since it was
+    // not really requested with the `first` parameter.
+    const recordsToReturn = hasNextPage ? records?.slice(0, -1) : records;
+
+    const totalCount = recordsToReturn.length;
+    const lastRecordId = recordsToReturn
+      .at(-1)
+      ?.get('node')
+      .identity.toString();
+    const endCursor = lastRecordId ? btoa(lastRecordId) : null;
+
+    // Finally, map nodes and edges
     const nodes = [];
     const edges = [];
 
-    records?.forEach((record) => {
+    recordsToReturn.forEach((record) => {
       const id = record.get('node').identity;
       const node = record.get('node').properties;
 
       nodes.push(node);
       edges.push({
         node,
-        cursor: id.toString(),
+        cursor: btoa(id),
       });
     });
-
-    // Parse page info
-    const totalCount = records.length;
-    const hasNextPage = records.length === first;
-    const endCursor = records.at(-1)?.get('node').identity.toString() ?? null;
 
     return plainToInstance(Paginated(this._schema), {
       nodes,
