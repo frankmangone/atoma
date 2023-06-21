@@ -9,7 +9,7 @@ import { NotFoundError } from '@common/graphql/errors/not-found.error';
 import { Query } from '@modules/neo4j/utils';
 import { v4 as uuidv4 } from 'uuid';
 import { FindPaginatedInput } from '@common/graphql/pagination/pagination.input';
-import { Paginated } from '@common/graphql/pagination/pagination.types';
+import { PaginatedType } from '@common/graphql/pagination/paginated.schema';
 
 @Injectable()
 export class PropertiesService {
@@ -22,9 +22,10 @@ export class PropertiesService {
    *
    * Gets all property records, paginated.
    *
-   * @returns {Promise<Paginated<Compound>>}
+   * @param {FindPaginatedInput} options
+   * @returns {Promise<PaginatedType<Compound>>}
    */
-  async find(options?: FindPaginatedInput): Promise<Paginated<Property>> {
+  async find(options?: FindPaginatedInput): Promise<PaginatedType<Property>> {
     this._logger.log('Querying DB for compound records...');
 
     return this._propertiesRepository.findNodes({}, options);

@@ -29,7 +29,7 @@ export class PropertiesResolver {
 
     this._logger.log({
       message: 'Found properties for query options.',
-      data: { nextCursor: result.nextCursor, prevCursor: result.prevCursor },
+      data: { pageInfo: result.pageInfo },
     });
 
     return result;

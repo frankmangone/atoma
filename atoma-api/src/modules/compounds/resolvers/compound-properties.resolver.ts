@@ -52,7 +52,7 @@ export class CompoundPropertiesResolver {
 
     this._logger.log({
       message: 'Found compounds for query options.',
-      data: { nextCursor: result.nextCursor, prevCursor: result.prevCursor },
+      data: { pageInfo: result.pageInfo },
     });
 
     return result;

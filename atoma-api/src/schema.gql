@@ -16,11 +16,20 @@ type CompoundData {
   value: String!
 }
 
+type CompoundDataEdge {
+  cursor: String!
+  node: CompoundData!
+}
+
+type CompoundEdge {
+  cursor: String!
+  node: Compound!
+}
+
 input CompoundPropertiesInput {
   after: String
-  before: String
   compoundUuid: String!
-  limit: Int!
+  first: Int!
 }
 
 type CompoundProperty {
@@ -30,6 +39,11 @@ type CompoundProperty {
   propertyUuid: String!
   uuid: String!
   value(conditions: ConditionInput!): Float!
+}
+
+type CompoundPropertyEdge {
+  cursor: String!
+  node: CompoundProperty!
 }
 
 input CompoundPropertyInput {
@@ -70,8 +84,7 @@ union FindCompoundResult = Compound | NotFoundError
 
 input FindPaginatedInput {
   after: String
-  before: String
-  limit: Int!
+  first: Int!
 }
 
 type Mutation {
@@ -85,22 +98,28 @@ type NotFoundError {
   message: String!
 }
 
+type PageInfo {
+  endCursor: String
+  hasNextPage: Boolean!
+  totalCount: Int!
+}
+
 type PaginatedCompoundProperties {
-  data: [CompoundProperty!]
-  nextCursor: String
-  prevCursor: String
+  edges: [CompoundPropertyEdge!]
+  nodes: [CompoundProperty!]
+  pageInfo: PageInfo!
 }
 
 type PaginatedCompounds {
-  data: [Compound!]
-  nextCursor: String
-  prevCursor: String
+  edges: [CompoundEdge!]
+  nodes: [Compound!]
+  pageInfo: PageInfo!
 }
 
 type PaginatedProperties {
-  data: [Property!]
-  nextCursor: String
-  prevCursor: String
+  edges: [PropertyEdge!]
+  nodes: [Property!]
+  pageInfo: PageInfo!
 }
 
 type Property {
@@ -110,6 +129,11 @@ type Property {
   type: String!
   units: String!
   uuid: String!
+}
+
+type PropertyEdge {
+  cursor: String!
+  node: Property!
 }
 
 type Query {

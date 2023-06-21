@@ -1,7 +1,11 @@
 import { Neo4jService } from '@modules/neo4j/neo4j.service';
 import { ClassConstructor, plainToInstance } from 'class-transformer';
 import { Query } from './types';
-import { Paginated } from '@common/graphql/pagination/pagination.types';
+import {
+  Paginated,
+  PaginatedType,
+} from '@common/graphql/pagination/paginated.schema';
+import { FindPaginatedInput } from '@common/graphql/pagination/pagination.input';
 
 export abstract class BaseRepository<T> {
   constructor(
@@ -40,60 +44,72 @@ export abstract class BaseRepository<T> {
    * TODO: Pagination
    *
    * @param {Query<T>} query
-   * @returns {Promise<T | undefined>}
+   * @returns {PaginatedType<T>}
    */
   async findNodes(
     query: Query<T>,
-    paginationOptions: any,
-  ): Promise<Paginated<T>> {
-    const { limit, after, before } = paginationOptions;
+    paginationOptions: FindPaginatedInput,
+  ): Promise<PaginatedType<T>> {
+    const { first = 10, after: afterCursor } = paginationOptions;
     const fields = this._buildQueryFields(query);
 
     let where = '';
-    let orderBy = `LIMIT ${limit}`;
-    const cursorParam: Record<string, unknown> = {};
+    let after;
 
-    if (before) {
-      where = 'WHERE id(type) < toInteger($before)';
-      orderBy = `ORDER BY id(type) DESC LIMIT ${limit}`;
-      cursorParam.before = before;
-    }
-
-    if (after) {
-      where = 'WHERE id(r) > toInteger($after)';
-      orderBy = `ORDER BY id(r) ASC ${orderBy}`;
-      cursorParam.after = after;
+    if (afterCursor) {
+      // Decode cursor from base64
+      after = atob(afterCursor);
+      where = `WHERE id(node) > ${after}`;
     }
 
     const cypher = `
       MATCH 
-        (r:${this._schema.name} {${fields}})
+        (node:${this._schema.name} {${fields}})
       ${where}
-      RETURN r
-      ${orderBy}
+      RETURN node
+      ORDER BY id(node) ASC LIMIT toInteger($first)
     `;
 
+    // Query for 1 more than the requested records to know if there's an additional page
     const { records } = await this._neo4jService.read(cypher, {
+      first: paginationOptions.first + 1,
       ...query,
-      ...cursorParam,
     });
 
-    const data = records.map((record) => {
-      const recordProperties = record.get('r').properties;
-      return plainToInstance(this._schema, recordProperties);
+    // Parse page info
+    const hasNextPage = records.length > first;
+
+    // If there's a next page, slice the last element of the records array, since it was
+    // not really requested with the `first` parameter.
+    const recordsToReturn = hasNextPage ? records?.slice(0, -1) : records;
+
+    const totalCount = recordsToReturn.length;
+    const lastRecordId = recordsToReturn
+      .at(-1)
+      ?.get('node')
+      .identity.toString();
+    const endCursor = lastRecordId ? btoa(lastRecordId) : null;
+
+    // Finally, map nodes and edges
+    const nodes = [];
+    const edges = [];
+
+    recordsToReturn.forEach((record) => {
+      const id = record.get('node').identity;
+      const node = record.get('node').properties;
+
+      nodes.push(node);
+      edges.push({
+        node,
+        cursor: btoa(id),
+      });
     });
 
-    // After:
-    let nextCursor = null;
-    if (records.length === limit) {
-      const lastCompound = records.at(-1);
-      nextCursor = lastCompound.get('r').identity.toString();
-    }
-
-    // Before: TODO: improve
-    const prevCursor = after;
-
-    return { data, nextCursor, prevCursor };
+    return plainToInstance(Paginated(this._schema), {
+      nodes,
+      edges,
+      pageInfo: { totalCount, hasNextPage, endCursor },
+    });
   }
 
   /**
