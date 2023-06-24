@@ -1,0 +1,13 @@
+{
+	"name": "atoma",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"compounds-api:start": "pnpm --filter @atoma/compounds-api start:dev",
+		"mvp-frontend:start": "pnpm --filter @atoma/mvp-frontend dev"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC"
+}

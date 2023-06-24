@@ -8,6 +8,6 @@ async function bootstrap() {
   // Logger
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
 
-  await app.listen(3000);
+  await app.listen(process.env.PORT ?? 4000);
 }
 bootstrap();

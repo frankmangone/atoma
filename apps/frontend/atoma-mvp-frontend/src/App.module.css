@@ -1,33 +1,71 @@
+body {
+	font-family: Raleway, Arial, sans-serif;
+}
+
 .App {
-  text-align: center;
+	text-align: center;
 }
 
 .logo {
-  animation: logo-spin infinite 20s linear;
-  height: 40vmin;
-  pointer-events: none;
+	height: 10vmin;
+	pointer-events: none;
 }
 
-.header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.container {
+	max-width: 800px;
+	width: calc(100% - 40px);
+	padding: 0 20px;
+	margin-left: auto;
+	margin-right: auto;
 }
+
+/* .header {
+	background-color: #282c34;
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	font-size: calc(10px + 2vmin);
+	color: white;
+} */
 
 .link {
-  color: #b318f0;
+	color: #b318f0;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.card {
+	display: flex;
+	gap: 16px;
+	justify-content: center;
+	border: 1px solid #99b2a7;
+	border-radius: 4px;
+	padding: 20px;
+	margin: 8px 0;
+}
+
+.input-group {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	font-size: 12px;
+	gap: 4px;
+}
+
+.input-group > .label {
+	font-weight: 700;
+	color: #5d6f67;
+}
+
+.input {
+	border: 2px solid #5d6f67;
+	border-radius: 4px;
+	padding: 8px 12px;
+	align-self: stretch;
+}
+
+.input:active,
+.input:focus {
+	border-color: #a237c9;
+	outline: none;
 }
