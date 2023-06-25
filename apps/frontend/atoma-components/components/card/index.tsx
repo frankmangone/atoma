@@ -8,7 +8,7 @@ export type CardProps = Component<
 	children: JSX.Element | JSX.Element[];
 };
 
-const Card: Component<CardProps> = (props) => {
+export const Card: Component<CardProps> = (props) => {
 	const { children, ...rest } = props;
 	const c = createChildren(() => props.children);
 

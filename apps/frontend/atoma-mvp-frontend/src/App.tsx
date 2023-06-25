@@ -2,6 +2,7 @@ import type { Component } from "solid-js";
 
 import logo from "./logo.svg";
 import styles from "./App.module.css";
+import { Card } from "@atoma/component-library";
 
 const App: Component = () => {
 	return (
