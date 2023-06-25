@@ -11,7 +11,7 @@ const App: Component = () => {
 				<img src={logo} class={styles.logo} alt="logo" />
 				<h1>ATOMA</h1>
 				<h3>Compound property search & estimation</h3>
-				<div class={styles.card}>
+				<Card>
 					<div class={styles["input-group"]} style={{ "flex-basis": "250px" }}>
 						<label for="compound" class={styles.label}>
 							Compound
@@ -37,8 +37,8 @@ const App: Component = () => {
 							placeholder="Property..."
 						/>
 					</div>
-				</div>
-				<div class={styles.card}>
+				</Card>
+				<Card>
 					<div
 						style={{
 							"flex-basis": "50%",
@@ -74,7 +74,7 @@ const App: Component = () => {
 					<div style={{ "flex-basis": "50%" }}>
 						<h3>Estimate!</h3>
 					</div>
-				</div>
+				</Card>
 			</main>
 		</div>
 	);
