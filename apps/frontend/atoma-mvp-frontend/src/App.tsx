@@ -2,7 +2,7 @@ import type { Component } from "solid-js";
 
 import logo from "./logo.svg";
 import styles from "./App.module.css";
-import { Card, Input } from "@atoma/component-library";
+import { Card, Input, Button } from "@atoma/component-library";
 
 const App: Component = () => {
 	return (
@@ -63,7 +63,7 @@ const App: Component = () => {
 						<h3>Result</h3>
 					</div>
 				</Card>
-				<button>Estimate</button>
+				<Button style={{ width: "400px" }}>Estimate</Button>
 			</main>
 		</div>
 	);

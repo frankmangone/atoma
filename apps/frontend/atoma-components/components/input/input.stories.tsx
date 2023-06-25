@@ -15,7 +15,6 @@ export const Default: Story = {
 export default {
 	title: "Input",
 	// tags: ["autodocs"],
-	// render: (props) => <Input {...props} />,
 	component: Input,
 	argTypes: {
 		label: { control: "text" },
