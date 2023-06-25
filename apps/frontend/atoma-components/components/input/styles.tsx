@@ -18,4 +18,10 @@ export const Input = styled("input")`
 	border-radius: 4px;
 	padding: 8px 12px;
 	align-self: stretch;
+
+	&:active,
+	&:focus {
+		border-color: #a237c9;
+		outline: none;
+	}
 `;

@@ -2,6 +2,9 @@
 	"compilerOptions": {
 		"jsx": "preserve",
 		"jsxImportSource": "solid-js",
-		"outDir": "./dist"
-	}
+		"outDir": "./dist",
+		"lib": ["ES2017", "dom"],
+		"skipLibCheck": true
+	},
+	"exclude": ["components/**/*.stories.tsx", "vite.config.ts"]
 }

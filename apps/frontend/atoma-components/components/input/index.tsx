@@ -10,10 +10,10 @@ export type InputProps = JSX.HTMLAttributes<HTMLDivElement> &
 	};
 
 export const Input: Component<InputProps> = (props) => {
-	const { label, name, placeholder } = props;
+	const { label, name, placeholder, ...rest } = props;
 
 	return (
-		<Wrapper>
+		<Wrapper {...rest}>
 			<Label for={name}>{label}</Label>
 			<InputBody type="text" name={name} placeholder={placeholder} />
 		</Wrapper>

@@ -4,6 +4,7 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
+		"components:build": "pnpm --filter @atoma/component-library build",
 		"compounds-api:start": "pnpm --filter @atoma/compounds-api start:dev",
 		"mvp-frontend:start": "pnpm --filter @atoma/mvp-frontend dev"
 	},
