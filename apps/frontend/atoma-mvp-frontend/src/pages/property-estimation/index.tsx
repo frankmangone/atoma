@@ -1,7 +1,7 @@
 import { createSignal, type Component, createResource } from "solid-js";
 
-import logo from "./logo.svg";
-import styles from "./App.module.css";
+import logo from "../../logo.svg";
+import styles from "./property-estimation.module.css";
 import {
 	Card,
 	Input,
@@ -12,9 +12,9 @@ import {
 import {
 	FindCompoundPropertyPayload,
 	findCompoundProperty,
-} from "./queries/findCompoundProperty";
+} from "../../queries/findCompoundProperty";
 
-const App: Component = () => {
+const PropertyEstimationPage: Component = () => {
 	const [compound, setCompound] = createSignal<string>("");
 	const [property, setProperty] = createSignal<string>("");
 	const [temperature, setTemperature] = createSignal<number>();
@@ -101,16 +101,15 @@ const App: Component = () => {
 					</div>
 				</Card>
 				<Button
-					style={{ width: "400px", "align-self": "center" }}
+					style={{ width: "400px", height: "50px", "align-self": "center" }}
 					// disabled={loading}
 					onClick={fetch}
 				>
-					Estimate
-					{/* {loading ? <Spinner /> : "Estimate"} */}
+					{data?.loading ? <Spinner /> : "Estimate"}
 				</Button>
 			</main>
 		</div>
 	);
 };
 
-export default App;
+export default PropertyEstimationPage;

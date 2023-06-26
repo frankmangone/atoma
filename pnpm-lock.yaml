@@ -136,7 +136,7 @@ importers:
   apps/frontend/atoma-mvp-frontend:
     specifiers:
       '@atoma/component-library': '*'
-      '@tanstack/solid-query': ^4.29.17
+      '@solidjs/router': ^0.8.2
       graphql-tag: ^2.12.6
       solid-devtools: ^0.27.3
       solid-js: ^1.7.6
@@ -145,7 +145,7 @@ importers:
       vite-plugin-solid: ^2.7.0
     dependencies:
       '@atoma/component-library': link:../atoma-components
-      '@tanstack/solid-query': 4.29.17_solid-js@1.7.6
+      '@solidjs/router': 0.8.2_solid-js@1.7.6
       graphql-tag: 2.12.6
       solid-js: 1.7.6
     devDependencies:
@@ -4342,6 +4342,14 @@ packages:
       solid-js: 1.7.6
     dev: true
 
+  /@solidjs/router/0.8.2_solid-js@1.7.6:
+    resolution: {integrity: sha512-gUKW+LZqxtX6y/Aw6JKyy4gQ9E7dLqp513oB9pSYJR1HM5c56Pf7eijzyXX+b3WuXig18Cxqah4tMtF0YGu80w==}
+    peerDependencies:
+      solid-js: ^1.5.3
+    dependencies:
+      solid-js: 1.7.6
+    dev: false
+
   /@storybook/addon-actions/7.0.23_biqbaboplfbrettd7655fr4n2y:
     resolution: {integrity: sha512-xsLUZez6fzHc+be8BypVO5aA7kjeH9jymLAib68SSQoF0GQry7mb/fhumifQno2BKfCyCw++lYqLHzwV0EISxg==}
     peerDependencies:
@@ -5397,19 +5405,6 @@ packages:
       '@types/express': 4.17.17
       file-system-cache: 2.3.0
     dev: true
-
-  /@tanstack/query-core/4.29.17:
-    resolution: {integrity: sha512-iDbO8yZOpm1lqgq6L8mpxGbKaoiyZSjthxEB3WGU7mNPYss9q4H3Q67+e2xXGwkemEVmtEX/WwvtFitrvVU8TA==}
-    dev: false
-
-  /@tanstack/solid-query/4.29.17_solid-js@1.7.6:
-    resolution: {integrity: sha512-z2HNuvHmvJ8oqKj3Up/ZVqb5zHWY1jyfhHH6eunn25vYlOl3zKRnzT8USPwmO6Ny3UfKUxVYsvpiVfmh6FeKcQ==}
-    peerDependencies:
-      solid-js: ^1.5.7
-    dependencies:
-      '@tanstack/query-core': 4.29.17
-      solid-js: 1.7.6
-    dev: false
 
   /@testing-library/dom/9.3.1:
     resolution: {integrity: sha512-0DGPd9AR3+iDTjGoMpxIkAsUihHZ3Ai6CneU6bRRrffXMgzCdlNk43jTrD2/5LT6CBb3MWTP8v510JzYtahD2w==}

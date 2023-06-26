@@ -1,9 +1,8 @@
 /* @refresh reload */
 import { render } from "solid-js/web";
-
 import "./index.css";
-import App from "./App";
-import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
+import { Route, Router, Routes } from "@solidjs/router";
+import PropertyEstimationPage from "./pages/property-estimation";
 
 const root = document.getElementById("root");
 
@@ -13,13 +12,13 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
 	);
 }
 
-const queryClient = new QueryClient();
-
 render(
 	() => (
-		<QueryClientProvider client={queryClient}>
-			<App />
-		</QueryClientProvider>
+		<Router>
+			<Routes>
+				<Route path="/" component={PropertyEstimationPage} />
+			</Routes>
+		</Router>
 	),
 	root!
 );
