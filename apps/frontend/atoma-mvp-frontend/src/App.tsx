@@ -1,4 +1,4 @@
-import { createSignal, type Component } from "solid-js";
+import { createSignal, type Component, createResource } from "solid-js";
 
 import logo from "./logo.svg";
 import styles from "./App.module.css";
@@ -9,27 +9,35 @@ import {
 	Divider,
 	Spinner,
 } from "@atoma/component-library";
-import { createQuery } from "@tanstack/solid-query";
-import { findCompoundProperty } from "./queries/findCompoundProperty";
+import {
+	FindCompoundPropertyPayload,
+	findCompoundProperty,
+} from "./queries/findCompoundProperty";
 
 const App: Component = () => {
-	const [enabled, setEnabled] = createSignal<boolean>(false);
+	const [compound, setCompound] = createSignal<string>("");
+	const [property, setProperty] = createSignal<string>("");
+	const [temperature, setTemperature] = createSignal<number>();
+	const [pressure, setPressure] = createSignal<number>();
 
-	const query = createQuery(() => ["todos"], findCompoundProperty, {
-		get enabled() {
-			return enabled();
-		},
-	});
+	const [query, setQuery] = createSignal<FindCompoundPropertyPayload>();
 
-	const loading = enabled() && query.isLoading;
+	const [data] = createResource(query, findCompoundProperty);
 
-	const fetch = async () => {
-		if (!enabled()) {
-			setEnabled(true);
+	const fetch = () => {
+		const t = temperature();
+		const p = pressure();
+
+		if (t === undefined || p === undefined) {
 			return;
 		}
 
-		await query.refetch();
+		setQuery({
+			compoundUuid: compound(),
+			propertyUuid: property(),
+			temperature: t,
+			pressure: p,
+		});
 	};
 
 	return (
@@ -44,12 +52,16 @@ const App: Component = () => {
 						label="Compound"
 						name="compound"
 						placeholder="Compound..."
+						value={compound()}
+						onChange={(e: any) => setCompound(e.target.value)}
 						style={{ "flex-basis": "250px" }}
 					/>
 					<Input
 						label="Property"
 						name="property"
 						placeholder="Property..."
+						value={property()}
+						onChange={(e: any) => setProperty(e.target.value)}
 						style={{ "flex-basis": "250px" }}
 					/>
 				</Card>
@@ -68,12 +80,16 @@ const App: Component = () => {
 							label="Temperature"
 							name="temperature"
 							placeholder="Temperature..."
+							value={temperature()}
+							onChange={(e: any) => setTemperature(parseFloat(e.target.value))}
 							style={{ width: "250px" }}
 						/>
 						<Input
 							label="Pressure"
 							name="pressure"
 							placeholder="Pressure..."
+							value={pressure()}
+							onChange={(e: any) => setPressure(parseFloat(e.target.value))}
 							style={{ width: "250px" }}
 						/>
 					</div>
@@ -81,15 +97,16 @@ const App: Component = () => {
 					<div style={{ "flex-grow": 1, "flex-basis": "49%" }}>
 						<h3>Result</h3>
 						{/** TODO: Handle failure scenarios */}
-						<p>{query.data?.data.compoundProperty.value}</p>
+						<p>{data()?.compoundProperty.value}</p>
 					</div>
 				</Card>
 				<Button
 					style={{ width: "400px", "align-self": "center" }}
-					disabled={loading}
+					// disabled={loading}
 					onClick={fetch}
 				>
-					{loading ? <Spinner /> : "Estimate"}
+					Estimate
+					{/* {loading ? <Spinner /> : "Estimate"} */}
 				</Button>
 			</main>
 		</div>

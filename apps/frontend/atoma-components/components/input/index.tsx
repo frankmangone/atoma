@@ -3,6 +3,7 @@ import { Wrapper, Label, Input as InputBody } from "./styles";
 import type { Component, JSX } from "solid-js";
 
 export type InputProps = JSX.HTMLAttributes<HTMLDivElement> &
+	JSX.InputHTMLAttributes<HTMLInputElement> &
 	AsProps & {
 		label: string;
 		name: string;
@@ -10,12 +11,18 @@ export type InputProps = JSX.HTMLAttributes<HTMLDivElement> &
 	};
 
 export const Input: Component<InputProps> = (props) => {
-	const { label, name, placeholder, ...rest } = props;
+	const { value, onInput, label, name, placeholder, ...rest } = props;
 
 	return (
 		<Wrapper {...rest}>
 			<Label for={name}>{label}</Label>
-			<InputBody type="text" name={name} placeholder={placeholder} />
+			<InputBody
+				value={value}
+				onInput={onInput}
+				type="text"
+				name={name}
+				placeholder={placeholder}
+			/>
 		</Wrapper>
 	);
 };

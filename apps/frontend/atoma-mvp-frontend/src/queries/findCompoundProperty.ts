@@ -1,3 +1,10 @@
+export interface FindCompoundPropertyPayload {
+	compoundUuid: string;
+	propertyUuid: string;
+	temperature: number;
+	pressure: number;
+}
+
 const query = `
 	query FindCompoundProperty(
 		$compoundUuid: String!
@@ -30,7 +37,9 @@ const query = `
 	}
 `;
 
-export const findCompoundProperty = async () => {
+export const findCompoundProperty = async (
+	payload: FindCompoundPropertyPayload
+) => {
 	const response = await fetch("http://localhost:3000/graphql", {
 		method: "POST",
 		headers: {
@@ -39,14 +48,11 @@ export const findCompoundProperty = async () => {
 		},
 		body: JSON.stringify({
 			query,
-			variables: {
-				compoundUuid: "9d7c71ab-ac47-45da-b5b4-62795f126f7c",
-				propertyUuid: "5a6cdccd-f1bc-40af-998a-295c5a86a6c2",
-				temperature: 38,
-				pressure: 10000,
-			},
+			variables: payload,
 		}),
 	});
 
-	return response.json();
+	const { data } = await response.json();
+
+	return data;
 };
