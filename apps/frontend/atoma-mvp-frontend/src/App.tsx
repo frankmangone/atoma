@@ -1,4 +1,4 @@
-import type { Component } from "solid-js";
+import { createSignal, type Component } from "solid-js";
 
 import logo from "./logo.svg";
 import styles from "./App.module.css";
@@ -13,11 +13,24 @@ import { createQuery } from "@tanstack/solid-query";
 import { findCompoundProperty } from "./queries/findCompoundProperty";
 
 const App: Component = () => {
+	const [enabled, setEnabled] = createSignal<boolean>(false);
+
 	const query = createQuery(() => ["todos"], findCompoundProperty, {
-		enabled: false,
+		get enabled() {
+			return enabled();
+		},
 	});
 
-	const { refetch: fetch, isLoading } = query;
+	const loading = enabled() && query.isLoading;
+
+	const fetch = async () => {
+		if (!enabled()) {
+			setEnabled(true);
+			return;
+		}
+
+		await query.refetch();
+	};
 
 	return (
 		<div class={styles.App}>
@@ -73,11 +86,10 @@ const App: Component = () => {
 				</Card>
 				<Button
 					style={{ width: "400px", "align-self": "center" }}
-					// disabled={isLoading}
-					onClick={() => fetch()}
+					disabled={loading}
+					onClick={fetch}
 				>
-					Estimate
-					{/* {isLoading ? <Spinner /> : "Estimate"} */}
+					{loading ? <Spinner /> : "Estimate"}
 				</Button>
 			</main>
 		</div>
