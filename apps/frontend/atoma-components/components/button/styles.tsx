@@ -6,6 +6,8 @@ export const Button = styled("button")`
 	border-radius: 4px;
 	color: white;
 	cursor: pointer;
+	display: flex;
+	justify-content: center;
 	font-size: 16px;
 	font-weight: 500;
 	padding: 8px 20px;

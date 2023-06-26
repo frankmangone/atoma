@@ -2,7 +2,13 @@ import type { Component } from "solid-js";
 
 import logo from "./logo.svg";
 import styles from "./App.module.css";
-import { Card, Input, Button, Divider } from "@atoma/component-library";
+import {
+	Card,
+	Input,
+	Button,
+	Divider,
+	Spinner,
+} from "@atoma/component-library";
 import { createQuery } from "@tanstack/solid-query";
 import { findCompoundProperty } from "./queries/findCompoundProperty";
 
@@ -11,7 +17,7 @@ const App: Component = () => {
 		enabled: false,
 	});
 
-	const { refetch: fetch } = query;
+	const { refetch: fetch, isLoading } = query;
 
 	return (
 		<div class={styles.App}>
@@ -65,8 +71,13 @@ const App: Component = () => {
 						<p>{query.data?.data.compoundProperty.value}</p>
 					</div>
 				</Card>
-				<Button style={{ width: "400px" }} onClick={() => fetch()}>
+				<Button
+					style={{ width: "400px", "align-self": "center" }}
+					// disabled={isLoading}
+					onClick={() => fetch()}
+				>
 					Estimate
+					{/* {isLoading ? <Spinner /> : "Estimate"} */}
 				</Button>
 			</main>
 		</div>
