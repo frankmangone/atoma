@@ -7,9 +7,11 @@ import { createQuery } from "@tanstack/solid-query";
 import { findCompoundProperty } from "./queries/findCompoundProperty";
 
 const App: Component = () => {
-	const query = createQuery(() => ["todos"], findCompoundProperty);
+	const query = createQuery(() => ["todos"], findCompoundProperty, {
+		enabled: false,
+	});
 
-	console.log(query.data);
+	const { refetch: fetch } = query;
 
 	return (
 		<div class={styles.App}>
@@ -59,9 +61,13 @@ const App: Component = () => {
 					<Divider direction="vertical" />
 					<div style={{ "flex-grow": 1, "flex-basis": "49%" }}>
 						<h3>Result</h3>
+						{/** TODO: Handle failure scenarios */}
+						<p>{query.data?.data.compoundProperty.value}</p>
 					</div>
 				</Card>
-				<Button style={{ width: "400px" }}>Estimate</Button>
+				<Button style={{ width: "400px" }} onClick={() => fetch()}>
+					Estimate
+				</Button>
 			</main>
 		</div>
 	);
