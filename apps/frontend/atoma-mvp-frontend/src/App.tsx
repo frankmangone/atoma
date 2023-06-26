@@ -3,8 +3,14 @@ import type { Component } from "solid-js";
 import logo from "./logo.svg";
 import styles from "./App.module.css";
 import { Card, Input, Button, Divider } from "@atoma/component-library";
+import { createQuery } from "@tanstack/solid-query";
+import { findCompoundProperty } from "./queries/findCompoundProperty";
 
 const App: Component = () => {
+	const query = createQuery(() => ["todos"], findCompoundProperty);
+
+	console.log(query.data);
+
 	return (
 		<div class={styles.App}>
 			<main class={styles.container}>
