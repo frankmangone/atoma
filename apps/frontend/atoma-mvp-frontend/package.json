@@ -17,6 +17,7 @@
 	},
 	"dependencies": {
 		"@atoma/component-library": "*",
+		"@tanstack/solid-query": "^4.29.17",
 		"solid-js": "^1.7.6"
 	}
 }
