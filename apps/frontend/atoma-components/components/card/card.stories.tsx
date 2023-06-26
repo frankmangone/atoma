@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from "@storybook/solid";
+import { Meta, StoryObj } from "storybook-solidjs";
 import Card from ".";
 import type { CardProps } from ".";
 
