@@ -2,13 +2,14 @@ import type { Component } from "solid-js";
 
 import logo from "./logo.svg";
 import styles from "./App.module.css";
-import { Card, Input, Button } from "@atoma/component-library";
+import { Card, Input, Button, Divider } from "@atoma/component-library";
 
 const App: Component = () => {
 	return (
 		<div class={styles.App}>
 			<main class={styles.container}>
 				<img src={logo} class={styles.logo} alt="logo" />
+				{/** TODO: Typography components */}
 				<h1>ATOMA</h1>
 				<h3>Compound property search & estimation</h3>
 				<Card style={{ "justify-content": "center" }}>
@@ -49,16 +50,7 @@ const App: Component = () => {
 							style={{ width: "250px" }}
 						/>
 					</div>
-					{/** TODO: Move to "Divider" component */}
-					<div
-						style={{
-							width: "1px",
-							"align-self": "stretch",
-							"margin-left": "4px",
-							"margin-right": "4px",
-							background: "#DAEEE4",
-						}}
-					/>
+					<Divider direction="vertical" />
 					<div style={{ "flex-grow": 1, "flex-basis": "49%" }}>
 						<h3>Result</h3>
 					</div>
