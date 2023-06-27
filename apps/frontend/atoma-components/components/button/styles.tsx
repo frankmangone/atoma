@@ -1,6 +1,7 @@
 import { styled } from "solid-styled-components";
 
 export const Button = styled("button")`
+	align-items: center;
 	background-color: #951cb8;
 	border: 2px solid #951cb8;
 	border-radius: 4px;

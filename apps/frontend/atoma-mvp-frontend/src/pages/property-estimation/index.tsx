@@ -9,36 +9,21 @@ import {
 	Divider,
 	Spinner,
 } from "@atoma/component-library";
-import {
-	FindCompoundPropertyPayload,
-	findCompoundProperty,
-} from "../../queries/findCompoundProperty";
+import { useData } from "./use-data";
 
 const PropertyEstimationPage: Component = () => {
-	const [compound, setCompound] = createSignal<string>("");
-	const [property, setProperty] = createSignal<string>("");
-	const [temperature, setTemperature] = createSignal<number>();
-	const [pressure, setPressure] = createSignal<number>();
-
-	const [query, setQuery] = createSignal<FindCompoundPropertyPayload>();
-
-	const [data] = createResource(query, findCompoundProperty);
-
-	const fetch = () => {
-		const t = temperature();
-		const p = pressure();
-
-		if (t === undefined || p === undefined) {
-			return;
-		}
-
-		setQuery({
-			compoundUuid: compound(),
-			propertyUuid: property(),
-			temperature: t,
-			pressure: p,
-		});
-	};
+	const {
+		compound,
+		setCompound,
+		property,
+		setProperty,
+		temperature,
+		setTemperature,
+		pressure,
+		setPressure,
+		fetch,
+		data,
+	} = useData();
 
 	return (
 		<div class={styles.App}>
@@ -101,11 +86,11 @@ const PropertyEstimationPage: Component = () => {
 					</div>
 				</Card>
 				<Button
-					style={{ width: "400px", height: "50px", "align-self": "center" }}
-					// disabled={loading}
+					style={{ width: "400px", height: "40px", "align-self": "center" }}
+					disabled={data?.loading}
 					onClick={fetch}
 				>
-					{data?.loading ? <Spinner /> : "Estimate"}
+					{data?.loading ? <Spinner size="25px" /> : "Estimate"}
 				</Button>
 			</main>
 		</div>
