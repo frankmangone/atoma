@@ -12,18 +12,8 @@ import {
 import { useData } from "./use-data";
 
 const PropertyEstimationPage: Component = () => {
-	const {
-		compound,
-		setCompound,
-		property,
-		setProperty,
-		temperature,
-		setTemperature,
-		pressure,
-		setPressure,
-		fetch,
-		data,
-	} = useData();
+	const { formValues, setFormValue, fetch, data } = useData();
+	const { compoundUuid, propertyUuid, temperature, pressure } = formValues();
 
 	return (
 		<div class={styles.App}>
@@ -37,16 +27,16 @@ const PropertyEstimationPage: Component = () => {
 						label="Compound"
 						name="compound"
 						placeholder="Compound..."
-						value={compound()}
-						onChange={(e: any) => setCompound(e.target.value)}
+						value={compoundUuid}
+						onChange={(e: any) => setFormValue("compoundUuid", e.target.value)}
 						style={{ "flex-basis": "250px" }}
 					/>
 					<Input
 						label="Property"
 						name="property"
 						placeholder="Property..."
-						value={property()}
-						onChange={(e: any) => setProperty(e.target.value)}
+						value={propertyUuid}
+						onChange={(e: any) => setFormValue("propertyUuid", e.target.value)}
 						style={{ "flex-basis": "250px" }}
 					/>
 				</Card>
@@ -65,16 +55,20 @@ const PropertyEstimationPage: Component = () => {
 							label="Temperature"
 							name="temperature"
 							placeholder="Temperature..."
-							value={temperature()}
-							onChange={(e: any) => setTemperature(parseFloat(e.target.value))}
+							value={temperature}
+							onChange={(e: any) =>
+								setFormValue("temperature", parseFloat(e.target.value))
+							}
 							style={{ width: "250px" }}
 						/>
 						<Input
 							label="Pressure"
 							name="pressure"
 							placeholder="Pressure..."
-							value={pressure()}
-							onChange={(e: any) => setPressure(parseFloat(e.target.value))}
+							value={pressure}
+							onChange={(e: any) =>
+								setFormValue("pressure", parseFloat(e.target.value))
+							}
 							style={{ width: "250px" }}
 						/>
 					</div>
