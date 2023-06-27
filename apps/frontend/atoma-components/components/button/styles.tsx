@@ -1,11 +1,14 @@
 import { styled } from "solid-styled-components";
 
 export const Button = styled("button")`
+	align-items: center;
 	background-color: #951cb8;
 	border: 2px solid #951cb8;
 	border-radius: 4px;
 	color: white;
 	cursor: pointer;
+	display: flex;
+	justify-content: center;
 	font-size: 16px;
 	font-weight: 500;
 	padding: 8px 20px;

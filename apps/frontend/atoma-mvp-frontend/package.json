@@ -17,6 +17,8 @@
 	},
 	"dependencies": {
 		"@atoma/component-library": "*",
+		"@solidjs/router": "^0.8.2",
+		"graphql-tag": "^2.12.6",
 		"solid-js": "^1.7.6"
 	}
 }
