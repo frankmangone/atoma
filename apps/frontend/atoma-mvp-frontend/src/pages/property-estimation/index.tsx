@@ -1,6 +1,6 @@
 import { createSignal, type Component, createResource } from "solid-js";
 
-import logo from "../../logo.svg";
+import logo from "../../assets/logo.png";
 import styles from "./property-estimation.module.css";
 import {
 	Card,
@@ -20,7 +20,7 @@ const PropertyEstimationPage: Component = () => {
 			<main class={styles.container}>
 				<img src={logo} class={styles.logo} alt="logo" />
 				{/** TODO: Typography components */}
-				<h1>ATOMA</h1>
+				<h1 style={{ color: "#8e2eb2" }}>ATOMA</h1>
 				<h3>Compound property search & estimation</h3>
 				<Card style={{ "justify-content": "center" }}>
 					<Input

@@ -4,10 +4,14 @@ body {
 
 .App {
 	text-align: center;
+	display: flex;
+	justify-content: center;
+	height: 100vh;
 }
 
 .logo {
-	height: 10vmin;
+	width: 80px;
+	align-self: center;
 	pointer-events: none;
 }
 
@@ -18,8 +22,7 @@ body {
 	max-width: 800px;
 	width: calc(100% - 40px);
 	padding: 0 20px;
-	margin-left: auto;
-	margin-right: auto;
+	margin-top: 50px;
 }
 
 /* .header {
@@ -34,5 +37,5 @@ body {
 } */
 
 .link {
-	color: #b318f0;
+	color: #8e2eb2;
 }
