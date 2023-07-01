@@ -1,5 +1,3 @@
-import { createSignal, type Component, createResource } from "solid-js";
-
 import logo from "../../assets/logo.png";
 import styles from "./property-estimation.module.css";
 import {
@@ -8,8 +6,11 @@ import {
 	Button,
 	Divider,
 	Spinner,
+	Search,
+	Icon,
 } from "@atoma/component-library";
 import { useData } from "./use-data";
+import type { Component } from "solid-js";
 
 const PropertyEstimationPage: Component = () => {
 	const { formValues, setFormValue, fetch, data } = useData();
@@ -30,6 +31,7 @@ const PropertyEstimationPage: Component = () => {
 						value={compoundUuid}
 						onChange={(e: any) => setFormValue("compoundUuid", e.target.value)}
 						style={{ "flex-basis": "250px" }}
+						rightComponent={<Icon icon="search" size={20} />}
 					/>
 					<Input
 						label="Property"
@@ -38,6 +40,7 @@ const PropertyEstimationPage: Component = () => {
 						value={propertyUuid}
 						onChange={(e: any) => setFormValue("propertyUuid", e.target.value)}
 						style={{ "flex-basis": "250px" }}
+						rightComponent={<Icon icon="search" size={20} />}
 					/>
 				</Card>
 				<Card>
