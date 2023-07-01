@@ -20,6 +20,11 @@ export const InputWrapper = styled("div")`
 	align-self: stretch;
 	border-radius: 4px;
 	padding: 8px 12px;
+
+	&:has(input:active),
+	&:has(input:focus) {
+		border-color: #a237c9;
+	}
 `;
 
 export const Input = styled("input")`
@@ -27,10 +32,10 @@ export const Input = styled("input")`
 	flex-grow: 1;
 	width: 100%;
 	border: none;
+	font-size: 14px;
 
 	&:active,
 	&:focus {
-		border-color: #a237c9;
 		outline: none;
 	}
 `;

@@ -16,7 +16,7 @@ export const Icon: Component<IconProps> = (props) => {
 	const { icon, size = 24 } = props;
 	const IconComponent = ICONS[icon];
 
-	return <IconComponent width={`${size}px`} />;
+	return <IconComponent width={`${size}px`} height={`${size}px`} />;
 };
 
 export default Icon;
