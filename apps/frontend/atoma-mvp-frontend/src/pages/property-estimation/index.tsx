@@ -7,7 +7,6 @@ import {
 	Divider,
 	Spinner,
 	Search,
-	Icon,
 } from "@atoma/component-library";
 import { useData } from "./use-data";
 import type { Component } from "solid-js";
@@ -24,23 +23,21 @@ const PropertyEstimationPage: Component = () => {
 				<h1 style={{ color: "#8e2eb2" }}>ATOMA</h1>
 				<h3>Compound property search & estimation</h3>
 				<Card style={{ "justify-content": "center" }}>
-					<Input
+					<Search
 						label="Compound"
 						name="compound"
 						placeholder="Compound..."
 						value={compoundUuid}
 						onChange={(e: any) => setFormValue("compoundUuid", e.target.value)}
 						style={{ "flex-basis": "250px" }}
-						rightComponent={<Icon icon="search" size={20} />}
 					/>
-					<Input
+					<Search
 						label="Property"
 						name="property"
 						placeholder="Property..."
 						value={propertyUuid}
 						onChange={(e: any) => setFormValue("propertyUuid", e.target.value)}
 						style={{ "flex-basis": "250px" }}
-						rightComponent={<Icon icon="search" size={20} />}
 					/>
 				</Card>
 				<Card>
