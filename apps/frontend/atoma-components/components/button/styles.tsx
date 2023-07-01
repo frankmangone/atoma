@@ -2,8 +2,8 @@ import { styled } from "solid-styled-components";
 
 export const Button = styled("button")`
 	align-items: center;
-	background-color: #951cb8;
-	border: 2px solid #951cb8;
+	background-color: #8e2eb2;
+	border: none;
 	border-radius: 4px;
 	color: white;
 	cursor: pointer;
@@ -14,7 +14,6 @@ export const Button = styled("button")`
 	padding: 8px 20px;
 
 	&:hover {
-		background-color: #b361db;
-		border-color: #cc9ced;
+		background-color: #ac48d0;
 	}
 `;
