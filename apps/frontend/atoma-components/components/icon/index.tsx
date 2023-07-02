@@ -1,8 +1,10 @@
 import { Component } from "solid-js";
 import { SearchIcon } from "./icons/search";
+import { TimesIcon } from "./icons/times";
 
 const ICONS = {
 	search: SearchIcon,
+	times: TimesIcon,
 } as const;
 
 type IconName = keyof typeof ICONS;

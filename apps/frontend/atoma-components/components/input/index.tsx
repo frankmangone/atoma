@@ -1,13 +1,13 @@
 import { AsProps } from "solid-styled-components";
 import { Wrapper, Label, Input as InputBody, InputWrapper } from "./styles";
-import { children, type Component, type JSX } from "solid-js";
+import { Accessor, children, type Component, type JSX } from "solid-js";
 
 export type InputProps = JSX.HTMLAttributes<HTMLInputElement> &
 	JSX.InputHTMLAttributes<HTMLInputElement> &
 	AsProps & {
 		label: string;
 		name: string;
-		rightComponent?: JSX.Element;
+		rightComponent?: Accessor<JSX.Element>;
 		placeholder?: string;
 	};
 
@@ -27,7 +27,7 @@ export const Input: Component<InputProps> = (props) => {
 	let renderedRightComponent = null;
 
 	if (rightComponent) {
-		renderedRightComponent = children(() => rightComponent);
+		renderedRightComponent = children(() => rightComponent());
 	}
 
 	return (

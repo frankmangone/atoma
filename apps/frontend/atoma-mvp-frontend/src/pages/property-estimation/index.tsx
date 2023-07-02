@@ -27,16 +27,16 @@ const PropertyEstimationPage: Component = () => {
 						label="Compound"
 						name="compound"
 						placeholder="Compound..."
-						value={compoundUuid()}
-						onInput={(e: any) => setFormValue("compoundUuid", e.target.value)}
+						value={compoundUuid}
+						onSelect={(value) => setFormValue("compoundUuid", value)}
 						style={{ "flex-basis": "250px" }}
 					/>
 					<Search
 						label="Property"
 						name="property"
 						placeholder="Property..."
-						value={propertyUuid()}
-						onInput={(e: any) => setFormValue("propertyUuid", e.target.value)}
+						value={propertyUuid}
+						onSelect={(value) => setFormValue("propertyUuid", value)}
 						style={{ "flex-basis": "250px" }}
 					/>
 				</Card>
