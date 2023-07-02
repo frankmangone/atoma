@@ -22,38 +22,30 @@ export type SearchProps = Omit<
 export const Search: Component<SearchProps> = (props) => {
 	const { onSelect, style, options } = props;
 
+	let inputRef: HTMLInputElement;
+
 	const [focused, setFocused] = createSignal<boolean>(false);
 	const [searchString, setSearchString] = createSignal<string>("");
 
 	const handleFocus = () => setFocused(true);
 	const handleBlur = () => setFocused(false);
-	const handleSelect = (selection: any) => onSelect(selection);
+	const handleSelect = (selection: any) => {
+		onSelect(selection);
+		setSearchString(selection);
+		inputRef.value = selection;
+	};
 
 	return (
 		<div style={{ ...style, position: "relative" }}>
-			{props.value() ? (
-				<Wrapper>
-					<Label>{props.label}</Label>
-					<SelectedValueWrapper
-						onMouseDown={() => {
-							setSearchString("");
-							onSelect("");
-						}}
-					>
-						<SelectedValue>{props.value()}</SelectedValue>
-						<Icon icon="times" size={20} />
-					</SelectedValueWrapper>
-				</Wrapper>
-			) : (
-				<Input
-					{...props}
-					value={searchString()}
-					onInput={(e: any) => setSearchString(e.target.value)}
-					onFocus={handleFocus}
-					onBlur={handleBlur}
-					rightComponent={() => <Icon icon="search" size={20} />}
-				/>
-			)}
+			<Input
+				{...props}
+				ref={inputRef}
+				value={searchString()}
+				onInput={(e: any) => setSearchString(e.target.value)}
+				onFocus={handleFocus}
+				onBlur={handleBlur}
+				rightComponent={() => <Icon icon="search" size={20} />}
+			/>
 			{focused() && searchString() && (
 				<SelectWrapper>
 					<SelectOption onMouseDown={() => handleSelect("option A")}>

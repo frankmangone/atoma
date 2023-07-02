@@ -23,6 +23,10 @@ export const InputWrapper = styled("div")`
 
 	&:has(input:active),
 	&:has(input:focus) {
+		svg {
+			color: #a237c9;
+		}
+
 		border-color: #a237c9;
 	}
 `;

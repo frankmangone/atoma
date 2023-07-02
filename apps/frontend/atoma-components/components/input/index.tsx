@@ -13,6 +13,7 @@ export type InputProps = JSX.HTMLAttributes<HTMLInputElement> &
 
 export const Input: Component<InputProps> = (props) => {
 	const {
+		ref,
 		value,
 		onFocus,
 		onBlur,
@@ -35,6 +36,7 @@ export const Input: Component<InputProps> = (props) => {
 			<Label for={name}>{label}</Label>
 			<InputWrapper>
 				<InputBody
+					ref={ref}
 					value={value}
 					onFocus={onFocus}
 					onBlur={onBlur}
