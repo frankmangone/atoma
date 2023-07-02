@@ -1,4 +1,4 @@
-import type { Component, JSX } from "solid-js";
+import { createSignal, type Component, type JSX } from "solid-js";
 import Input, { InputProps } from "../input";
 import Icon from "../icon";
 import { SelectOption, SelectWrapper } from "./styles";
@@ -10,11 +10,20 @@ export type SearchProps = Omit<InputProps, "rightComponent" | "style"> & {
 
 export const Search: Component<SearchProps> = (props) => {
 	const { style, options } = props;
+	const [focused, setFocused] = createSignal<boolean>(false);
+
+	const handleFocus = () => setFocused(true);
+	const handleBlur = () => setFocused(false);
 
 	return (
 		<div style={{ ...style, position: "relative" }}>
-			<Input rightComponent={<Icon icon="search" size={20} />} {...props} />
-			{props.value && (
+			<Input
+				onFocus={handleFocus}
+				onBlur={handleBlur}
+				rightComponent={<Icon icon="search" size={20} />}
+				{...props}
+			/>
+			{focused() && props.value && (
 				<SelectWrapper>
 					<SelectOption>Option A</SelectOption>
 					<SelectOption>Option B</SelectOption>

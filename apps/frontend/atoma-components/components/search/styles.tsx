@@ -5,7 +5,7 @@ export const SelectWrapper = styled("div")`
 	bottom: 0;
 	transform: translateY(calc(100% + 4px));
 	width: calc(100% - 4px);
-	border: 2px solid #99b2a7;
+	border: 2px solid #a237c9;
 	border-radius: 4px;
 	background: white;
 	display: flex;

@@ -12,8 +12,17 @@ export type InputProps = JSX.HTMLAttributes<HTMLInputElement> &
 	};
 
 export const Input: Component<InputProps> = (props) => {
-	const { value, onInput, label, name, placeholder, rightComponent, ...rest } =
-		props;
+	const {
+		value,
+		onFocus,
+		onBlur,
+		onInput,
+		label,
+		name,
+		placeholder,
+		rightComponent,
+		...rest
+	} = props;
 
 	let renderedRightComponent = null;
 
@@ -27,6 +36,8 @@ export const Input: Component<InputProps> = (props) => {
 			<InputWrapper>
 				<InputBody
 					value={value}
+					onFocus={onFocus}
+					onBlur={onBlur}
 					onInput={onInput}
 					type="text"
 					name={name}
