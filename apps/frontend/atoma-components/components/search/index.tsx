@@ -1,7 +1,13 @@
 import { createSignal, type Component, type JSX, Accessor } from "solid-js";
 import Input, { InputProps } from "../input";
 import Icon from "../icon";
-import { SelectOption, SelectWrapper } from "./styles";
+import {
+	SelectOption,
+	SelectWrapper,
+	SelectedValue,
+	SelectedValueWrapper,
+} from "./styles";
+import { Wrapper, Label } from "../input/styles";
 
 export type SearchProps = Omit<
 	InputProps,
@@ -23,25 +29,31 @@ export const Search: Component<SearchProps> = (props) => {
 	const handleBlur = () => setFocused(false);
 	const handleSelect = (selection: any) => onSelect(selection);
 
-	const icon = () =>
-		props.value() ? (
-			<button onClick={() => onSelect(undefined)}>
-				<Icon icon="times" size={20} />
-			</button>
-		) : (
-			<Icon icon="search" size={20} />
-		);
-
 	return (
 		<div style={{ ...style, position: "relative" }}>
-			<Input
-				{...props}
-				value={searchString()}
-				onInput={setSearchString}
-				onFocus={handleFocus}
-				onBlur={handleBlur}
-				rightComponent={icon}
-			/>
+			{props.value() ? (
+				<Wrapper>
+					<Label>{props.label}</Label>
+					<SelectedValueWrapper
+						onMouseDown={() => {
+							setSearchString("");
+							onSelect("");
+						}}
+					>
+						<SelectedValue>{props.value()}</SelectedValue>
+						<Icon icon="times" size={20} />
+					</SelectedValueWrapper>
+				</Wrapper>
+			) : (
+				<Input
+					{...props}
+					value={searchString()}
+					onInput={(e: any) => setSearchString(e.target.value)}
+					onFocus={handleFocus}
+					onBlur={handleBlur}
+					rightComponent={() => <Icon icon="search" size={20} />}
+				/>
+			)}
 			{focused() && searchString() && (
 				<SelectWrapper>
 					<SelectOption onMouseDown={() => handleSelect("option A")}>

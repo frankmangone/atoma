@@ -7,8 +7,8 @@ export type InputProps = JSX.HTMLAttributes<HTMLInputElement> &
 	AsProps & {
 		label: string;
 		name: string;
-		rightComponent?: Accessor<JSX.Element>;
 		placeholder?: string;
+		rightComponent?: Accessor<JSX.Element>;
 	};
 
 export const Input: Component<InputProps> = (props) => {
