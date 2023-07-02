@@ -2,7 +2,7 @@ import { AsProps } from "solid-styled-components";
 import { Wrapper, Label, Input as InputBody, InputWrapper } from "./styles";
 import { children, type Component, type JSX } from "solid-js";
 
-export type InputProps = JSX.HTMLAttributes<HTMLDivElement> &
+export type InputProps = JSX.HTMLAttributes<HTMLInputElement> &
 	JSX.InputHTMLAttributes<HTMLInputElement> &
 	AsProps & {
 		label: string;

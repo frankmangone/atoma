@@ -1,42 +1,59 @@
-import { createResource, createSignal } from "solid-js";
+import { Setter, createResource, createSignal } from "solid-js";
 import {
 	type FindCompoundPropertyPayload,
 	findCompoundProperty,
 } from "../../queries/findCompoundProperty";
 
+type Setters<T> = {
+	[K in keyof T]: Setter<T[K]>;
+};
+
 export const useData = () => {
-	const [formValues, setFormValues] = createSignal<
-		Partial<FindCompoundPropertyPayload>
-	>({
-		compoundUuid: "9d7c71ab-ac47-45da-b5b4-62795f126f7c",
-		propertyUuid: "5a6cdccd-f1bc-40af-998a-295c5a86a6c2",
-		temperature: 39,
-		pressure: 1000,
-	});
+	// Form values
+	const [compoundUuid, setCompoundUuid] = createSignal<string>("");
+	const [propertyUuid, setPropertyUuid] = createSignal<string>("");
+	const [temperature, setTemperature] = createSignal<number>();
+	const [pressure, setPressure] = createSignal<number>();
+
+	const formValues = {
+		compoundUuid,
+		propertyUuid,
+		temperature,
+		pressure,
+	};
+
+	const setters: Setters<FindCompoundPropertyPayload> = {
+		compoundUuid: setCompoundUuid,
+		propertyUuid: setPropertyUuid,
+		temperature: setTemperature,
+		pressure: setPressure,
+	};
+
+	const setFormValue = <K extends keyof FindCompoundPropertyPayload>(
+		key: K,
+		value: FindCompoundPropertyPayload[K]
+	) => {
+		const setter = setters[key];
+		setter(() => value);
+	};
 
 	const [query, setQuery] = createSignal<FindCompoundPropertyPayload>();
 	const [data] = createResource(query, findCompoundProperty);
 
-	const setFormValue = (
-		key: keyof FindCompoundPropertyPayload,
-		value: FindCompoundPropertyPayload[typeof key]
-	) => {
-		setFormValues({
-			...formValues(),
-			[key]: value,
-		});
-	};
-
 	const fetch = () => {
-		const payload = formValues();
-		const { compoundUuid, propertyUuid, temperature, pressure } = payload;
+		const payload = {
+			compoundUuid: compoundUuid(),
+			propertyUuid: propertyUuid(),
+			temperature: temperature(),
+			pressure: pressure(),
+		};
 
 		// TODO: Better validation
 		if (
-			temperature === undefined ||
-			pressure === undefined ||
-			compoundUuid === undefined ||
-			propertyUuid === undefined
+			payload.temperature === undefined ||
+			payload.pressure === undefined ||
+			payload.compoundUuid === undefined ||
+			payload.propertyUuid === undefined
 		) {
 			return;
 		}

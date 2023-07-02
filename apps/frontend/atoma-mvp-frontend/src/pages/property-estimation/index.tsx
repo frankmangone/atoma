@@ -13,30 +13,30 @@ import type { Component } from "solid-js";
 
 const PropertyEstimationPage: Component = () => {
 	const { formValues, setFormValue, fetch, data } = useData();
-	const { compoundUuid, propertyUuid, temperature, pressure } = formValues();
+	const { compoundUuid, propertyUuid, temperature, pressure } = formValues;
 
 	return (
 		<div class={styles.App}>
 			<main class={styles.container}>
 				<img src={logo} class={styles.logo} alt="logo" />
 				{/** TODO: Typography components */}
-				<h1 style={{ color: "#8e2eb2" }}>ATOMA</h1>
+				<h1 style={{ "font-weight": "semibold", color: "#8e2eb2" }}>ATOMA</h1>
 				<h3>Compound property search & estimation</h3>
 				<Card style={{ "justify-content": "center" }}>
 					<Search
 						label="Compound"
 						name="compound"
 						placeholder="Compound..."
-						value={compoundUuid}
-						onChange={(e: any) => setFormValue("compoundUuid", e.target.value)}
+						value={compoundUuid()}
+						onInput={(e: any) => setFormValue("compoundUuid", e.target.value)}
 						style={{ "flex-basis": "250px" }}
 					/>
 					<Search
 						label="Property"
 						name="property"
 						placeholder="Property..."
-						value={propertyUuid}
-						onChange={(e: any) => setFormValue("propertyUuid", e.target.value)}
+						value={propertyUuid()}
+						onInput={(e: any) => setFormValue("propertyUuid", e.target.value)}
 						style={{ "flex-basis": "250px" }}
 					/>
 				</Card>
@@ -55,7 +55,7 @@ const PropertyEstimationPage: Component = () => {
 							label="Temperature"
 							name="temperature"
 							placeholder="Temperature..."
-							value={temperature}
+							value={temperature()}
 							onChange={(e: any) =>
 								setFormValue("temperature", parseFloat(e.target.value))
 							}
@@ -65,7 +65,7 @@ const PropertyEstimationPage: Component = () => {
 							label="Pressure"
 							name="pressure"
 							placeholder="Pressure..."
-							value={pressure}
+							value={pressure()}
 							onChange={(e: any) =>
 								setFormValue("pressure", parseFloat(e.target.value))
 							}
