@@ -82,6 +82,12 @@ input CreatePropertyInput {
 
 union FindCompoundResult = Compound | NotFoundError
 
+input FindManyCompoundsInput {
+  after: String
+  first: Int!
+  name: String
+}
+
 input FindPaginatedInput {
   after: String
   first: Int!
@@ -140,6 +146,6 @@ type Query {
   compound(name: String!): FindCompoundResult!
   compoundProperties(input: CompoundPropertiesInput!): PaginatedCompoundProperties!
   compoundProperty(input: CompoundPropertyInput!): CompoundPropertyResult!
-  compounds(options: FindPaginatedInput!): PaginatedCompounds!
+  compounds(options: FindManyCompoundsInput!): PaginatedCompounds!
   properties(options: FindPaginatedInput!): PaginatedProperties!
 }

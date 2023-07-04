@@ -1,6 +1,11 @@
 import * as fs from 'fs';
 import { Session } from 'neo4j-driver';
-import { IS_NODE_TYPE, ANNOTATED_KEYS, IS_PROPERTY_UNIQUE } from '../constants';
+import {
+  IS_NODE_TYPE,
+  ANNOTATED_KEYS,
+  IS_PROPERTY_UNIQUE,
+  IS_FULL_TEXT_INDEXED,
+} from '../constants';
 
 /**
  * setConstraints
@@ -39,13 +44,40 @@ export const setConstraints = async (session: Session) => {
           key,
         );
 
-        if (!isPropertyUnique) continue;
+        const fullTextIndexName = Reflect.getMetadata(
+          IS_FULL_TEXT_INDEXED,
+          class_.prototype,
+          key,
+        );
 
         try {
-          await session.run(
-            `CREATE CONSTRAINT FOR (n:${class_.name}) REQUIRE n.${key} IS UNIQUE`,
-          );
+          if (isPropertyUnique) {
+            await session.run(
+              `
+                CREATE CONSTRAINT
+                FOR (n:${class_.name})
+                REQUIRE n.${key} IS UNIQUE
+                IF NOT EXISTS
+              `,
+            );
+          }
         } catch {
+          // Constraint already exists; nothing should happen
+        }
+
+        try {
+          if (fullTextIndexName) {
+            await session.run(
+              `
+                CREATE FULLTEXT INDEX ${fullTextIndexName} IF NOT EXISTS
+                FOR (n:${class_.name})
+                ON EACH [n.${key}]
+                
+              `,
+            );
+          }
+        } catch (err) {
+          console.log(err);
           // Constraint already exists; nothing should happen
         }
       }

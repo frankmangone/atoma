@@ -3,30 +3,44 @@ import {
   Logger,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { Compound } from '@schemas/compound.schema';
+import { Compound, PaginatedCompounds } from '@schemas/compound.schema';
 import { CreateCompoundInput } from '../inputs/create-compound.input';
 import { CompoundsRepository } from '../repositories/compounds.repository';
 import { NotFoundError } from '@common/graphql/errors/not-found.error';
 import { v4 as uuidv4 } from 'uuid';
-import { FindPaginatedInput } from '@common/graphql/pagination/pagination.input';
 import { PaginatedType } from '@common/graphql/pagination/paginated.schema';
+import { FindManyCompoundsInput } from '../inputs/find-many-compounds.input';
+import { Neo4jService } from '@modules/neo4j/neo4j.service';
 
 @Injectable()
 export class CompoundsService {
   private readonly _logger = new Logger(CompoundsService.name);
 
-  constructor(private readonly _compoundsRepository: CompoundsRepository) {}
+  constructor(
+    private readonly _compoundsRepository: CompoundsRepository,
+    private readonly _neo4jService: Neo4jService,
+  ) {}
 
   /**
    * find
    *
    * Gets all compound records, paginated.
    *
-   * @param {FindPaginatedInput} options
+   * @param {FindManyCompoundsInput} options
    * @returns {Promise<PaginatedType<Compound>>}
    */
-  async find(options?: FindPaginatedInput): Promise<PaginatedType<Compound>> {
+  async find(
+    options?: FindManyCompoundsInput,
+  ): Promise<PaginatedType<Compound>> {
     this._logger.log('Querying DB for compound records...');
+
+    const { name } = options;
+
+    if (name) {
+      // Use full text search for this query.
+      return this._findManyByName(name);
+    }
+
     return this._compoundsRepository.findNodes({}, options);
   }
 
@@ -97,5 +111,31 @@ export class CompoundsService {
 
       throw new InternalServerErrorException('Internal server error.');
     }
+  }
+
+  /**
+   * _findManyByName
+   *
+   * Builds a fulltext search query to find compounds with the requested name.
+   */
+  private async _findManyByName(name: string): Promise<PaginatedCompounds> {
+    // Use full text search for this query.
+    const cypher = `
+    CALL db.index.fulltext.queryNodes("compoundName", "${name}") YIELD node, score
+    RETURN node
+  `;
+
+    const { records } = await this._neo4jService.read(cypher, {});
+
+    // TODO: Add actual pagination!
+    return {
+      edges: [],
+      nodes: records.map((record) => record.get('node').properties),
+      pageInfo: {
+        endCursor: null,
+        hasNextPage: false,
+        totalCount: records.length,
+      },
+    };
   }
 }

@@ -4,8 +4,8 @@ import { CompoundsService } from '../services/compounds.service';
 import { CreateCompoundInput } from '../inputs/create-compound.input';
 import { Payload } from '@common/decorators';
 import { Logger } from '@nestjs/common';
-import { FindPaginatedInput } from '@common/graphql/pagination/pagination.input';
 import { FindCompoundResult } from '../results/find-compound.result';
+import { FindManyCompoundsInput } from '../inputs/find-many-compounds.input';
 
 @Resolver(() => Compound)
 export class CompoundsResolver {
@@ -22,7 +22,7 @@ export class CompoundsResolver {
    */
   @Query(() => PaginatedCompounds, { name: 'compounds' })
   async findManyCompounds(
-    @Args('options') options: FindPaginatedInput,
+    @Args('options') options: FindManyCompoundsInput,
   ): Promise<PaginatedCompounds> {
     this._logger.log({
       message: 'Resolver `compounds` called',
