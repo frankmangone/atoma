@@ -136,14 +136,19 @@ export class CompoundsService {
     // Notice the ~3 after the `name` value. This is what indicates the
     // query to use fuzzy search. The number indicates the allowed edit distance
     // for results. Lower values yield less results but with better scores.
+    //
+    // We also want to order by relevance (score), which is not compatible with the DISTINCT clause;
+    // hence the subquery.
     const cypher = `
       CALL db.index.fulltext.queryNodes("compoundName", "${name}~3") YIELD node, score
       ${where}
-      WITH node
+      WITH node, score
       OPTIONAL MATCH (compound:Compound)-[:HAS_ALTERNATIVE_NAME]->(node)
-      WITH CASE WHEN compound IS NULL THEN node ELSE compound END AS result
+      WITH CASE WHEN compound IS NULL THEN node ELSE compound END AS result, score
+      WITH DISTINCT result, score
+      ORDER BY score DESC
       RETURN DISTINCT result
-      ORDER BY id(result) ASC LIMIT toInteger($first)
+      LIMIT toInteger($first)
     `;
 
     const { records } = await this._neo4jService.read(cypher, {
