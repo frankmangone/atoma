@@ -139,8 +139,11 @@ export class CompoundsService {
     const cypher = `
       CALL db.index.fulltext.queryNodes("compoundName", "${name}~3") YIELD node, score
       ${where}
-      RETURN node
-      ORDER BY id(node) ASC LIMIT toInteger($first)
+      WITH node
+      OPTIONAL MATCH (compound:Compound)-[:HAS_ALTERNATIVE_NAME]->(node)
+      WITH CASE WHEN compound IS NULL THEN node ELSE compound END AS result
+      RETURN result
+      ORDER BY id(result) ASC LIMIT toInteger($first)
     `;
 
     const { records } = await this._neo4jService.read(cypher, {
@@ -158,7 +161,7 @@ export class CompoundsService {
     const totalCount = recordsToReturn.length;
     const lastRecordId = recordsToReturn
       .at(-1)
-      ?.get('node')
+      ?.get('result')
       .identity.toString();
     const endCursor = lastRecordId ? btoa(lastRecordId) : null;
 
@@ -166,9 +169,9 @@ export class CompoundsService {
     const nodes = [];
     const edges = [];
 
-    records.forEach((record) => {
-      const id = record.get('node').identity;
-      const node = record.get('node').properties;
+    recordsToReturn.forEach((record) => {
+      const id = record.get('result').identity;
+      const node = record.get('result').properties;
 
       nodes.push(node);
       edges.push({
@@ -177,13 +180,12 @@ export class CompoundsService {
       });
     });
 
-    // TODO: Add actual pagination!
     return {
       edges,
       nodes,
       pageInfo: {
         endCursor,
-        hasNextPage: false,
+        hasNextPage,
         totalCount,
       },
     };
