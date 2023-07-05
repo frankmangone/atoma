@@ -38,7 +38,7 @@ export class CompoundsService {
 
     if (name) {
       // Use full text search for this query.
-      return this._findManyByName(name);
+      return this._findManyByName(options);
     }
 
     return this._compoundsRepository.findNodes({}, options);
@@ -118,23 +118,73 @@ export class CompoundsService {
    *
    * Builds a fulltext search query to find compounds with the requested name.
    */
-  private async _findManyByName(name: string): Promise<PaginatedCompounds> {
-    // Use full text search for this query.
-    const cypher = `
-    CALL db.index.fulltext.queryNodes("compoundName", "${name}") YIELD node, score
-    RETURN node
-  `;
+  private async _findManyByName(
+    options: FindManyCompoundsInput,
+  ): Promise<PaginatedCompounds> {
+    const { first = 5, name, after: afterCursor } = options;
 
-    const { records } = await this._neo4jService.read(cypher, {});
+    let where = '';
+    let after;
+
+    if (afterCursor) {
+      // Decode cursor from base64
+      after = atob(afterCursor);
+      where = `WHERE id(node) > ${after}`;
+    }
+
+    // Use full text search for this query.
+    // Notice the ~3 after the `name` value. This is what indicates the
+    // query to use fuzzy search. The number indicates the allowed edit distance
+    // for results. Lower values yield less results but with better scores.
+    const cypher = `
+      CALL db.index.fulltext.queryNodes("compoundName", "${name}~3") YIELD node, score
+      ${where}
+      RETURN node
+      ORDER BY id(node) ASC LIMIT toInteger($first)
+    `;
+
+    const { records } = await this._neo4jService.read(cypher, {
+      first: first + 1,
+      after,
+    });
+
+    // Parse page info
+    const hasNextPage = records.length > first;
+
+    // If there's a next page, slice the last element of the records array, since it was
+    // not really requested with the `first` parameter.
+    const recordsToReturn = hasNextPage ? records?.slice(0, -1) : records;
+
+    const totalCount = recordsToReturn.length;
+    const lastRecordId = recordsToReturn
+      .at(-1)
+      ?.get('node')
+      .identity.toString();
+    const endCursor = lastRecordId ? btoa(lastRecordId) : null;
+
+    // Finally, map nodes and edges
+    const nodes = [];
+    const edges = [];
+
+    records.forEach((record) => {
+      const id = record.get('node').identity;
+      const node = record.get('node').properties;
+
+      nodes.push(node);
+      edges.push({
+        node,
+        cursor: btoa(id),
+      });
+    });
 
     // TODO: Add actual pagination!
     return {
-      edges: [],
-      nodes: records.map((record) => record.get('node').properties),
+      edges,
+      nodes,
       pageInfo: {
-        endCursor: null,
+        endCursor,
         hasNextPage: false,
-        totalCount: records.length,
+        totalCount,
       },
     };
   }
