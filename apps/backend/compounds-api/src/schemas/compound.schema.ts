@@ -15,8 +15,6 @@ export class Compound extends BaseEntity {
 
   @Field({ nullable: true })
   reducedFormula?: string;
-
-  alternativeNames: string[];
 }
 
 @ObjectType()

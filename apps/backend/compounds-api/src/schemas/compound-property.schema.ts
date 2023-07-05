@@ -1,5 +1,5 @@
 import { Paginated } from '@common/graphql/pagination/paginated.schema';
-import { Field, Float, ObjectType } from '@nestjs/graphql';
+import { Field, ObjectType } from '@nestjs/graphql';
 import { BaseEntity } from '@common/graphql/base.schema';
 import { Compound } from './compound.schema';
 import { Property } from './property.schema';

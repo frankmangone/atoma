@@ -2,12 +2,16 @@ import 'dotenv/config';
 import neo4j from 'neo4j-driver';
 import { v4 as uuidv4 } from 'uuid';
 
-import { COMPOUNDS, ETHANOL, WATER } from './datasets/compounds';
-import { DENSITY, PROPERTIES } from './datasets/properties';
+import { COMPOUNDS, METHANOL, ETHANOL, WATER } from './datasets/compounds-data';
+import { DENSITY, PROPERTIES } from './datasets/properties-data';
 import {
   ETHANOL_DENSITY_DATA,
   WATER_DENSITY_DATA,
-} from './datasets/compound-property-data';
+} from './datasets/compound-properties-data';
+import {
+  ETHANOL_NAMES_DATA,
+  METHANOL_NAMES_DATA,
+} from './datasets/compound-names-data';
 
 const {
   NEO_PROTOCOL,
@@ -156,6 +160,44 @@ const seed = async () => {
     } catch (error) {
       console.log(error);
       console.log(`Failed to create compound property data for ${ETHANOL}.`);
+    }
+  }
+
+  console.log('=========================================');
+  console.log('Seeding alternative compound names...');
+
+  const compoundNamesCypher = `
+    MATCH
+      (compound:Compound {uuid: $compoundUuid})
+    CREATE
+      (compound)
+        -[:HAS_ALTERNATIVE_NAME]->
+      (compoundName:CompoundName {name: $name})
+  `;
+
+  for (const name of ETHANOL_NAMES_DATA) {
+    try {
+      await session.run(compoundNamesCypher, {
+        compoundUuid: ethanolUuid,
+        name,
+      });
+      console.log(`Alternative name for ${ETHANOL} created: ${name}.`);
+    } catch (error) {
+      console.log(`Failed to create alternative name "${name}".`);
+    }
+  }
+
+  const methanolUuid = compoundUuids.get(METHANOL);
+
+  for (const name of METHANOL_NAMES_DATA) {
+    try {
+      await session.run(compoundNamesCypher, {
+        compoundUuid: methanolUuid,
+        name,
+      });
+      console.log(`Alternative name for ${METHANOL} created: ${name}.`);
+    } catch (error) {
+      console.log(`Failed to create alternative name "${name}".`);
     }
   }
 
