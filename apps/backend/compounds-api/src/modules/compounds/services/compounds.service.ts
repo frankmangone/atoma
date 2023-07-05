@@ -142,7 +142,7 @@ export class CompoundsService {
       WITH node
       OPTIONAL MATCH (compound:Compound)-[:HAS_ALTERNATIVE_NAME]->(node)
       WITH CASE WHEN compound IS NULL THEN node ELSE compound END AS result
-      RETURN result
+      RETURN DISTINCT result
       ORDER BY id(result) ASC LIMIT toInteger($first)
     `;
 
