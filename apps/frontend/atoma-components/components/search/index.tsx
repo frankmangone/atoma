@@ -8,8 +8,8 @@ import {
 	SelectedValueWrapper,
 	SpinnerWrapper,
 } from "./styles";
-import { Wrapper, Label } from "../input/styles";
 import Spinner from "../spinner";
+import { createDebounce } from "@solid-primitives/debounce";
 
 export type SearchProps = Omit<
 	InputProps,
@@ -17,13 +17,23 @@ export type SearchProps = Omit<
 > & {
 	style?: JSX.CSSProperties;
 	options?: any[];
-	loading: boolean;
+	loading?: boolean;
 	value?: Accessor<string>;
 	onSelect: (value: any) => void;
+	onSearch: (searchString: string) => void | Promise<void>;
+	debounceDelay?: number;
 };
 
 export const Search: Component<SearchProps> = (props) => {
-	const { onSelect, style, loading = false, options } = props;
+	const {
+		onSelect,
+		onSearch,
+		debounceDelay = 500,
+		style,
+		loading = false,
+		options,
+		...otherProps
+	} = props;
 
 	let inputRef: HTMLInputElement;
 
@@ -38,13 +48,26 @@ export const Search: Component<SearchProps> = (props) => {
 		inputRef.value = selection;
 	};
 
+	// Debounce search callback
+	const search = createDebounce(
+		(search: string) => onSearch(search),
+		debounceDelay
+	);
+
+	const handleInput: JSX.EventHandlerUnion<HTMLInputElement, InputEvent> = (
+		event
+	) => {
+		search(event.currentTarget.value);
+		setSearchString(event.currentTarget.value);
+	};
+
 	return (
 		<div style={{ ...style, position: "relative" }}>
 			<Input
-				{...props}
+				{...otherProps}
 				ref={inputRef}
 				value={searchString()}
-				onInput={(e: any) => setSearchString(e.target.value)}
+				onInput={handleInput}
 				onFocus={handleFocus}
 				onBlur={handleBlur}
 				rightComponent={() => <Icon icon="search" size={20} />}

@@ -2,18 +2,31 @@ export interface FindCompoundsByNamePayload {
 	name: string;
 }
 
+export type FindCompoundsByNameResult = Array<{
+	uuid: string;
+	name: string;
+}>;
+
+interface QueryResult {
+	compounds: {
+		nodes: FindCompoundsByNameResult;
+	};
+}
+
 const query = `
 	query FindCompoundsByName($name: String!) {
-		compounds(input: { name: $name, first: 4 }) {
-			uuid
-			name
+		compounds(options: { name: $name, first: 4 }) {
+			nodes {
+				uuid
+				name
+			}
 		}
 	}
 `;
 
 export const findCompoundsByName = async (
 	payload: FindCompoundsByNamePayload
-) => {
+): Promise<FindCompoundsByNameResult> => {
 	const response = await fetch("http://localhost:3000/graphql", {
 		method: "POST",
 		headers: {
@@ -26,7 +39,8 @@ export const findCompoundsByName = async (
 		}),
 	});
 
-	const { data } = await response.json();
+	const result = await response.json();
+	const data = result?.data as QueryResult;
 
-	return data;
+	return data.compounds.nodes;
 };

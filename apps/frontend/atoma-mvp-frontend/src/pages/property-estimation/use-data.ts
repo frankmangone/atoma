@@ -3,7 +3,8 @@ import {
 	type FindCompoundPropertyPayload,
 	findCompoundProperty,
 } from "../../queries/find-compound-property";
-import { findCompoundsByName } from "../../queries/find-compound-by-name";
+import { findCompoundsByName } from "../../queries/find-compounds-by-name";
+import { findPropertiesByName } from "../../queries/find-properties-by-name";
 
 type Setters<T> = {
 	[K in keyof T]: Setter<T[K]>;
@@ -51,6 +52,19 @@ export const useData = () => {
 		findCompoundsByName
 	);
 
+	const [findPropertiesQuery, setFindPropertiesQuery] = createSignal<any>();
+	const [propertyData] = createResource(
+		findPropertiesQuery,
+		findPropertiesByName
+	);
+
+	const searchCompounds = (name: string) => {
+		setFindCompoundsQuery({ name });
+	};
+	const searchProperties = (name: string) => {
+		setFindPropertiesQuery({ name });
+	};
+
 	const estimateProperty = () => {
 		const payload = {
 			compoundUuid: compoundUuid(),
@@ -73,9 +87,17 @@ export const useData = () => {
 	};
 
 	return {
-		estimateProperty,
 		formValues,
 		setFormValue,
+		compounds: {
+			search: searchCompounds,
+			data: compoundData,
+			loading: compoundData.loading,
+		},
+		compoundData,
+		propertyData,
 		compoundPropertyData,
+		estimateProperty,
+		searchProperties,
 	};
 };

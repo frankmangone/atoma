@@ -12,8 +12,17 @@ import { useData } from "./use-data";
 import type { Component } from "solid-js";
 
 const PropertyEstimationPage: Component = () => {
-	const { formValues, setFormValue, estimateProperty, compoundPropertyData } =
-		useData();
+	const {
+		formValues,
+		setFormValue,
+		compounds,
+		compoundData,
+		searchProperties,
+		estimateProperty,
+		propertyData,
+		compoundPropertyData,
+	} = useData();
+
 	const { compoundUuid, propertyUuid, temperature, pressure } = formValues;
 
 	return (
@@ -24,13 +33,16 @@ const PropertyEstimationPage: Component = () => {
 				<h1 style={{ "font-weight": "semibold", color: "#8e2eb2" }}>ATOMA</h1>
 				<h3>Compound property search & estimation</h3>
 				<Card style={{ "justify-content": "center" }}>
+					{compounds.loading ? "Loading..." : "Not loading"}
 					<Search
 						label="Compound"
 						name="compound"
 						placeholder="Compound..."
-						loading={true}
 						value={compoundUuid}
 						onSelect={(value) => setFormValue("compoundUuid", value)}
+						onSearch={compounds.search}
+						loading={compoundData.loading}
+						options={compounds.data()}
 						style={{ "flex-basis": "250px" }}
 					/>
 					<Search
@@ -40,6 +52,7 @@ const PropertyEstimationPage: Component = () => {
 						loading={true}
 						value={propertyUuid}
 						onSelect={(value) => setFormValue("propertyUuid", value)}
+						onSearch={searchProperties}
 						style={{ "flex-basis": "250px" }}
 					/>
 				</Card>
