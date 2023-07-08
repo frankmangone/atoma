@@ -39,7 +39,10 @@ const PropertyEstimationPage: Component = () => {
 						onSelect={(value) => setFormValue("compoundUuid", value)}
 						onSearch={compounds.search}
 						loading={compounds.data.loading}
-						options={compounds.data()?.map((compound) => compound.name)}
+						options={compounds.data()?.map((compound) => ({
+							display: compound.name,
+							value: compound.uuid,
+						}))}
 						style={{ "flex-basis": "250px" }}
 					/>
 					<Search
@@ -50,7 +53,10 @@ const PropertyEstimationPage: Component = () => {
 						onSelect={(value) => setFormValue("propertyUuid", value)}
 						onSearch={properties.search}
 						loading={properties.data.loading}
-						options={properties.data()?.map((property) => property.name)}
+						options={properties.data()?.map((property) => ({
+							display: property.name,
+							value: property.uuid,
+						}))}
 						style={{ "flex-basis": "250px" }}
 					/>
 				</Card>

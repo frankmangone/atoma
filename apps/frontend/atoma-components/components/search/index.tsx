@@ -16,7 +16,7 @@ export type SearchProps = Omit<
 	"onInput" | "rightComponent" | "style" | "value"
 > & {
 	style?: JSX.CSSProperties;
-	options?: any[];
+	options?: Array<{ display: any; value: string }>;
 	loading?: boolean;
 	value?: Accessor<string>;
 	onSelect: (value: any) => void;
@@ -42,10 +42,10 @@ export const Search: Component<SearchProps> = (props) => {
 
 	const handleFocus = () => setFocused(true);
 	const handleBlur = () => setFocused(false);
-	const handleSelect = (selection: any) => {
-		onSelect(selection);
-		setSearchString(selection);
-		inputRef.value = selection;
+	const handleSelect = (selection: { display: string; value: string }) => {
+		onSelect(selection.value);
+		setSearchString(selection.display);
+		inputRef.value = selection.display;
 	};
 
 	// Debounce search callback
@@ -83,8 +83,12 @@ export const Search: Component<SearchProps> = (props) => {
 						<For
 							each={props.options ?? []}
 							children={(item) => (
-								<SelectOption onMouseDown={() => handleSelect("option A")}>
-									{item}
+								<SelectOption
+									onMouseDown={() =>
+										handleSelect({ display: item.display, value: item.value })
+									}
+								>
+									{item.display}
 								</SelectOption>
 							)}
 						/>

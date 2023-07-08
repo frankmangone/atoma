@@ -46,14 +46,14 @@ export const useData = () => {
 		findCompoundProperty
 	);
 
-	const [findCompoundsQuery, setFindCompoundsQuery] = createSignal<any>();
-	const [compounds] = createResource(findCompoundsQuery, findCompoundsByName);
-
 	const [findPropertiesQuery, setFindPropertiesQuery] = createSignal<any>();
 	const [properties] = createResource(
 		findPropertiesQuery,
 		findPropertiesByName
 	);
+
+	const [findCompoundsQuery, setFindCompoundsQuery] = createSignal<any>();
+	const [compounds] = createResource(findCompoundsQuery, findCompoundsByName);
 
 	const searchCompounds = (name: string) => {
 		setFindCompoundsQuery({ name });

@@ -8,7 +8,7 @@ export type FindPropertiesByNameResult = Array<{
 }>;
 
 interface QueryResult {
-	compounds: {
+	properties: {
 		nodes: FindPropertiesByNameResult;
 	};
 }
@@ -42,5 +42,5 @@ export const findPropertiesByName = async (
 	const result = await response.json();
 	const data = result?.data as QueryResult;
 
-	return data.compounds.nodes;
+	return data.properties.nodes;
 };
