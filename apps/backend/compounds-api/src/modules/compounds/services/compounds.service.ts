@@ -117,6 +117,9 @@ export class CompoundsService {
    * _findManyByName
    *
    * Builds a fulltext search query to find compounds with the requested name.
+   *
+   * @param {FindManyCompoundsInput} options
+   * @returns {Promise<PaginatedCompounds>}
    */
   private async _findManyByName(
     options: FindManyCompoundsInput,
@@ -147,7 +150,7 @@ export class CompoundsService {
       WITH CASE WHEN compound IS NULL THEN node ELSE compound END AS result, score
       WITH DISTINCT result, score
       ORDER BY score DESC
-      RETURN DISTINCT result
+      RETURN result
       LIMIT toInteger($first)
     `;
 
