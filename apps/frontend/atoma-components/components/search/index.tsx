@@ -6,21 +6,24 @@ import {
 	SelectWrapper,
 	SelectedValue,
 	SelectedValueWrapper,
+	SpinnerWrapper,
 } from "./styles";
 import { Wrapper, Label } from "../input/styles";
+import Spinner from "../spinner";
 
 export type SearchProps = Omit<
 	InputProps,
 	"onInput" | "rightComponent" | "style" | "value"
 > & {
-	value?: Accessor<string>;
 	style?: JSX.CSSProperties;
 	options?: any[];
+	loading: boolean;
+	value?: Accessor<string>;
 	onSelect: (value: any) => void;
 };
 
 export const Search: Component<SearchProps> = (props) => {
-	const { onSelect, style, options } = props;
+	const { onSelect, style, loading = false, options } = props;
 
 	let inputRef: HTMLInputElement;
 
@@ -48,15 +51,23 @@ export const Search: Component<SearchProps> = (props) => {
 			/>
 			{focused() && searchString() && (
 				<SelectWrapper>
-					<SelectOption onMouseDown={() => handleSelect("option A")}>
-						Option A
-					</SelectOption>
-					<SelectOption onMouseDown={() => handleSelect("option B")}>
-						Option B
-					</SelectOption>
-					<SelectOption onMouseDown={() => handleSelect("option C")}>
-						Option C
-					</SelectOption>
+					{loading ? (
+						<SpinnerWrapper>
+							<Spinner size="30px" color="#BE7EE4" />
+						</SpinnerWrapper>
+					) : (
+						<>
+							<SelectOption onMouseDown={() => handleSelect("option A")}>
+								Option A
+							</SelectOption>
+							<SelectOption onMouseDown={() => handleSelect("option B")}>
+								Option B
+							</SelectOption>
+							<SelectOption onMouseDown={() => handleSelect("option C")}>
+								Option C
+							</SelectOption>
+						</>
+					)}
 				</SelectWrapper>
 			)}
 		</div>

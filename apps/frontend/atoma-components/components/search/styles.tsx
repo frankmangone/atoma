@@ -45,3 +45,11 @@ export const SelectOption = styled("button")`
 		background-color: #f3fcf7;
 	}
 `;
+
+//
+
+export const SpinnerWrapper = styled("div")`
+	display: flex;
+	justify-content: center;
+	margin: 12px 0;
+`;

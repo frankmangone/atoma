@@ -12,7 +12,8 @@ import { useData } from "./use-data";
 import type { Component } from "solid-js";
 
 const PropertyEstimationPage: Component = () => {
-	const { formValues, setFormValue, fetch, data } = useData();
+	const { formValues, setFormValue, estimateProperty, compoundPropertyData } =
+		useData();
 	const { compoundUuid, propertyUuid, temperature, pressure } = formValues;
 
 	return (
@@ -27,6 +28,7 @@ const PropertyEstimationPage: Component = () => {
 						label="Compound"
 						name="compound"
 						placeholder="Compound..."
+						loading={true}
 						value={compoundUuid}
 						onSelect={(value) => setFormValue("compoundUuid", value)}
 						style={{ "flex-basis": "250px" }}
@@ -35,6 +37,7 @@ const PropertyEstimationPage: Component = () => {
 						label="Property"
 						name="property"
 						placeholder="Property..."
+						loading={true}
 						value={propertyUuid}
 						onSelect={(value) => setFormValue("propertyUuid", value)}
 						style={{ "flex-basis": "250px" }}
@@ -76,15 +79,15 @@ const PropertyEstimationPage: Component = () => {
 					<div style={{ "flex-grow": 1, "flex-basis": "49%" }}>
 						<h3>Result</h3>
 						{/** TODO: Handle failure scenarios */}
-						<p>{data()?.compoundProperty.value}</p>
+						<p>{compoundPropertyData()?.compoundProperty.value}</p>
 					</div>
 				</Card>
 				<Button
 					style={{ width: "400px", height: "40px", "align-self": "center" }}
-					disabled={data?.loading}
-					onClick={fetch}
+					disabled={compoundPropertyData?.loading}
+					onClick={estimateProperty}
 				>
-					{data?.loading ? <Spinner size="25px" /> : "Estimate"}
+					{compoundPropertyData?.loading ? <Spinner size="25px" /> : "Estimate"}
 				</Button>
 			</main>
 		</div>

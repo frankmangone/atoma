@@ -2,7 +2,8 @@ import { Setter, createResource, createSignal } from "solid-js";
 import {
 	type FindCompoundPropertyPayload,
 	findCompoundProperty,
-} from "../../queries/findCompoundProperty";
+} from "../../queries/find-compound-property";
+import { findCompoundsByName } from "../../queries/find-compound-by-name";
 
 type Setters<T> = {
 	[K in keyof T]: Setter<T[K]>;
@@ -37,10 +38,20 @@ export const useData = () => {
 		setter(() => value);
 	};
 
-	const [query, setQuery] = createSignal<FindCompoundPropertyPayload>();
-	const [data] = createResource(query, findCompoundProperty);
+	const [findCompoundPropertyQuery, setFindCompoundPropertyQuery] =
+		createSignal<FindCompoundPropertyPayload>();
+	const [compoundPropertyData] = createResource(
+		findCompoundPropertyQuery,
+		findCompoundProperty
+	);
 
-	const fetch = () => {
+	const [findCompoundsQuery, setFindCompoundsQuery] = createSignal<any>();
+	const [compoundData] = createResource(
+		findCompoundsQuery,
+		findCompoundsByName
+	);
+
+	const estimateProperty = () => {
 		const payload = {
 			compoundUuid: compoundUuid(),
 			propertyUuid: propertyUuid(),
@@ -58,13 +69,13 @@ export const useData = () => {
 			return;
 		}
 
-		setQuery(payload as FindCompoundPropertyPayload);
+		setFindCompoundPropertyQuery(payload as FindCompoundPropertyPayload);
 	};
 
 	return {
-		fetch,
+		estimateProperty,
 		formValues,
 		setFormValue,
-		data,
+		compoundPropertyData,
 	};
 };
