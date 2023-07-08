@@ -1,13 +1,13 @@
-import { createSignal, type Component, type JSX, Accessor } from "solid-js";
+import {
+	createSignal,
+	type Component,
+	type JSX,
+	Accessor,
+	For,
+} from "solid-js";
 import Input, { InputProps } from "../input";
 import Icon from "../icon";
-import {
-	SelectOption,
-	SelectWrapper,
-	SelectedValue,
-	SelectedValueWrapper,
-	SpinnerWrapper,
-} from "./styles";
+import { SelectOption, SelectWrapper, SpinnerWrapper } from "./styles";
 import Spinner from "../spinner";
 import { createDebounce } from "@solid-primitives/debounce";
 
@@ -30,7 +30,6 @@ export const Search: Component<SearchProps> = (props) => {
 		onSearch,
 		debounceDelay = 500,
 		style,
-		loading = false,
 		options,
 		...otherProps
 	} = props;
@@ -74,22 +73,19 @@ export const Search: Component<SearchProps> = (props) => {
 			/>
 			{focused() && searchString() && (
 				<SelectWrapper>
-					{loading ? (
+					{props.loading ? (
 						<SpinnerWrapper>
 							<Spinner size="30px" color="#BE7EE4" />
 						</SpinnerWrapper>
 					) : (
-						<>
-							<SelectOption onMouseDown={() => handleSelect("option A")}>
-								Option A
-							</SelectOption>
-							<SelectOption onMouseDown={() => handleSelect("option B")}>
-								Option B
-							</SelectOption>
-							<SelectOption onMouseDown={() => handleSelect("option C")}>
-								Option C
-							</SelectOption>
-						</>
+						<For
+							each={props.options ?? []}
+							children={(item) => (
+								<SelectOption onMouseDown={() => handleSelect("option A")}>
+									{item}
+								</SelectOption>
+							)}
+						/>
 					)}
 				</SelectWrapper>
 			)}

@@ -39,6 +39,8 @@ export const findCompoundsByName = async (
 		}),
 	});
 
+	await new Promise((resolve) => setTimeout(() => resolve(true), 2000));
+
 	const result = await response.json();
 	const data = result?.data as QueryResult;
 

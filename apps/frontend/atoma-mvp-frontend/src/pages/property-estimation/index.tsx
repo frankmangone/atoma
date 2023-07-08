@@ -33,7 +33,6 @@ const PropertyEstimationPage: Component = () => {
 				<h1 style={{ "font-weight": "semibold", color: "#8e2eb2" }}>ATOMA</h1>
 				<h3>Compound property search & estimation</h3>
 				<Card style={{ "justify-content": "center" }}>
-					{compounds.loading ? "Loading..." : "Not loading"}
 					<Search
 						label="Compound"
 						name="compound"
@@ -42,7 +41,7 @@ const PropertyEstimationPage: Component = () => {
 						onSelect={(value) => setFormValue("compoundUuid", value)}
 						onSearch={compounds.search}
 						loading={compoundData.loading}
-						options={compounds.data()}
+						options={compounds.data()?.map((compound) => compound.name)}
 						style={{ "flex-basis": "250px" }}
 					/>
 					<Search
