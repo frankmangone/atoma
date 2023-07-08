@@ -47,13 +47,10 @@ export const useData = () => {
 	);
 
 	const [findCompoundsQuery, setFindCompoundsQuery] = createSignal<any>();
-	const [compoundData] = createResource(
-		findCompoundsQuery,
-		findCompoundsByName
-	);
+	const [compounds] = createResource(findCompoundsQuery, findCompoundsByName);
 
 	const [findPropertiesQuery, setFindPropertiesQuery] = createSignal<any>();
-	const [propertyData] = createResource(
+	const [properties] = createResource(
 		findPropertiesQuery,
 		findPropertiesByName
 	);
@@ -91,13 +88,13 @@ export const useData = () => {
 		setFormValue,
 		compounds: {
 			search: searchCompounds,
-			data: compoundData,
-			loading: compoundData.loading,
+			data: compounds,
 		},
-		compoundData,
-		propertyData,
+		properties: {
+			search: searchProperties,
+			data: properties,
+		},
 		compoundPropertyData,
 		estimateProperty,
-		searchProperties,
 	};
 };

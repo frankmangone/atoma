@@ -37,6 +37,7 @@ export const Search: Component<SearchProps> = (props) => {
 	let inputRef: HTMLInputElement;
 
 	const [focused, setFocused] = createSignal<boolean>(false);
+	const [typing, setTyping] = createSignal<boolean>(false);
 	const [searchString, setSearchString] = createSignal<string>("");
 
 	const handleFocus = () => setFocused(true);
@@ -48,14 +49,15 @@ export const Search: Component<SearchProps> = (props) => {
 	};
 
 	// Debounce search callback
-	const search = createDebounce(
-		(search: string) => onSearch(search),
-		debounceDelay
-	);
+	const search = createDebounce((search: string) => {
+		onSearch(search);
+		setTyping(false);
+	}, debounceDelay);
 
 	const handleInput: JSX.EventHandlerUnion<HTMLInputElement, InputEvent> = (
 		event
 	) => {
+		setTyping(true);
 		search(event.currentTarget.value);
 		setSearchString(event.currentTarget.value);
 	};
@@ -73,7 +75,7 @@ export const Search: Component<SearchProps> = (props) => {
 			/>
 			{focused() && searchString() && (
 				<SelectWrapper>
-					{props.loading ? (
+					{typing() || props.loading ? (
 						<SpinnerWrapper>
 							<Spinner size="30px" color="#BE7EE4" />
 						</SpinnerWrapper>
