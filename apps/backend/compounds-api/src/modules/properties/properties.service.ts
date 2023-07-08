@@ -138,7 +138,7 @@ export class PropertiesService {
     const cypher = `
       CALL db.index.fulltext.queryNodes("propertyName", "${name}~3") YIELD node, score
       ${where}
-      WITH DISTINCT node
+      WITH DISTINCT node, score
       ORDER BY score DESC
       RETURN node
       LIMIT toInteger($first)

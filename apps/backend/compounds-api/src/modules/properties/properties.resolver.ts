@@ -5,6 +5,7 @@ import { Logger } from '@nestjs/common';
 import { FindPaginatedInput } from '@common/graphql/pagination/pagination.input';
 import { CreatePropertyInput } from './inputs/create-property.input';
 import { v4 as uuidv4 } from 'uuid';
+import { FindManyPropertiesInput } from './inputs/find-many-properties.input';
 
 @Resolver(() => Property)
 export class PropertiesResolver {
@@ -17,11 +18,12 @@ export class PropertiesResolver {
    *
    * Queries for multiple properties.
    *
+   * @param {FindManyPropertiesInput} options
    * @returns {Promise<PaginatedProperties>}
    */
   @Query(() => PaginatedProperties, { name: 'properties' })
   async findManyProperties(
-    @Args('options') options: FindPaginatedInput,
+    @Args('options') options: FindManyPropertiesInput,
   ): Promise<PaginatedProperties> {
     this._logger.log('Resolver `properties` called');
 

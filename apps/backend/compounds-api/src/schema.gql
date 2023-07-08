@@ -88,9 +88,10 @@ input FindManyCompoundsInput {
   name: String
 }
 
-input FindPaginatedInput {
+input FindManyPropertiesInput {
   after: String
   first: Int!
+  name: String
 }
 
 type Mutation {
@@ -147,5 +148,5 @@ type Query {
   compoundProperties(input: CompoundPropertiesInput!): PaginatedCompoundProperties!
   compoundProperty(input: CompoundPropertyInput!): CompoundPropertyResult!
   compounds(options: FindManyCompoundsInput!): PaginatedCompounds!
-  properties(options: FindPaginatedInput!): PaginatedProperties!
+  properties(options: FindManyPropertiesInput!): PaginatedProperties!
 }
