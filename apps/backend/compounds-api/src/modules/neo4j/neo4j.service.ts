@@ -1,12 +1,28 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Session, session, Result } from 'neo4j-driver';
 import { NEO4J_CONFIG, NEO4J_DRIVER } from './neo4j.module';
-import { Query } from './utils';
+import { Direction, MatchBuilder } from './utils/builders/match.builder';
 
-interface MatchOptions<T> {
-  label?: string;
-  fields?: Query<T>;
+interface MatchOptions {
   limit?: number;
+  node: {
+    tag?: string;
+    label?: string;
+    fields?: Record<string, unknown>;
+  };
+  connections?: Array<{
+    node?: {
+      tag?: string;
+      label?: string;
+      fields?: Record<string, unknown>;
+    };
+    edge?: {
+      direction?: Direction;
+      tag?: string;
+      label?: string;
+      fields?: Record<string, unknown>;
+    };
+  }>;
 }
 
 @Injectable()
@@ -46,47 +62,34 @@ export class Neo4jService {
 
   //
 
-  async match<T>(options?: MatchOptions<T>): Promise<any> {
-    const { label, limit, fields } = options ?? {};
+  async match(options?: MatchOptions): Promise<any> {
+    const { node, limit, connections } = options ?? {};
 
     let params = {};
     let cypher = '';
 
-    cypher += `MATCH (${label ? `node:${label}` : 'node'}`;
+    const matchBuilder = new MatchBuilder(node);
+    params = { ...params, ...(node.fields ?? {}) };
 
-    if (fields) {
-      const fieldsString = this._buildQueryFields(fields);
-      params = { ...params, ...fields };
-      cypher += ` {${fieldsString}}) `;
-    } else {
-      cypher += ')';
-    }
-
-    cypher += 'RETURN node ';
-
-    if (limit) {
-      cypher += `LIMIT ${limit}`;
-    }
-
-    const result = await this.read(cypher, params);
-    return result.records.map((record) => record.get('node').properties);
-  }
-
-  /**
-   * _buildQueryFields
-   *
-   * Builds query fields for a given payload.
-   *
-   * @param {Query<T>} query
-   * @returns {string}
-   */
-  private _buildQueryFields<T>(query: Query<T>): string {
-    let fields = '';
-
-    Object.keys(query).forEach((key) => {
-      fields += `${key}: $${key},`;
+    connections?.forEach((connection) => {
+      const { node, edge } = connection;
+      matchBuilder.addConnection({ node, edge });
+      params = { ...params, ...(node.fields ?? {}), ...(edge.fields ?? {}) };
     });
 
-    return fields.slice(0, -1);
+    cypher += matchBuilder.cypher;
+
+    // TODO: Request what to return to the user.
+    // In this context, `node.tag` may be undefined.
+    cypher += `\nRETURN ${node.tag} `;
+
+    if (limit) {
+      cypher += `\nLIMIT ${limit}`;
+    }
+
+    console.log(cypher);
+
+    const result = await this.read(cypher, params);
+    return result.records.map((record) => record.get(node.tag).properties);
   }
 }

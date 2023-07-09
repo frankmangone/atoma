@@ -23,9 +23,12 @@ export abstract class BaseRepository<T> {
    */
   async findOneNode(query: Query<T>): Promise<T | undefined> {
     const result = await this._neo4jService.match({
-      label: this._schema.name,
-      fields: query,
       limit: 1,
+      node: {
+        tag: 'node',
+        label: this._schema.name,
+        fields: query,
+      },
     });
 
     return plainToInstance(this._schema, result[0]);
