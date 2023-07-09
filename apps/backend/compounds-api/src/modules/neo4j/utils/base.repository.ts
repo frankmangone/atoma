@@ -22,19 +22,13 @@ export abstract class BaseRepository<T> {
    * @returns {Promise<T | undefined>}
    */
   async findOneNode(query: Query<T>): Promise<T | undefined> {
-    const fields = this._buildQueryFields(query);
+    const result = await this._neo4jService.match({
+      label: this._schema.name,
+      fields: query,
+      limit: 1,
+    });
 
-    const cypher = `
-      MATCH 
-        (r:${this._schema.name} {${fields}})
-      RETURN r
-      LIMIT 1
-    `;
-
-    const queryResult = await this._neo4jService.read(cypher, query);
-    const recordProperties = queryResult.records[0]?.get('r').properties;
-
-    return plainToInstance(this._schema, recordProperties);
+    return plainToInstance(this._schema, result[0]);
   }
 
   /**
