@@ -11,13 +11,18 @@ interface MatchOptions {
     fields?: Record<string, unknown>;
   };
   connections?: Array<{
-    node?: {
+    sourceNode?: {
       tag?: string;
       label?: string;
       fields?: Record<string, unknown>;
     };
     edge?: {
       direction?: Direction;
+      tag?: string;
+      label?: string;
+      fields?: Record<string, unknown>;
+    };
+    targetNode?: {
       tag?: string;
       label?: string;
       fields?: Record<string, unknown>;
@@ -72,8 +77,8 @@ export class Neo4jService {
     params = { ...params, ...(node.fields ?? {}) };
 
     connections?.forEach((connection) => {
-      const { node, edge } = connection;
-      matchBuilder.addConnection({ node, edge });
+      const { sourceNode, targetNode, edge } = connection;
+      matchBuilder.addConnection({ sourceNode, targetNode, edge });
       params = { ...params, ...(node.fields ?? {}), ...(edge.fields ?? {}) };
     });
 
@@ -86,8 +91,6 @@ export class Neo4jService {
     if (limit) {
       cypher += `\nLIMIT ${limit}`;
     }
-
-    console.log(cypher);
 
     const result = await this.read(cypher, params);
     return result.records.map((record) => record.get(node.tag).properties);

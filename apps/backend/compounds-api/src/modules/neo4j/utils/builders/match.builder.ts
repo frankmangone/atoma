@@ -21,15 +21,15 @@ interface EdgeParams {
 }
 
 interface AddConnectionParams {
-  node?: NodeParams;
+  sourceNode?: NodeParams;
   edge?: EdgeParams;
+  targetNode?: NodeParams;
 }
 
 export class MatchBuilder {
   #cypher: string;
-  #hasConnections = false;
 
-  constructor(node: NodeParams) {
+  constructor(node?: NodeParams) {
     this.#cypher = `MATCH ${this.#parseNodeCypher(node)}`;
   }
 
@@ -50,20 +50,15 @@ export class MatchBuilder {
    * Adds a connection to the match expression.
    */
   public addConnection(params: AddConnectionParams): MatchBuilder {
-    const { node, edge } = params;
+    const { sourceNode, edge, targetNode } = params;
 
-    if (!this.#hasConnections) {
-      this.#hasConnections = true;
-      this.#cypher += '\n';
-    } else {
-      // Add comma and new line to separate matches
-      this.#cypher += ',\n';
-    }
+    this.#cypher += ',\n';
 
-    const nodeString = this.#parseNodeCypher(node);
+    const sourceNodeString = this.#parseNodeCypher(sourceNode);
+    const targetNodeString = this.#parseNodeCypher(targetNode);
     const edgeString = this.#parseEdgeCypher(edge);
 
-    this.#cypher += `${edgeString}${nodeString}`;
+    this.#cypher += `${sourceNodeString}${edgeString}${targetNodeString}`;
 
     return this;
   }
@@ -86,6 +81,10 @@ export class MatchBuilder {
       result += `(${tag}:${label}`;
     } else {
       result += `(${tag}`;
+    }
+
+    if (result !== '(' && Object.keys(fields).length !== 0) {
+      result += ' ';
     }
 
     result += `${this.#buildQueryFields(fields)})`;
@@ -115,6 +114,10 @@ export class MatchBuilder {
       result += `[${tag}:${label}`;
     } else {
       result += `[${tag}`;
+    }
+
+    if (result !== '[' && Object.keys(fields).length !== 0) {
+      result += ' ';
     }
 
     result += `${this.#buildQueryFields(fields)}]`;
@@ -151,9 +154,9 @@ export class MatchBuilder {
     }
 
     Object.keys(query).forEach((key) => {
-      result += `${key}: $${key},`;
+      result += `${key}: $${key}, `;
     });
 
-    return ` {${result.slice(0, -1)}}`;
+    return `{${result.slice(0, -2)}}`;
   }
 }
