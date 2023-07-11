@@ -17,6 +17,7 @@
 	},
 	"dependencies": {
 		"@atoma/component-library": "*",
+		"@solid-primitives/debounce": "^1.3.0",
 		"@solidjs/router": "^0.8.2",
 		"graphql-tag": "^2.12.6",
 		"solid-js": "^1.7.6"
