@@ -1,21 +1,14 @@
-import type { StorybookConfig } from "storybook-solidjs-vite";
-
-const config: StorybookConfig = {
+const config = {
 	stories: [
 		"../components/**/*.mdx",
 		"../components/**/*.stories.@(js|jsx|mjs|ts|tsx)",
 	],
 	addons: [
-		"@storybook/addon-links",
-		"@storybook/addon-essentials",
-		"@storybook/addon-interactions",
+		'@storybook/preset-typescript',
 	],
-	framework: {
-		name: "storybook-solidjs-vite",
-		options: {},
-	},
 	docs: {
 		autodocs: "tag",
 	},
 };
+
 export default config;
