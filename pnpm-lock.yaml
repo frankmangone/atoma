@@ -260,6 +260,15 @@ importers:
         specifier: ^6.16.0
         version: 6.17.0(react-dom@18.2.0)(react@18.2.0)
     devDependencies:
+      '@types/node':
+        specifier: ^16.0.0
+        version: 16.18.36
+      '@types/react':
+        specifier: ^18.2.31
+        version: 18.2.31
+      '@types/react-dom':
+        specifier: ^18.2.14
+        version: 18.2.14
       '@vitejs/plugin-react':
         specifier: ^4.1.0
         version: 4.1.0(vite@4.5.0)
@@ -272,9 +281,12 @@ importers:
       serve-static:
         specifier: ^1.15.0
         version: 1.15.0
+      typescript:
+        specifier: ^5.2.2
+        version: 5.2.2
       vite:
         specifier: ^4.3.9
-        version: 4.5.0
+        version: 4.5.0(@types/node@16.18.36)
 
   apps/frontend/atoma-mvp-frontend-solid:
     dependencies:
@@ -302,7 +314,7 @@ importers:
         version: 5.2.2
       vite:
         specifier: ^4.3.9
-        version: 4.5.0
+        version: 4.5.0(@types/node@16.18.36)
       vite-plugin-solid:
         specifier: ^2.7.0
         version: 2.7.0(solid-js@1.7.6)(vite@4.5.0)
@@ -4632,7 +4644,7 @@ packages:
       magic-string: 0.27.0
       react-docgen-typescript: 2.2.2(typescript@5.2.2)
       typescript: 5.2.2
-      vite: 4.5.0
+      vite: 4.5.0(@types/node@16.18.36)
     dev: true
 
   /@jridgewell/gen-mapping@0.3.3:
@@ -6670,7 +6682,7 @@ packages:
       magic-string: 0.30.0
       rollup: 3.29.4
       typescript: 5.2.2
-      vite: 4.5.0
+      vite: 4.5.0(@types/node@16.18.36)
     transitivePeerDependencies:
       - encoding
       - supports-color
@@ -7606,7 +7618,7 @@ packages:
       react: 18.2.0
       react-docgen: 6.0.4
       react-dom: 18.2.0(react@18.2.0)
-      vite: 4.5.0
+      vite: 4.5.0(@types/node@16.18.36)
     transitivePeerDependencies:
       - '@preact/preset-vite'
       - encoding
@@ -8094,6 +8106,12 @@ packages:
   /@types/range-parser@1.2.4:
     resolution: {integrity: sha512-EEhsLsD6UsDM1yFhAvy0Cjr6VwmpMWqFBCb9w07wVugF7w9nfajxLuVmngTIpgS6svCnm6Vaw+MZhoDCKnOfsw==}
 
+  /@types/react-dom@18.2.14:
+    resolution: {integrity: sha512-V835xgdSVmyQmI1KLV2BEIUgqEuinxp9O4G6g3FqO/SqLac049E53aysv0oEFD2kHfejeKU+ZqL2bcFWj9gLAQ==}
+    dependencies:
+      '@types/react': 18.2.31
+    dev: true
+
   /@types/react@18.2.31:
     resolution: {integrity: sha512-c2UnPv548q+5DFh03y8lEDeMfDwBn9G3dRwfkrxQMo/dOtRHUUO57k6pHvBIfH/VF4Nh+98mZ5aaSe+2echD5g==}
     dependencies:
@@ -8309,7 +8327,7 @@ packages:
       '@babel/plugin-transform-react-jsx-source': 7.22.5(@babel/core@7.23.2)
       magic-string: 0.27.0
       react-refresh: 0.14.0
-      vite: 4.5.0
+      vite: 4.5.0(@types/node@16.18.36)
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -8325,7 +8343,7 @@ packages:
       '@babel/plugin-transform-react-jsx-source': 7.22.5(@babel/core@7.23.2)
       '@types/babel__core': 7.20.3
       react-refresh: 0.14.0
-      vite: 4.5.0
+      vite: 4.5.0(@types/node@16.18.36)
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -14992,7 +15010,7 @@ packages:
       '@solid-devtools/debugger': 0.22.1(solid-js@1.7.6)
       '@solid-devtools/shared': 0.12.0(solid-js@1.7.6)
       solid-js: 1.7.6
-      vite: 4.5.0
+      vite: 4.5.0(@types/node@16.18.36)
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -16225,7 +16243,7 @@ packages:
       merge-anything: 5.1.7
       solid-js: 1.7.6
       solid-refresh: 0.5.3(solid-js@1.7.6)
-      vite: 4.5.0
+      vite: 4.5.0(@types/node@16.18.36)
       vitefu: 0.2.4(vite@4.5.0)
     transitivePeerDependencies:
       - supports-color
@@ -16263,7 +16281,7 @@ packages:
       fsevents: 2.3.2
     dev: true
 
-  /vite@4.5.0:
+  /vite@4.5.0(@types/node@16.18.36):
     resolution: {integrity: sha512-ulr8rNLA6rkyFAlVWw2q5YJ91v098AFQ2R0PRFwPzREXOUJQPtFUG0t+/ZikhaOCDqFoDhN6/v8Sq0o4araFAw==}
     engines: {node: ^14.18.0 || >=16.0.0}
     hasBin: true
@@ -16291,6 +16309,7 @@ packages:
       terser:
         optional: true
     dependencies:
+      '@types/node': 16.18.36
       esbuild: 0.18.20
       postcss: 8.4.31
       rollup: 3.29.4
@@ -16317,7 +16336,7 @@ packages:
       vite:
         optional: true
     dependencies:
-      vite: 4.5.0
+      vite: 4.5.0(@types/node@16.18.36)
     dev: true
 
   /vue-template-compiler@2.7.14:

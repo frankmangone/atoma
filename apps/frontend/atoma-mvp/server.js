@@ -1,6 +1,6 @@
-import fs from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 import express from "express";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -66,7 +66,7 @@ export async function createServer(
 				// always read fresh template in dev
 				template = fs.readFileSync(resolve("index.html"), "utf-8");
 				template = await vite.transformIndexHtml(url, template);
-				render = (await vite.ssrLoadModule("/src/entry-server.jsx")).render;
+				render = (await vite.ssrLoadModule("/entry-server.jsx")).render;
 			} else {
 				template = indexProd;
 				// @ts-ignore
