@@ -3,7 +3,7 @@ export default function About() {
 		<>
 			<h1>About</h1>
 			<div>1</div>
-			<div>2</div>
+			<div>4</div>
 		</>
 	);
 }

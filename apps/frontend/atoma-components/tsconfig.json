@@ -1,14 +1,15 @@
 {
-  "compilerOptions": {
-    "outDir": "./dist/",
-    "sourceMap": true,
-    "noImplicitAny": true,
-    "module": "commonjs",
-    "target": "es6",
-    "jsx": "react",
-    "allowJs": true,
-    "moduleResolution": "node"
-  },
-  "include": ["./node_modules/**/*"],
-  "exclude": ["components/**/*.stories.tsx", "vite.config.ts"]
+	"compilerOptions": {
+		"outDir": "./dist/",
+		"sourceMap": true,
+		"noImplicitAny": true,
+		"esModuleInterop": true,
+		"module": "commonjs",
+		"target": "es6",
+		"jsx": "react",
+		"allowJs": true,
+		"moduleResolution": "node"
+	},
+	"include": ["index.ts", "components/**/*.tsx"],
+	"exclude": ["node_modules", "components/**/*.stories.tsx", "vite.config.ts"]
 }
