@@ -4,6 +4,7 @@ import { PropertyType } from '@common/enums';
 import { BaseEntity } from '@common/graphql/base.schema';
 import { NodeType } from '@modules/neo4j/utils/decorators/node-type.decorator';
 import { Unique } from '@modules/neo4j/utils/decorators/unique.decorator';
+import { FullTextIndex } from '@modules/neo4j/utils/decorators/full-text-index.decorator';
 
 @NodeType()
 @ObjectType()
@@ -13,6 +14,7 @@ export class Property extends BaseEntity {
   key: string;
 
   @Unique()
+  @FullTextIndex({ name: 'propertyName' })
   @Field(() => String)
   name: string;
 
