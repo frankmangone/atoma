@@ -1,12 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Vite App</title>
+		<title>Atoma</title>
+    <script src="https://unpkg.com/htmx.org@1.5.0"></script>
 	</head>
 	<body>
-		<div id="app"><!--app-html--></div>
-		<script type="module" src="/entry-client.jsx"></script>
-	</body>
+    <h2>Atoma</h1>
+    <p>Compound property estimation</p>
+    
+    <form>
+      <label>Compound</label>
+      <input name="compound" />
+
+      <label>Property</label>
+      <input name="property" />
+
+      <hr />
+
+      <label>Temperature</label>
+      <input name="temperature" />
+
+      <label>Pressure</label>
+      <input name="pressure" />
+
+      <button type="submit">Estimate</button>
+    </form>
+  </body>
 </html>

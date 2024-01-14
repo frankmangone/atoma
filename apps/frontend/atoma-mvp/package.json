@@ -1,31 +1,14 @@
 {
 	"name": "@atoma/mvp",
-	"private": true,
-	"version": "0.0.0",
-	"type": "module",
+	"version": "0.0.1",
+	"description": "",
+	"main": "index.js",
 	"scripts": {
-		"build": "tsc",
-		"dev": "concurrently \"tsc --watch\" \"node server.js\"",
-		"build:client": "vite build --outDir dist/client",
-		"build:server": "vite build --ssr src/entry-server.jsx --outDir dist/server",
-		"generate": "vite build --outDir dist/static && npm run build:server && node prerender",
-		"serve": "NODE_ENV=production node server",
-		"debug": "node --inspect-brk server"
+		"start": "node index.js"
 	},
+	"author": "",
+	"license": "ISC",
 	"dependencies": {
-		"react": "^18.2.0",
-		"react-dom": "^18.2.0",
-		"react-router-dom": "^6.16.0"
-	},
-	"devDependencies": {
-		"@types/node": "^16.0.0",
-		"@types/react": "^18.2.31",
-		"@types/react-dom": "^18.2.14",
-		"@vitejs/plugin-react": "^4.1.0",
-		"compression": "^1.7.4",
-		"express": "^4.18.2",
-		"serve-static": "^1.15.0",
-		"typescript": "^5.2.2",
-		"vite": "^4.3.9"
+		"express": "^4.18.2"
 	}
 }
